@@ -18,11 +18,11 @@ import java.net.UnknownHostException;
  */
 @Slf4j
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
-public class FileCabinetApiApplication {
+public class BcsApiApplication {
     public static void main(String[] args) throws UnknownHostException {
 
 
-        ConfigurableApplicationContext application = SpringApplication.run(FileCabinetApiApplication.class, args);
+        ConfigurableApplicationContext application = SpringApplication.run(BcsApiApplication.class, args);
         Environment env = application.getEnvironment();
         String ip = InetAddress.getLocalHost().getHostAddress();
         String port = env.getProperty("server.port");
