@@ -1,0 +1,59 @@
+package ${packageName}.domain;
+
+    #foreach ($import in $importList)
+    import ${import};
+    #end
+import cn.bcs.common.core.domain.BaseDBEntity;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+#if($table.crud || $table.sub)
+#elseif($table.tree)
+#end
+
+/**
+ * ${functionName}对象 ${tableName}
+ *
+ * @author ${author}
+ * @date ${datetime}
+ */
+#if($table.crud || $table.sub)
+    #set($Entity="BaseDBEntity")
+#elseif($table.tree)
+    #set($Entity="TreeEntity")
+#end
+@Data
+@EqualsAndHashCode(callSuper = true)
+@Accessors(chain = true)
+@ApiModel(value = "${functionName}对象", description = "${functionName}对象")
+@TableName("${tableName}")
+public class ${ClassName} extends ${Entity} {
+private static final long serialVersionUID=1L;
+
+#foreach ($column in $columns)
+    #if(!$table.isSuperColumn($column.javaField))
+    /** $column.columnComment */
+    #if($column.isRequired.equals("1"))
+    #if($column.javaType == 'String')
+    @NotBlank(message = "${column.columnComment}不能为空")
+    #elseif($column.javaType == 'Integer' || $column.javaType == 'Long' || $column.javaType == 'Double' || $column.javaType == 'Float' || $column.javaType == 'BigDecimal')
+    @NotNull(message = "${column.columnComment}不能为空")
+    #end
+    @ApiModelProperty(value = "${column.columnComment}", required = true)
+    #else
+    @ApiModelProperty(value = "${column.columnComment}")
+    #end
+    private $column.javaType $column.javaField;
+
+    #end
+#end
+
+}

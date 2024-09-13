@@ -1,0 +1,35 @@
+# 开发环境配置
+server:
+  # 服务器的HTTP端口
+  port: 8006
+# 数据源配置
+spring:
+  datasource:
+    druid:
+      # 主库数据源
+      master:
+        url: jdbc:mysql://rm-bp1p08wx2wi9433admo.mysql.rds.aliyuncs.com/file_cabinet_dev?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+        username: bcs_test
+        password: moji2219@
+      # 从库数据源
+      slave:
+        # 从数据源开关/默认关闭
+        enabled: false
+        url:
+        username:
+        password:
+  # redis 配置
+  redis:
+    # 地址
+    host: localhost
+    # 端口，默认为6379
+    port: 6379
+    # 数据库索引
+    database: 6
+    # 密码
+    password:
+
+# Swagger配置
+swagger:
+  # 是否开启swagger
+  enabled: true
