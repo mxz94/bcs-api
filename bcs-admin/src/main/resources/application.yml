@@ -45,6 +45,11 @@ user:
 
 # Spring配置
 spring:
+  thymeleaf:
+    prefix: classpath:/dist/
+    mode: HTML
+    encoding: utf-8
+    cache: false
   # 资源信息
   messages:
     # 国际化资源文件路径
