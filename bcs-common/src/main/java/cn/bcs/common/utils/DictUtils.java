@@ -4,6 +4,7 @@ import cn.bcs.common.constant.CacheConstants;
 import cn.bcs.common.utils.spring.SpringUtils;
 import cn.bcs.common.core.domain.entity.SysDictData;
 import cn.bcs.common.core.redis.RedisCache;
+import cn.hutool.core.collection.CollUtil;
 import com.alibaba.fastjson2.JSONArray;
 
 import java.util.Collection;
@@ -37,9 +38,9 @@ public class DictUtils {
      * @return dictDatas 字典数据列表
      */
     public static List<SysDictData> getDictCache(String key) {
-        JSONArray arrayCache = SpringUtils.getBean(RedisCache.class).getCacheObject(getCacheKey(key));
-        if (StringUtils.isNotNull(arrayCache)) {
-            return arrayCache.toList(SysDictData.class);
+        List<SysDictData> arrayCache = SpringUtils.getBean(RedisCache.class).getCacheObject(getCacheKey(key));
+        if (CollUtil.isNotEmpty(arrayCache)) {
+            return arrayCache;
         }
         return null;
     }
@@ -143,7 +144,7 @@ public class DictUtils {
      * 清空字典缓存
      */
     public static void clearDictCache() {
-        Collection<String> keys = SpringUtils.getBean(RedisCache.class).keys(CacheConstants.SYS_DICT_KEY + "*");
+        Collection<String> keys = SpringUtils.getBean(RedisCache.class).keys(CacheConstants.SYS_DICT_KEY);
         SpringUtils.getBean(RedisCache.class).deleteObject(keys);
     }
 
