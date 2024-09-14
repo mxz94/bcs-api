@@ -3,7 +3,7 @@
     <el-form ref="registerForm" :model="registerForm" :rules="registerRules" class="register-form">
       <div class="top">
         <img class="logo" src="../assets/images/logo.png" alt="">
-        <div class="title">智能档案柜</div>
+        <div class="title">业务佣金系统</div>
         <div class="welcome">欢迎登录业务佣金系统</div>
       </div>
       <el-form-item prop="username">
