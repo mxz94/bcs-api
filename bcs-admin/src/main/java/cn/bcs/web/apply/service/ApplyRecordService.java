@@ -1,6 +1,7 @@
 package cn.bcs.web.apply.service;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 
 import cn.bcs.common.core.domain.Result;
 import cn.bcs.common.core.domain.entity.SysUser;
@@ -51,8 +52,12 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
 
     public Result apply(ApplyRecordDTO dto) {
         SysUser fromUser = userService.getById(dto.getFromUserId());
-        // TODO: 2024/9/14 验证是否为代理用户
 
+        // TODO: 2024/9/14 验证是否为代理用户
+        Integer count = this.lambdaQuery().eq(ApplyRecord::getOpenId, dto.getOpenId()).in(ApplyRecord::getStatus, Arrays.asList(ApplyStatus.PENDING.getCode(), ApplyStatus.APPROVED.getCode())).count();
+        if (count > 0) {
+            return Result.error("当前微信有正在办理中或已办理过的单子");
+        }
         SelectData taocan = selectDataService.getById(dto.getTaocanId());
         ApplyRecord applyRecord = BeanUtil.copyProperties(dto, ApplyRecord.class);
         applyRecord.setTaocanName(taocan.getName());
@@ -61,7 +66,6 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
         }
         applyRecord.setStatus(ApplyStatus.PENDING.getCode());
         this.save(applyRecord);
-
         return Result.success();
     }
 }

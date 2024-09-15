@@ -32,12 +32,12 @@ public class BcsApiApplication {
         if ("true".equals(swaggerEnable)) {
             MyBatisPlusSqlLogInterceptor.startPrintSQL();
         }
-        try {
-            Runtime.getRuntime().exec("cmd /c start http://localhost:" + port);
-        } catch (IOException e) {
-        }
+        //try {
+        //    Runtime.getRuntime().exec("cmd /c start http://localhost:" + port);
+        //} catch (IOException e) {
+        //}
         log.info("\n----------------------------------------------------------\n\t" +
-                "Access URLs:\n\t" +
+                "Access URLs:\n\t" +/**/
                 "Local: \t\thttp://localhost:" + port  + "/doc.html\n\t" +
                 "Doc: \t\thttp://" + ip + ":" + port  + "/doc.html\n" +
                 "-----------------------------------------------------------\n\t" +

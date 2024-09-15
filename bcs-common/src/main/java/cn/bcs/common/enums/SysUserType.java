@@ -6,7 +6,7 @@ import lombok.Getter;
 /**
  * 用户类型
  *
- * @author zhaoshuaixiang
+ * @author m
  * @date 2023/5/8 18:21
  */
 @Getter
@@ -15,11 +15,14 @@ public enum SysUserType {
     /**
      * 是
      */
-    ADMIN("00", "管理员"),
-    SUB_ACCOUNT("01", "子账号"),
+
+    ADMIN("0", "管理员"),
+    PUTONG("1", "普通用户"),
+    DAILI("2", "代理用户"),
+    HEHUO("3", "合伙人"),
     ;
 
-    public static final String INFO = " 00:管理员，01:子账号";
+    public static final String INFO = "0 管理员 1 普通用户 2  ";
     private final String code;
     private final String desc;
 

@@ -2,6 +2,8 @@ package cn.bcs.common.utils.ip;
 
 import cn.bcs.common.utils.ServletUtils;
 import cn.bcs.common.utils.StringUtils;
+import cn.bcs.common.utils.html.EscapeUtil;
+import cn.hutool.extra.servlet.ServletUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;

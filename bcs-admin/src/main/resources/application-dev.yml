@@ -33,3 +33,7 @@ spring:
 swagger:
   # 是否开启swagger
   enabled: true
+
+wechat:
+  appid: wxb0b0b0b0b0b0b0b0
+  secret: 0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b

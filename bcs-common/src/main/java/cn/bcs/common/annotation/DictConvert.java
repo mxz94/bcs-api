@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * 字典转换
  *
- * @author zhaoshuaixiang
+ * @author m
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

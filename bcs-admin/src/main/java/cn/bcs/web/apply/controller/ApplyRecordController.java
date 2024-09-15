@@ -35,7 +35,7 @@ import cn.bcs.common.core.page.TableDataInfo;
  */
 @RestController
 @RequestMapping("/apply")
-@Api("套餐申请记录")
+@Api("套餐办理记录")
 public class ApplyRecordController extends BaseController {
     @Autowired
     private ApplyRecordService applyRecordService;
@@ -43,7 +43,7 @@ public class ApplyRecordController extends BaseController {
 /**
  * 查询套餐申请记录列表
  */
-@ApiOperation(value = "查询套餐申请记录列表")
+@ApiOperation(value = "查询套餐办理记录列表")
 @GetMapping("/list")
     public TableDataInfo list(ApplyRecord applyRecord) {
         startPage();

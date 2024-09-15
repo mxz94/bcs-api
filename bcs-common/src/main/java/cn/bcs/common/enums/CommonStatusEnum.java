@@ -4,32 +4,32 @@ import cn.bcs.common.annotation.DictConfig;
 import lombok.Getter;
 
 /**
- * 启用禁用状态
  * @author m
- * @date 2023/5/8 18:21
+ * @date 2022/4/11 17:00
  */
 @Getter
-@DictConfig(dictType = "sys_common_status", dictName = "启用禁用状态")
-public enum SysCommonStatus {
+@DictConfig(dictType = "common_status", dictName = "通用状态")
+public enum CommonStatusEnum {
     /**
-     * 是
+     * 通用状态 1正常 0禁用
      */
     NORMAL("0", "正常"),
-    DISABLE("1", "禁用"),
+    DISABLED("1", "禁用"),
     ;
 
-    public static final String INFO = " 0:正常，1:禁用";
     private final String code;
     private final String desc;
 
-    SysCommonStatus(String code, String desc) {
+    public static final String INFO = " 0:正常，1:禁用";
+
+    CommonStatusEnum(String code, String desc) {
         this.code = code;
         this.desc = desc;
     }
 
-    public static SysCommonStatus getByCode(String code) {
+    public static CommonStatusEnum getByCode(String code) {
         if (code != null) {
-            for (SysCommonStatus status : SysCommonStatus.values()) {
+            for (CommonStatusEnum status : CommonStatusEnum.values()) {
                 if (status.getCode().equals(code)) {
                     return status;
                 }

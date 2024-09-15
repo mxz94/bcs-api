@@ -4,7 +4,7 @@ package cn.bcs.common.annotation;
 import java.lang.annotation.*;
 
 /**
- * @author zhaoshuaixiang
+ * @author m
  * @date 2021-09-24 17:06:46
  */
 @Target(ElementType.TYPE)

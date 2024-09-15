@@ -26,7 +26,7 @@ import java.util.Date;
 /**
  * mybatis-plus配置
  *
- * @author zhaoshuaixiang
+ * @author m
  * @date 2023/5/6 18:34
  */
 @EnableTransactionManagement(proxyTargetClass = true)

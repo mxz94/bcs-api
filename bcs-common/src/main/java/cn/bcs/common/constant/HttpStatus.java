@@ -90,4 +90,9 @@ public class HttpStatus {
      * 系统警告消息
      */
     public static final int WARN = 601;
+
+    /**
+     * 微信快照模式
+     */
+    public static final int WECHAT_SNAPSHOTUSER = 1001;
 }
