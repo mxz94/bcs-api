@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 
-@Api(tags = "微信")
+@Api(tags = "公众号")
 @RestController
 public class WechatLoginController {
     @Resource

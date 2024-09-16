@@ -6,12 +6,14 @@ import cn.bcs.common.core.domain.BaseDBEntity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -95,4 +97,19 @@ public class SysUser extends BaseDBEntity {
      * 备注
      */
     private String remark;
+
+    @ApiModelProperty("上级代理ID")
+    private Long fromUserId;
+
+    @ApiModelProperty("已确认佣金")
+    private BigDecimal balance;
+
+    @ApiModelProperty("上周待确认佣金")
+    private BigDecimal waitInBalance;
+
+    @ApiModelProperty("话费抽成金额")
+    private BigDecimal callBalance;
+
+    @ApiModelProperty("团队构建金额")
+    private BigDecimal teamBuildBalance;
 }

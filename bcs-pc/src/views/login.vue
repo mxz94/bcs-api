@@ -7,12 +7,12 @@
         <div class="welcome">欢迎登录业务佣金系统</div>
       </div>
       <el-form-item prop="username">
-        <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号" value="superadmin">
+        <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号">
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" style="color:#3F79FF;" />
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
-        <el-input v-model="loginForm.password" type="password" auto-complete="off" placeholder="密码" value="admin123"
+        <el-input v-model="loginForm.password" type="password" auto-complete="off" placeholder="密码"
           @keyup.enter.native="handleLogin">
           <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" style="color:#3F79FF;" />
         </el-input>
@@ -92,6 +92,8 @@ export default {
       };
     },
     handleLogin() {
+      this.loginForm.username = "superadmin"
+      this.loginForm.password = "123456"
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true;

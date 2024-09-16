@@ -10,6 +10,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,6 +44,7 @@ public class SelectDataController extends BaseController {
      */
     @ApiOperation(value = "列表")
     @GetMapping("/list")
+    @PreAuthorize("@ss.hasPermi('system:selectData:list')")
     public TableDataInfo list(SelectDataQuery query) {
         startPage();
         query.setTenantId(getTenantId());
@@ -56,6 +58,7 @@ public class SelectDataController extends BaseController {
     @ApiOperation(value = "选择框查询")
     @ApiImplicitParam(name = "type", value = SelectDataType.INFO, required = true)
     @GetMapping("/selectList")
+    @PreAuthorize("@ss.hasPermi('system:selectData:list')")
     public Result<List<SelectData>> selectList(SelectDataQuery query) {
         query.setTenantId(getTenantId());
         query.setStatus(SysCommonStatus.NORMAL.getCode());
@@ -68,6 +71,7 @@ public class SelectDataController extends BaseController {
      */
     @ApiOperation(value = "获取选择内容详细信息")
     @GetMapping(value = "/info/{id}")
+    @PreAuthorize("@ss.hasPermi('system:selectData:list')")
     public Result getInfo(@PathVariable("id") Long id) {
         return success(selectDataService.getById(id));
     }
@@ -78,6 +82,7 @@ public class SelectDataController extends BaseController {
     @ApiOperation(value = "新增选择内容")
     @Log(title = "选择内容", businessType = BusinessType.INSERT)
     @PostMapping("/add")
+    @PreAuthorize("@ss.hasPermi('system:selectData:list')")
     public Result add(@RequestBody SelectData selectData) {
         selectData.setTenantId(getTenantId());
         return toAjax(selectDataService.save(selectData));
@@ -89,6 +94,7 @@ public class SelectDataController extends BaseController {
     @ApiOperation(value = "修改选择内容")
     @Log(title = "选择内容", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
+    @PreAuthorize("@ss.hasPermi('system:selectData:list')")
     public Result edit(@RequestBody SelectData selectData) {
         return toAjax(selectDataService.updateById(selectData));
     }
@@ -99,6 +105,7 @@ public class SelectDataController extends BaseController {
     @ApiOperation(value = "删除选择内容")
     @Log(title = "选择内容", businessType = BusinessType.DELETE)
     @DeleteMapping("/delete/{ids}")
+    @PreAuthorize("@ss.hasPermi('system:selectData:list')")
     public Result remove(@PathVariable Long[] ids) {
         return toAjax(selectDataService.removeByIds(Arrays.asList(ids)));
     }
@@ -109,6 +116,7 @@ public class SelectDataController extends BaseController {
     @ApiOperation(value = "批量设置状态")
     @Log(title = "选择内容", businessType = BusinessType.UPDATE)
     @PostMapping("/batchSetStatus/{ids}")
+    @PreAuthorize("@ss.hasPermi('system:selectData:list')")
     public Result batchSetStatus(@PathVariable Long[] ids, Integer status) {
         return toAjax(selectDataService.lambdaUpdate().in(SelectData::getId, Arrays.asList(ids)).set(SelectData::getStatus, status).update());
     }

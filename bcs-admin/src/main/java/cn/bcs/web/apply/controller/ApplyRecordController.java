@@ -43,8 +43,9 @@ public class ApplyRecordController extends BaseController {
 /**
  * 查询套餐申请记录列表
  */
-@ApiOperation(value = "查询套餐办理记录列表")
-@GetMapping("/list")
+    @ApiOperation(value = "查询套餐办理记录列表")
+    @GetMapping("/list")
+    @PreAuthorize("@ss.hasPermi('system:apply:list')")
     public TableDataInfo list(ApplyRecord applyRecord) {
         startPage();
         List<ApplyRecord> list = applyRecordService.list(new LambdaQueryWrapper<ApplyRecord>(applyRecord));
@@ -56,6 +57,7 @@ public class ApplyRecordController extends BaseController {
      */
     @ApiOperation(value = "获取套餐申请记录详细信息")
     @GetMapping(value = "/{id}")
+    @PreAuthorize("@ss.hasPermi('system:apply:list')")
     public Result getInfo(@PathVariable("id") Long id) {
         return success(applyRecordService.getById(id));
     }
@@ -66,6 +68,7 @@ public class ApplyRecordController extends BaseController {
     @ApiOperation(value = "新增套餐申请记录")
     @Log(title = "套餐申请记录", businessType = BusinessType.INSERT)
     @PostMapping
+    @PreAuthorize("@ss.hasPermi('system:apply:add')")
     public Result add(@RequestBody ApplyRecord applyRecord) {
         return toAjax(applyRecordService.save(applyRecord));
     }
@@ -76,6 +79,7 @@ public class ApplyRecordController extends BaseController {
     @ApiOperation(value = "修改套餐申请记录")
     @Log(title = "套餐申请记录", businessType = BusinessType.UPDATE)
     @PutMapping
+    @PreAuthorize("@ss.hasPermi('system:apply:add')")
     public Result edit(@RequestBody ApplyRecord applyRecord) {
         return toAjax(applyRecordService.updateById(applyRecord));
     }
@@ -86,6 +90,7 @@ public class ApplyRecordController extends BaseController {
     @ApiOperation(value = "删除套餐申请记录")
     @Log(title = "套餐申请记录", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
+    @PreAuthorize("@ss.hasPermi('system:apply:add')")
     public Result remove(@PathVariable Long[] ids) {
         return toAjax(applyRecordService.removeByIds(Arrays.asList(ids)));
     }
@@ -93,6 +98,7 @@ public class ApplyRecordController extends BaseController {
     @ApiOperation(value = "修改审核状态")
     @Log(title = "修改审核状态")
     @PostMapping("/handleStatus")
+    @PreAuthorize("@ss.hasPermi('system:apply:add')")
     public Result handleStatus(@RequestBody ApplyRecordHandleStatus applyRecordHandleStatus) {
         return applyRecordService.handleStatus(applyRecordHandleStatus);
     }
@@ -103,6 +109,7 @@ public class ApplyRecordController extends BaseController {
     @ApiOperation(value = "套餐申请", tags = {"公众号"})
     @Log(title = "套餐申请", businessType = BusinessType.INSERT)
     @PostMapping("/apply")
+    @PreAuthorize("@ss.hasPermi('system:apply:add')")
     public Result apply(@Validated @RequestBody ApplyRecordDTO dto) {
         return applyRecordService.apply(dto);
     }

@@ -247,4 +247,8 @@ public class SysUserService extends ServiceImpl<SysUserMapper, SysUser> {
         }
         return successMsg.toString();
     }
+
+    public void addWaitBalance2Balance() {
+        this.baseMapper.addWaitBalance2Balance();
+    }
 }

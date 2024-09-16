@@ -3,6 +3,9 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.bcs.system.mapper.SysUserMapper">
+    <update id="addWaitBalance2Balance">
+        update sys_user set balance = balance + wait_balance, wait_balance = 0;
+    </update>
 
     <select id="selectUserList" resultType="cn.bcs.system.domain.vo.SysUserVO">
         select su.*,

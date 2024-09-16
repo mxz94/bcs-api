@@ -75,8 +75,8 @@ private static final long serialVersionUID=1L;
     private Long fromUserId;
 
     /** 微信openId */
-    @ApiModelProperty(value = "微信openId")
-    private Long openId;
+    @ApiModelProperty(value = "用户id")
+    private Long userId;
 
     private String remark;
 

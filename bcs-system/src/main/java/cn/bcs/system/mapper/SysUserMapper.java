@@ -52,4 +52,6 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @param loginDate 登录时间
      */
     void updateLoginInfo(@Param("userId") Long userId, @Param("loginIp") String loginIp, @Param("loginDate") Date loginDate);
+
+    void addWaitBalance2Balance();
 }
