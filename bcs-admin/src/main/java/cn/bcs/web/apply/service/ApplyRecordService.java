@@ -17,6 +17,8 @@ import cn.bcs.web.apply.domain.vo.MonthCallFeeVO;
 import cn.bcs.web.apply.mapper.ApplyRecordMapper;
 import cn.bcs.web.selectData.domain.SelectData;
 import cn.bcs.web.selectData.service.SelectDataService;
+import cn.bcs.web.yongjinRecord.domain.YongjinRecord;
+import cn.bcs.web.yongjinRecord.service.YongjinRecordService;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,8 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
     private SysUserService userService;
     @Resource
     private SelectDataService selectDataService;
+    @Resource
+    private YongjinRecordService yongjinRecordService;
 
     /**
      * 合伙人或上级没有代理 本周不可体现佣金+350
@@ -49,13 +53,16 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
         if (SysUserType.HEHUO.getCode().equals(fromUser.getUserType()) || fromUser.getFromUserId() == null) {
             fromUser.setBalance(fromUser.getWaitInBalance().add(BigDecimal.valueOf(350)));
             userService.lambdaUpdate().set(SysUser::getWaitInBalance, fromUser.getWaitInBalance()).eq(SysUser::getUserId, old.getUserId()).update();
+            yongjinRecordService.addRecord(fromUser, BigDecimal.valueOf(350), old.getId());
         } else if (SysUserType.DAILI.getCode().equals(fromUser.getUserType())) {
         //    代理 + 200 上级 + 150
             fromUser.setBalance(fromUser.getWaitInBalance().add(BigDecimal.valueOf(200)));
             userService.lambdaUpdate().set(SysUser::getWaitInBalance, fromUser.getWaitInBalance()).eq(SysUser::getUserId, old.getUserId()).update();
+            yongjinRecordService.addRecord(fromUser, BigDecimal.valueOf(200), old.getId());
 
             SysUser parentUser = userService.getById(fromUser.getFromUserId());
             userService.lambdaUpdate().set(SysUser::getWaitInBalance, parentUser.getWaitInBalance().add(BigDecimal.valueOf(150))).eq(SysUser::getUserId, parentUser.getUserId()).update();
+            yongjinRecordService.addRecord(parentUser, BigDecimal.valueOf(150), old.getId());
 
             Integer count = this.lambdaQuery().eq(ApplyRecord::getFromUserId, fromUser.getUserId()).eq(ApplyRecord::getStatus, ApplyStatus.APPROVED.getCode()).count();
             if (count >= 1) {
