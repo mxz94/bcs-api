@@ -3,6 +3,9 @@ package cn.bcs.web.callFeeRecord.controller;
 import java.util.Arrays;
 import java.util.List;
 
+import cn.bcs.common.core.domain.entity.SysUser;
+import cn.bcs.common.enums.SysUserType;
+import cn.bcs.common.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,11 +43,15 @@ public class CallFeeRecordController extends BaseController {
 /**
  * 查询话费分成记录列表
  */
-@ApiOperation(value = "查询话费分成记录列表")
+@ApiOperation(value = "话费分成记录", tags = {"公众号"})
 @PreAuthorize("@ss.hasPermi('callFeeRecord:list')")
 @GetMapping("/list")
     public TableDataInfo list(CallFeeRecord callFeeRecord) {
         startPage();
+        SysUser user = SecurityUtils.getLoginUser().getUser();
+        if (SysUserType.ADMIN.getCode() != user.getUserType()) {
+            callFeeRecord.setUserId(user.getUserId());
+        }
         List<CallFeeRecord> list = callFeeRecordService.list(new LambdaQueryWrapper<CallFeeRecord>(callFeeRecord));
         return getDataTable(list);
     }

@@ -53,16 +53,16 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
         if (SysUserType.HEHUO.getCode().equals(fromUser.getUserType()) || fromUser.getFromUserId() == null) {
             fromUser.setBalance(fromUser.getWaitInBalance().add(BigDecimal.valueOf(350)));
             userService.lambdaUpdate().set(SysUser::getWaitInBalance, fromUser.getWaitInBalance()).eq(SysUser::getUserId, old.getUserId()).update();
-            yongjinRecordService.addRecord(fromUser, BigDecimal.valueOf(350), old.getId());
+            yongjinRecordService.addRecord(fromUser, BigDecimal.valueOf(350), old);
         } else if (SysUserType.DAILI.getCode().equals(fromUser.getUserType())) {
         //    代理 + 200 上级 + 150
             fromUser.setBalance(fromUser.getWaitInBalance().add(BigDecimal.valueOf(200)));
             userService.lambdaUpdate().set(SysUser::getWaitInBalance, fromUser.getWaitInBalance()).eq(SysUser::getUserId, old.getUserId()).update();
-            yongjinRecordService.addRecord(fromUser, BigDecimal.valueOf(200), old.getId());
+            yongjinRecordService.addRecord(fromUser, BigDecimal.valueOf(200), old);
 
             SysUser parentUser = userService.getById(fromUser.getFromUserId());
             userService.lambdaUpdate().set(SysUser::getWaitInBalance, parentUser.getWaitInBalance().add(BigDecimal.valueOf(150))).eq(SysUser::getUserId, parentUser.getUserId()).update();
-            yongjinRecordService.addRecord(parentUser, BigDecimal.valueOf(150), old.getId());
+            yongjinRecordService.addRecord(parentUser, BigDecimal.valueOf(150), old);
 
             Integer count = this.lambdaQuery().eq(ApplyRecord::getFromUserId, fromUser.getUserId()).eq(ApplyRecord::getStatus, ApplyStatus.APPROVED.getCode()).count();
             if (count >= 1) {
@@ -93,7 +93,7 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
     public Result apply(ApplyRecordDTO dto) /**/{
         SysUser fromUser = userService.getById(dto.getFromUserId());
         if (fromUser.getUserType() != SysUserType.DAILI.getCode() && fromUser.getUserType() != SysUserType.HEHUO.getCode()) {
-            return Result.error("推荐人必须是代理用户");
+            return Result.error("邀请人未审核通过，无法邀请人，请联系管理员");
         }
         Integer count = this.lambdaQuery().eq(ApplyRecord::getUserId, SecurityUtils.getUserId()).in(ApplyRecord::getStatus, Arrays.asList(ApplyStatus.PENDING.getCode(), ApplyStatus.APPROVED.getCode())).count();
         if (count > 0) {

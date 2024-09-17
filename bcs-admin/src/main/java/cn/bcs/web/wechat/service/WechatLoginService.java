@@ -5,6 +5,7 @@ import cn.bcs.common.core.domain.entity.SysUser;
 import cn.bcs.common.core.domain.model.LoginUser;
 import cn.bcs.common.enums.CommonStatusEnum;
 import cn.bcs.common.enums.SysUserType;
+import cn.bcs.common.utils.BigDecimalUtils;
 import cn.bcs.common.utils.SecurityUtils;
 import cn.bcs.common.utils.ip.IpUtils;
 import cn.bcs.framework.web.service.TokenService;
@@ -13,6 +14,7 @@ import cn.bcs.system.service.SysUserService;
 import cn.bcs.web.third.domain.bo.WechatAccessTokenBO;
 import cn.bcs.web.third.domain.bo.WechatUserInfoBO;
 import cn.bcs.web.third.support.WechatSupport;
+import cn.bcs.web.wechat.domain.vo.WechatUserInfo;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -107,5 +109,18 @@ public class WechatLoginService {
         user.setLoginIp(IpUtils.getIpAddr());
         user.setLoginDate(new Date());
         userService.updateById(user);
+    }
+
+    public Result<WechatUserInfo> userInfo() {
+        SysUser byId = userService.getById(SecurityUtils.getUserId());
+        WechatUserInfo wechatUserInfo = BeanUtil.copyProperties(byId, WechatUserInfo.class);
+        if (byId.getFromUserId() != null) {
+            SysUser byId1 = userService.getById(byId.getFromUserId());
+            if (byId1 != null) wechatUserInfo.setFromUserNickName(byId1.getNickName());
+        }
+        wechatUserInfo.setShareUrl("http://www.baidu.com");
+        wechatUserInfo.setAllBalance(BigDecimalUtils.add(wechatUserInfo.getBalance(), wechatUserInfo.getWaitInBalance()));
+        wechatUserInfo.setAllCallBalance(BigDecimalUtils.add(wechatUserInfo.getCallBalance(), wechatUserInfo.getTeamBuildBalance()));
+        return Result.success(wechatUserInfo);
     }
 }

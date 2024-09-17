@@ -1,8 +1,10 @@
 package cn.bcs.common.core.domain.entity;
 
+import cn.bcs.common.annotation.DictConvert;
 import cn.bcs.common.annotation.Excel;
 import cn.bcs.common.annotation.Excel.Type;
 import cn.bcs.common.core.domain.BaseDBEntity;
+import cn.bcs.common.enums.SysUserType;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -42,20 +44,21 @@ public class SysUser extends BaseDBEntity {
     /**
      * 用户类型
      */
+    @DictConvert(dictType = "sys_user_type")
+    @ApiModelProperty(value = "用户类型" + SysUserType.INFO)
     private String userType;
     /**
      * 用户头像
      */
+    @ApiModelProperty(value = "用户头像")
     private String avatar;
 
     /**
      * 用户昵称
      */
+    @ApiModelProperty(value = "用户昵称")
     private String nickName;
 
-    /**
-     * 用户账号
-     */
     private String userName;
     /**
      * 密码

@@ -17,12 +17,12 @@ public enum SysUserType {
      */
 
     ADMIN("0", "管理员"),
-    PUTONG("1", "普通用户"),
-    DAILI("2", "代理用户"),
+    PUTONG("1", "普通"),
+    DAILI("2", "代理"),
     HEHUO("3", "合伙人"),
     ;
 
-    public static final String INFO = "0 管理员 1 普通用户 2  ";
+    public static final String INFO = "0 管理员 1 普通用户 2 代理 3 合伙人 ";
     private final String code;
     private final String desc;
 

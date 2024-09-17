@@ -7,25 +7,30 @@ import cn.bcs.system.domain.vo.LoginVO;
 import cn.bcs.web.third.domain.bo.WechatAccessTokenBO;
 import cn.bcs.web.third.domain.vo.WechatJsSdkSignVO;
 import cn.bcs.web.third.support.WechatSupport;
+import cn.bcs.web.wechat.domain.vo.WechatUserInfo;
 import cn.bcs.web.wechat.service.WechatLoginService;
 import cn.hutool.core.bean.BeanUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
 @Api(tags = "公众号")
 @RestController
+@RequestMapping("/wechat")
 public class WechatLoginController {
     @Resource
     private WechatLoginService loginService;
     @Resource
     private WechatSupport wechatSupport;
+
+    @ApiOperation(value = "用户信息")
+    @RequestMapping("/userInfo")
+    public Result<WechatUserInfo> userInfo() {
+        return loginService.userInfo();
+    }
 
     @Log(title = "微信登陆")
     @ApiOperation(value = "微信授权登录")
@@ -47,4 +52,5 @@ public class WechatLoginController {
     public Result<WechatJsSdkSignVO> getConfig(@RequestParam String url) {
         return Result.success(wechatSupport.jsSdkSign(url));
     }
+
 }

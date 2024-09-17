@@ -38,6 +38,9 @@ private static final long serialVersionUID=1L;
     @ApiModelProperty(value = "办理记录id", required = true)
     private Long recordId;
 
+    @ApiModelProperty(value = "办理用户")
+    private String recordNickName;
+
     /** 佣金 */
     @ApiModelProperty(value = "佣金")
     private BigDecimal fee;

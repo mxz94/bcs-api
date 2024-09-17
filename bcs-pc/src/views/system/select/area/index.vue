@@ -39,12 +39,13 @@
     <el-table v-loading="loading" :data="selectDataList" @selection-change="handleSelectionChange">
 <!--      <el-table-column type="selection" width="55" align="center" />-->
       <el-table-column
-        label="序号"
+        label="id"
         align="center"
-        type="index"
+        prop="id"
         >
       </el-table-column>
       <el-table-column label="名称" align="center" prop="name" />
+      <el-table-column label="值" align="center" prop="value" />
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="状态" align="center" prop="status">
         <template slot-scope="scope">
@@ -91,8 +92,11 @@
     <!-- 添加或编辑选择内容对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="区域名称:" prop="name">
-          <el-input v-model="form.name" placeholder="请输入区域名称" />
+        <el-form-item label="套餐名称:" prop="name">
+          <el-input v-model="form.name" placeholder="请输入套餐名称" />
+        </el-form-item>
+        <el-form-item label="值:" prop="value">
+          <el-input   type="number" :rows="2" v-model="form.value" placeholder="请输入值" />
         </el-form-item>
         <el-form-item label="备注:" prop="remark">
           <el-input   type="textarea" :rows="2" v-model="form.remark" placeholder="请输入备注内容" />

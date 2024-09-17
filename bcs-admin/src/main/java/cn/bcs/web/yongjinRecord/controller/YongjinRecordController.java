@@ -3,6 +3,9 @@ package cn.bcs.web.yongjinRecord.controller;
 import java.util.Arrays;
 import java.util.List;
 
+import cn.bcs.common.core.domain.entity.SysUser;
+import cn.bcs.common.enums.SysUserType;
+import cn.bcs.common.utils.SecurityUtils;
 import cn.bcs.web.yongjinRecord.domain.YongjinRecord;
 import cn.bcs.web.yongjinRecord.service.YongjinRecordService;
 import io.swagger.annotations.Api;
@@ -40,11 +43,14 @@ public class YongjinRecordController extends BaseController {
 /**
  * 查询佣金分成记录列表
  */
-@ApiOperation(value = "查询佣金分成记录列表")
-@PreAuthorize("@ss.hasPermi('yongjinRecord:yongjinRecord:list')")
-@GetMapping("/list")
-    public TableDataInfo list(YongjinRecord yongjinRecord) {
+    @ApiOperation(value = "账单记录", tags = {"公众号"})
+    @GetMapping("/list")
+    public TableDataInfo<List<YongjinRecord>> list(YongjinRecord yongjinRecord) {
         startPage();
+        SysUser user = SecurityUtils.getLoginUser().getUser();
+        if (SysUserType.ADMIN.getCode() != user.getUserType()) {
+            yongjinRecord.setUserId(user.getUserId());
+        }
         List<YongjinRecord> list = yongjinRecordService.list(new LambdaQueryWrapper<YongjinRecord>(yongjinRecord));
         return getDataTable(list);
     }
