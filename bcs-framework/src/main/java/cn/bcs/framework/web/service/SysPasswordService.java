@@ -8,6 +8,7 @@ import cn.bcs.common.exception.user.UserPasswordNotMatchException;
 import cn.bcs.common.exception.user.UserPasswordRetryLimitExceedException;
 import cn.bcs.common.utils.MessageUtils;
 import cn.bcs.common.utils.SecurityUtils;
+import cn.bcs.common.utils.StringUtils;
 import cn.bcs.framework.manager.AsyncManager;
 import cn.bcs.framework.manager.factory.AsyncFactory;
 import cn.bcs.framework.security.context.AuthenticationContextHolder;
@@ -57,14 +58,14 @@ public class SysPasswordService {
 
         if (retryCount >= Integer.valueOf(maxRetryCount).intValue()) {
             AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL,
-                    MessageUtils.message("user.password.retry.limit.exceed", maxRetryCount, lockTime)));
+                    "密码输入错误{0}次，帐户锁定{1}分钟"));
             throw new UserPasswordRetryLimitExceedException(maxRetryCount, lockTime);
         }
 
         if (!matches(user, password)) {
             retryCount = retryCount + 1;
             AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL,
-                    MessageUtils.message("user.password.retry.limit.count", retryCount)));
+                    "密码输入错误"+retryCount+ "次"));
             redisCache.setCacheObject(getCacheKey(username), retryCount, lockTime, TimeUnit.MINUTES);
             throw new UserPasswordNotMatchException();
         } else {

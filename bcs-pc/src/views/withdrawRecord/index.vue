@@ -1,13 +1,15 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="昵称" prop="nickName">
-        <el-input
-          v-model="queryParams.nickName"
-          placeholder="请输入昵称"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="用户" prop="nickName">
+        <el-select v-model="queryParams.userId" filterable placeholder="请选择" clearable>
+          <el-option
+            v-for="item in options"
+            :key="item.userId"
+            :label="item.nickName"
+            :value="item.userId">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -68,10 +70,13 @@
 <script>
 import { listWithdrawRecord, getWithdrawRecord, delWithdrawRecord, addWithdrawRecord, updateWithdrawRecord } from "@/api/withdrawRecord/withdrawRecord";
 
+import { getUserSelect } from "@/api/system/user";
+
 export default {
   name: "WithdrawRecord",
   data() {
     return {
+      options: [],
       // 遮罩层
       loading: true,
       // 选中数组
@@ -115,9 +120,15 @@ export default {
   },
   created() {
     this.getList();
+    this.getSelect();
   },
   methods: {
     /** 查询提现记录列表 */
+    getSelect() {
+      getUserSelect().then(response => {
+        this.options = response.data
+      })
+    },
     getList() {
       this.loading = true;
       listWithdrawRecord(this.queryParams).then(response => {

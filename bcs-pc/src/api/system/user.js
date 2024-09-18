@@ -1,6 +1,14 @@
 import request from '@/utils/request'
 import { parseStrEmpty } from "@/utils/ruoyi";
 
+export function getUserSelect() {
+  return request({
+    url: '/system/user/select',
+    method: 'get'
+  })
+}
+
+
 // 查询用户列表
 export function listUser(query) {
   return request({

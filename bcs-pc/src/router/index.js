@@ -47,6 +47,11 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/weixin',
+    component: () => import('@/views/weixin'),
+    hidden: true
+  },
+  {
     path: '/register',
     component: () => import('@/views/register'),
     hidden: true
@@ -149,7 +154,7 @@ Router.prototype.replace = function push(location) {
 }
 
 export default new Router({
-  mode: 'hash', // 去掉url中的#
+  mode: 'history', // 去掉url中的#  hash
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="办理记录id" prop="recordId">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" >
+      <el-form-item label="办理记录id" prop="recordId" label-width="140">
         <el-input
           v-model="queryParams.recordId"
           placeholder="请输入办理记录id"
@@ -9,13 +9,15 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="用户id" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入用户id"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="用户" prop="nickName">
+        <el-select v-model="queryParams.userId" filterable placeholder="请选择" clearable>
+          <el-option
+            v-for="item in options"
+            :key="item.userId"
+            :label="item.nickName"
+            :value="item.userId">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -64,11 +66,13 @@
 
 <script>
 import { listYongjinRecord, getYongjinRecord, delYongjinRecord, addYongjinRecord, updateYongjinRecord } from "@/api/yongjinRecord/yongjinRecord";
+import {getUserSelect} from "@/api/system/user";
 
 export default {
   name: "YongjinRecord",
   data() {
     return {
+      options: [],
       // 遮罩层
       loading: true,
       // 选中数组
@@ -109,8 +113,14 @@ export default {
   },
   created() {
     this.getList();
+    this.getSelect();
   },
   methods: {
+    getSelect() {
+      getUserSelect().then(response => {
+        this.options = response.data
+      })
+    },
     /** 查询佣金分成记录列表 */
     getList() {
       this.loading = true;

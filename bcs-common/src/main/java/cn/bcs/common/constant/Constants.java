@@ -145,4 +145,6 @@ public class Constants {
 
 
     public static final String DEVICE_CONFIG_KEY = "device_config:";
+
+    public static final String DICT_TEXT_SUFFIX = "_dictText";
 }

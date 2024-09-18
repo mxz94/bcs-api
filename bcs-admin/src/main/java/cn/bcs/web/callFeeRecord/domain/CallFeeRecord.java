@@ -52,6 +52,9 @@ private static final long serialVersionUID=1L;
     @ApiModelProperty(value = "用户id")
     private Long userId;
 
+    @ApiModelProperty(value = "昵称")
+    private String nickName;
+
     /** 计算前总话费分成 */
     @ApiModelProperty(value = "计算前总话费分成")
     private BigDecimal oldBalance;
@@ -64,5 +67,7 @@ private static final long serialVersionUID=1L;
     @ApiModelProperty(value = "月份")
     private String month;
 
+    @ApiModelProperty(value = "类型 分成， 团队奖")
+    private String type;
 
 }

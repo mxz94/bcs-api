@@ -1,9 +1,9 @@
 package cn.bcs.web.apply.domain;
 
-    import java.math.BigDecimal;
+import java.math.BigDecimal;
 
-    import cn.bcs.common.annotation.DictConvert;
-    import cn.bcs.common.core.domain.BaseDBEntity;
+import cn.bcs.common.annotation.DictConvert;
+import cn.bcs.common.core.domain.BaseDBEntity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;

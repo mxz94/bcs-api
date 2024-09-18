@@ -56,46 +56,46 @@ public class CallFeeRecordController extends BaseController {
         return getDataTable(list);
     }
 
-    /**
-     * 获取话费分成记录详细信息
-     */
-    @ApiOperation(value = "获取话费分成记录详细信息")
-    @PreAuthorize("@ss.hasPermi('callFeeRecord:query')")
-    @GetMapping(value = "/{id}")
-    public Result getInfo(@PathVariable("id") Long id) {
-        return success(callFeeRecordService.getById(id));
-    }
-
-    /**
-     * 新增话费分成记录
-     */
-    @ApiOperation(value = "新增话费分成记录")
-    @PreAuthorize("@ss.hasPermi('callFeeRecord:add')")
-    @Log(title = "话费分成记录", businessType = BusinessType.INSERT)
-    @PostMapping
-    public Result add(@RequestBody CallFeeRecord callFeeRecord) {
-        return toAjax(callFeeRecordService.save(callFeeRecord));
-    }
-
-    /**
-     * 修改话费分成记录
-     */
-    @ApiOperation(value = "修改话费分成记录")
-    @PreAuthorize("@ss.hasPermi('callFeeRecord:edit')")
-    @Log(title = "话费分成记录", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public Result edit(@RequestBody CallFeeRecord callFeeRecord) {
-        return toAjax(callFeeRecordService.updateById(callFeeRecord));
-    }
-
-    /**
-     * 删除话费分成记录
-     */
-    @ApiOperation(value = "删除话费分成记录")
-    @PreAuthorize("@ss.hasPermi('callFeeRecord:remove')")
-    @Log(title = "话费分成记录", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{ids}")
-    public Result remove(@PathVariable Long[] ids) {
-        return toAjax(callFeeRecordService.removeByIds(Arrays.asList(ids)));
-    }
+    ///**
+    // * 获取话费分成记录详细信息
+    // */
+    //@ApiOperation(value = "获取话费分成记录详细信息")
+    //@PreAuthorize("@ss.hasPermi('callFeeRecord:query')")
+    //@GetMapping(value = "/{id}")
+    //public Result getInfo(@PathVariable("id") Long id) {
+    //    return success(callFeeRecordService.getById(id));
+    //}
+    //
+    ///**
+    // * 新增话费分成记录
+    // */
+    //@ApiOperation(value = "新增话费分成记录")
+    //@PreAuthorize("@ss.hasPermi('callFeeRecord:add')")
+    //@Log(title = "话费分成记录", businessType = BusinessType.INSERT)
+    //@PostMapping
+    //public Result add(@RequestBody CallFeeRecord callFeeRecord) {
+    //    return toAjax(callFeeRecordService.save(callFeeRecord));
+    //}
+    //
+    ///**
+    // * 修改话费分成记录
+    // */
+    //@ApiOperation(value = "修改话费分成记录")
+    //@PreAuthorize("@ss.hasPermi('callFeeRecord:edit')")
+    //@Log(title = "话费分成记录", businessType = BusinessType.UPDATE)
+    //@PutMapping
+    //public Result edit(@RequestBody CallFeeRecord callFeeRecord) {
+    //    return toAjax(callFeeRecordService.updateById(callFeeRecord));
+    //}
+    //
+    ///**
+    // * 删除话费分成记录
+    // */
+    //@ApiOperation(value = "删除话费分成记录")
+    //@PreAuthorize("@ss.hasPermi('callFeeRecord:remove')")
+    //@Log(title = "话费分成记录", businessType = BusinessType.DELETE)
+    //@DeleteMapping("/{ids}")
+    //public Result remove(@PathVariable Long[] ids) {
+    //    return toAjax(callFeeRecordService.removeByIds(Arrays.asList(ids)));
+    //}
 }

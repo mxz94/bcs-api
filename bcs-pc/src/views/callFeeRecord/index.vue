@@ -1,13 +1,15 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="用户id" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入用户id"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="用户" prop="nickName">
+        <el-select v-model="queryParams.userId" filterable placeholder="请选择" clearable>
+          <el-option
+            v-for="item in options"
+            :key="item.userId"
+            :label="item.nickName"
+            :value="item.userId">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="月份" prop="month">
         <el-input
@@ -23,54 +25,10 @@
       </el-form-item>
     </el-form>
 
-<!--    <el-row :gutter="10" class="mb8">-->
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--          type="primary"-->
-<!--          icon="el-icon-plus"-->
-<!--          size="mini"-->
-<!--          @click="handleAdd"-->
-<!--          v-hasPermi="['callFeeRecord:add']"-->
-<!--        >添加</el-button>-->
-<!--      </el-col>-->
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--          type="success"-->
-<!--          plain-->
-<!--          size="mini"-->
-<!--          :disabled="single"-->
-<!--          @click="handleUpdate"-->
-<!--          v-hasPermi="['callFeeRecord:edit']"-->
-<!--        >编辑</el-button>-->
-<!--      </el-col>-->
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--          type="danger"-->
-<!--          plain-->
-<!--          icon="el-icon-delete"-->
-<!--          size="mini"-->
-<!--          :disabled="multiple"-->
-<!--          @click="handleDelete"-->
-<!--          v-hasPermi="['callFeeRecord:remove']"-->
-<!--        >删除</el-button>-->
-<!--      </el-col>-->
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--          type="warning"-->
-<!--          plain-->
-<!--          icon="el-icon-download"-->
-<!--          size="mini"-->
-<!--          @click="handleExport"-->
-<!--          v-hasPermi="['callFeeRecord:export']"-->
-<!--        >导出</el-button>-->
-<!--      </el-col>-->
-<!--      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>-->
-<!--    </el-row>-->
-
     <el-table v-loading="loading" :data="callFeeRecordList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="当月所办卡总花费" align="center" prop="sumCallFee" />
+      <el-table-column label="累计办理话费" align="center" prop="sumCallFee" />
       <el-table-column label="分成比例" align="center" prop="rate" />
       <el-table-column label="当月话费分成" align="center" prop="fee" />
       <el-table-column label="用户id" align="center" prop="userId" />
@@ -93,11 +51,13 @@
 
 <script>
 import { listCallFeeRecord, getCallFeeRecord, delCallFeeRecord, addCallFeeRecord, updateCallFeeRecord } from "@/api/callFeeRecord/callFeeRecord";
+import { getUserSelect } from "@/api/system/user";
 
 export default {
   name: "CallFeeRecord",
   data() {
     return {
+      options: [],
       // 遮罩层
       loading: true,
       // 选中数组
@@ -138,8 +98,14 @@ export default {
   },
   created() {
     this.getList();
+    this.getSelect();
   },
   methods: {
+    getSelect() {
+      getUserSelect().then(response => {
+        this.options = response.data
+      })
+    },
     /** 查询话费分成记录列表 */
     getList() {
       this.loading = true;

@@ -50,36 +50,6 @@
               <el-button type="primary" @click="handleAdd" v-hasPermi="['system:user:add']">添加
               </el-button>
             </el-col>
-            <el-dropdown placement="bottom">
-              <el-button type="primary" plain>
-                批量操作<i class="el-icon-arrow-down el-icon--right"></i>
-              </el-button>
-              <el-dropdown-menu slot="dropdown" style="text-align:center;">
-                <el-dropdown-item>
-                  <el-button type="text" :disabled="multiple" @click="handleStatusChange(ids, '0')"
-                    v-hasPermi="['system:user:edit']">启用
-                  </el-button>
-                </el-dropdown-item>
-                <el-dropdown-item>
-                  <el-button type="text" :disabled="multiple" @click="handleStatusChange(ids, '1')"
-                    v-hasPermi="['system:user:edit']">禁用
-                  </el-button>
-                </el-dropdown-item>
-                <el-dropdown-item>
-                  <el-button type="text" :disabled="multiple" @click="handleDelete" v-hasPermi="['system:user:remove']">删除
-                  </el-button>
-                </el-dropdown-item>
-                <el-dropdown-item>
-                  <el-button type="text" :disabled="multiple" @click="handleResetPwd(ids)"
-                    v-hasPermi="['system:user:edit']">重置密码
-                  </el-button>
-                </el-dropdown-item>
-                <el-dropdown-item>
-                  <el-button type="text" @click="handleImport" v-hasPermi="['system:user:import']">导入用户
-                  </el-button>
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
             <!-- <el-col :span="1.5">
 
             </el-col>
@@ -106,25 +76,21 @@
           </el-table-column>
           <el-table-column label="昵称" align="center" key="nickName" prop="nickName" :show-overflow-tooltip="true" />
           <el-table-column label="用户名" align="center" key="userName" prop="userName" :show-overflow-tooltip="true" />
-          <el-table-column label="角色" align="center" key="roleName" prop="roleName" />
+          <el-table-column label="用户类型" align="center" key="userType_dictText" prop="userType_dictText" />
           <el-table-column label="手机号" align="center" key="phonenumber" prop="phonenumber" />
-          <el-table-column label="已录特征" align="center">
-            <template slot-scope="scope">
-              <el-tag v-if="scope.row.fingerprintFlag">指纹</el-tag>
-              <el-tag v-if="scope.row.cardFlag">刷卡</el-tag>
-              <el-tag v-if="scope.row.faceFlag">人脸</el-tag>
-            </template>
-          </el-table-column>
+          <el-table-column label="佣金" align="center" key="balance" prop="balance" />
+          <el-table-column label="上周待确认佣金" align="center" key="waitInBalance" prop="waitInBalance" />
+          <el-table-column label="话费抽成" align="center" key="callBalance" prop="callBalance" />
+          <el-table-column label="团队构建金" align="center" key="teamBuildBalance" prop="teamBuildBalance" />
           <el-table-column label="状态" align="center" key="status">
             <template slot-scope="scope">
               <dict-tag :options="dict.type.sys_common_status" :value="scope.row.status" />
             </template>
           </el-table-column>
           <el-table-column label="创建时间" align="center" width="160" prop="createTime"></el-table-column>
-          <el-table-column label="操作" align="center" width="340" class-name="small-padding fixed-width" fixed="right">
+          <el-table-column label="推荐人" align="center" key="fromNickName" prop="fromNickName" />
+          <el-table-column label="操作" align="center" width="100" class-name="small-padding fixed-width" fixed="right">
             <template slot-scope="scope" v-if="scope.row.userId !== 1">
-              <el-button type="text" @click="handleUpdate(scope.row)" v-hasPermi="['system:user:edit']">编辑
-              </el-button>
               <el-button v-if="scope.row.status === '1'" type="text" @click="handleStatusChange([scope.row.userId], '0')"
                 v-hasPermi="['system:user:edit']">启用
               </el-button>
@@ -132,13 +98,6 @@
                 v-hasPermi="['system:user:edit']">禁用
               </el-button>
               <el-button type="text" @click="handleDelete(scope.row)" v-hasPermi="['system:user:remove']">删除
-              </el-button>
-              <el-button type="text" @click="handleResetPwd([scope.row.userId])"
-                v-hasPermi="['system:user:resetPwd']">重置密码
-              </el-button>
-              <el-button type="text" @click="handleResetPwd(scope.row)" v-hasPermi="['system:user:resetPwd']">柜机权限
-              </el-button>
-              <el-button type="text" @click="handleResetPwd(scope.row)" v-hasPermi="['system:user:resetPwd']">档案权限
               </el-button>
             </template>
           </el-table-column>

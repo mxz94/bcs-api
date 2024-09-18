@@ -6,8 +6,8 @@
     <select id="selectCallFee" resultType="cn.bcs.web.apply.domain.vo.MonthCallFeeVO">
         select
             user_id as userId,
-            sum(taocanValue) as amount,
-            group_contact(id) as recordIds
+            sum(taocan_value) as amount,
+            group_concat(id) as recordIds
         from b_apply_record
         where status = 1
         group by user_id

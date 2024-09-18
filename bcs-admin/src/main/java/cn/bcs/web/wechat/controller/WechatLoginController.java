@@ -27,7 +27,7 @@ public class WechatLoginController {
     private WechatSupport wechatSupport;
 
     @ApiOperation(value = "用户信息")
-    @RequestMapping("/userInfo")
+    @GetMapping("/userInfo")
     public Result<WechatUserInfo> userInfo() {
         return loginService.userInfo();
     }

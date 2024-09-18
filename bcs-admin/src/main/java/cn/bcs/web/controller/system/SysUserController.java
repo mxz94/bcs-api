@@ -8,6 +8,7 @@ import cn.bcs.common.core.domain.model.Edit;
 import cn.bcs.common.core.domain.model.LoginUser;
 import cn.bcs.common.core.page.TableDataInfo;
 import cn.bcs.common.enums.BusinessType;
+import cn.bcs.common.utils.StringUtils;
 import cn.bcs.common.utils.poi.ExcelUtil;
 import cn.bcs.system.domain.dto.SysUserDTO;
 import cn.bcs.system.domain.dto.SysUserResetPwdDTO;
@@ -17,6 +18,7 @@ import cn.bcs.system.domain.vo.SysUserInfoVO;
 import cn.bcs.system.domain.vo.SysUserVO;
 import cn.bcs.system.service.SysUserService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -111,5 +113,12 @@ public class SysUserController extends BaseController {
     @PutMapping("/changeStatus")
     public Result<Object> changeStatus(@RequestBody @Validated SysUserStatusDTO dto) {
         return userService.updateUserStatus(dto);
+    }
+
+    @ApiOperation("用户筛选框")
+    @ApiImplicitParam(name = "nickName", value = "用户昵称", required = false, dataType = "String")
+    @GetMapping("/select")
+    public Result<Object> selectAll(String nickName) {
+        return Result.success(userService.lambdaQuery().select(SysUser::getUserId, SysUser::getNickName).eq(SysUser::getDelFlag, 0).like(StringUtils.isNotEmpty(nickName), SysUser::getNickName, nickName).list());
     }
 }

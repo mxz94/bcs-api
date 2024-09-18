@@ -3,6 +3,7 @@ package cn.bcs.common.core.domain;
 import cn.bcs.common.constant.HttpStatus;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.Getter;
 
 /**
  * 操作消息提醒
@@ -68,5 +69,9 @@ public class Result<T> {
         rspData.setMsg(msg);
         rspData.setData(data);
         return rspData;
+    }
+
+    public T getResult() {
+        return data;
     }
 }

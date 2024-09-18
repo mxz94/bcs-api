@@ -56,46 +56,46 @@ public class WithdrawRecordController extends BaseController {
         return getDataTable(list);
     }
 
-    /**
-     * 获取提现记录详细信息
-     */
-    @ApiOperation(value = "获取提现记录详细信息")
-    @PreAuthorize("@ss.hasPermi('withdrawRecord:withdrawRecord:query')")
-    @GetMapping(value = "/{id}")
-    public Result getInfo(@PathVariable("id") Long id) {
-        return success(withdrawRecordService.getById(id));
-    }
-
-    /**
-     * 新增提现记录
-     */
-    @ApiOperation(value = "新增提现记录")
-    @PreAuthorize("@ss.hasPermi('withdrawRecord:withdrawRecord:add')")
-    @Log(title = "提现记录", businessType = BusinessType.INSERT)
-    @PostMapping
-    public Result add(@RequestBody WithdrawRecord withdrawRecord) {
-        return toAjax(withdrawRecordService.save(withdrawRecord));
-    }
-
-    /**
-     * 修改提现记录
-     */
-    @ApiOperation(value = "修改提现记录")
-    @PreAuthorize("@ss.hasPermi('withdrawRecord:withdrawRecord:edit')")
-    @Log(title = "提现记录", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public Result edit(@RequestBody WithdrawRecord withdrawRecord) {
-        return toAjax(withdrawRecordService.updateById(withdrawRecord));
-    }
-
-    /**
-     * 删除提现记录
-     */
-    @ApiOperation(value = "删除提现记录")
-    @PreAuthorize("@ss.hasPermi('withdrawRecord:withdrawRecord:remove')")
-    @Log(title = "提现记录", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{ids}")
-    public Result remove(@PathVariable Long[] ids) {
-        return toAjax(withdrawRecordService.removeByIds(Arrays.asList(ids)));
-    }
+    ///**
+    // * 获取提现记录详细信息
+    // */
+    //@ApiOperation(value = "获取提现记录详细信息")
+    //@PreAuthorize("@ss.hasPermi('withdrawRecord:withdrawRecord:query')")
+    //@GetMapping(value = "/{id}")
+    //public Result getInfo(@PathVariable("id") Long id) {
+    //    return success(withdrawRecordService.getById(id));
+    //}
+    //
+    ///**
+    // * 新增提现记录
+    // */
+    //@ApiOperation(value = "新增提现记录")
+    //@PreAuthorize("@ss.hasPermi('withdrawRecord:withdrawRecord:add')")
+    //@Log(title = "提现记录", businessType = BusinessType.INSERT)
+    //@PostMapping
+    //public Result add(@RequestBody WithdrawRecord withdrawRecord) {
+    //    return toAjax(withdrawRecordService.save(withdrawRecord));
+    //}
+    //
+    ///**
+    // * 修改提现记录
+    // */
+    //@ApiOperation(value = "修改提现记录")
+    //@PreAuthorize("@ss.hasPermi('withdrawRecord:withdrawRecord:edit')")
+    //@Log(title = "提现记录", businessType = BusinessType.UPDATE)
+    //@PutMapping
+    //public Result edit(@RequestBody WithdrawRecord withdrawRecord) {
+    //    return toAjax(withdrawRecordService.updateById(withdrawRecord));
+    //}
+    //
+    ///**
+    // * 删除提现记录
+    // */
+    //@ApiOperation(value = "删除提现记录")
+    //@PreAuthorize("@ss.hasPermi('withdrawRecord:withdrawRecord:remove')")
+    //@Log(title = "提现记录", businessType = BusinessType.DELETE)
+    //@DeleteMapping("/{ids}")
+    //public Result remove(@PathVariable Long[] ids) {
+    //    return toAjax(withdrawRecordService.removeByIds(Arrays.asList(ids)));
+    //}
 }

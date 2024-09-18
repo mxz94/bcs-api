@@ -55,26 +55,26 @@ public class YongjinRecordController extends BaseController {
         return getDataTable(list);
     }
 
-    /**
-     * 获取佣金分成记录详细信息
-     */
-    @ApiOperation(value = "获取佣金分成记录详细信息")
-    @PreAuthorize("@ss.hasPermi('yongjinRecord:yongjinRecord:query')")
-    @GetMapping(value = "/{id}")
-    public Result getInfo(@PathVariable("id") Long id) {
-        return success(yongjinRecordService.getById(id));
-    }
-
-
-    /**
-     * 修改佣金分成记录
-     */
-    @ApiOperation(value = "修改佣金分成记录")
-    @PreAuthorize("@ss.hasPermi('yongjinRecord:yongjinRecord:edit')")
-    @Log(title = "佣金分成记录", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public Result edit(@RequestBody YongjinRecord yongjinRecord) {
-        return toAjax(yongjinRecordService.updateById(yongjinRecord));
-    }
+    ///**
+    // * 获取佣金分成记录详细信息
+    // */
+    //@ApiOperation(value = "获取佣金分成记录详细信息")
+    //@PreAuthorize("@ss.hasPermi('yongjinRecord:yongjinRecord:query')")
+    //@GetMapping(value = "/{id}")
+    //public Result getInfo(@PathVariable("id") Long id) {
+    //    return success(yongjinRecordService.getById(id));
+    //}
+    //
+    //
+    ///**
+    // * 修改佣金分成记录
+    // */
+    //@ApiOperation(value = "修改佣金分成记录")
+    //@PreAuthorize("@ss.hasPermi('yongjinRecord:yongjinRecord:edit')")
+    //@Log(title = "佣金分成记录", businessType = BusinessType.UPDATE)
+    //@PutMapping
+    //public Result edit(@RequestBody YongjinRecord yongjinRecord) {
+    //    return toAjax(yongjinRecordService.updateById(yongjinRecord));
+    //}
 
 }
