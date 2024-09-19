@@ -71,7 +71,4 @@ public class Result<T> {
         return rspData;
     }
 
-    public T getResult() {
-        return data;
-    }
 }

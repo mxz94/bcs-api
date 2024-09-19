@@ -7,10 +7,12 @@ import cn.bcs.common.core.domain.entity.SysUser;
 import cn.bcs.common.core.domain.model.LoginUser;
 import cn.bcs.common.core.page.TableDataInfo;
 import cn.bcs.common.enums.SysCommonStatus;
+import cn.bcs.common.enums.SysUserType;
 import cn.bcs.common.exception.ServiceException;
 import cn.bcs.common.utils.SecurityUtils;
 import cn.bcs.common.utils.StringUtils;
 import cn.bcs.common.utils.bean.BeanValidators;
+import cn.bcs.system.domain.TeamTreeVO;
 import cn.bcs.system.domain.dto.SysUserDTO;
 import cn.bcs.system.domain.dto.SysUserResetPwdDTO;
 import cn.bcs.system.domain.dto.SysUserStatusDTO;
@@ -30,9 +32,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.validation.Validator;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 用户 业务层
@@ -251,4 +251,58 @@ public class SysUserService extends ServiceImpl<SysUserMapper, SysUser> {
     public void addWaitBalance2Balance() {
         this.baseMapper.addWaitBalance2Balance();
     }
+
+    public Result<List<TeamTreeVO>> teamTree() {
+        Long currentUserId = SecurityUtils.getUserId();
+
+        // 如果是管理员，查找所有下级用户的树状结构
+        if (SecurityUtils.isAdmin()) {
+            List<SysUser> topLevelUsers = this.lambdaQuery()
+                    .eq(SysUser::getDelFlag, "0")
+                    .ne(SysUser::getUserType, SysUserType.ADMIN.getCode())
+                    .isNull(SysUser::getFromUserId)
+                    .list();
+
+            // 构建完整的用户树
+            List<TeamTreeVO> userTree = buildUserTree(topLevelUsers, Integer.MAX_VALUE); // 管理员无限层
+            return Result.success(userTree);
+        } else {
+            // 普通用户只查找两层下级用户
+            List<SysUser> secondLevelUsers = this.lambdaQuery()
+                    .eq(SysUser::getDelFlag, "0")
+                    .eq(SysUser::getUserId, currentUserId)
+                    .list();
+
+            // 构建两层用户树
+            List<TeamTreeVO> userTree = buildUserTree(secondLevelUsers, 2); // 限制高度为2层
+            return Result.success(userTree);
+        }
+    }
+
+    // 查找用户并构建树状结构，限制层级深度
+    private List<TeamTreeVO> buildUserTree(List<SysUser> users, int level) {
+        if (level == 0 || users == null || users.isEmpty()) {
+            return Collections.emptyList(); // 如果层级为0或无用户，不继续查找
+        }
+
+        List<TeamTreeVO> tree = new ArrayList<>();
+        for (SysUser user : users) {
+            TeamTreeVO vo = new TeamTreeVO();
+            BeanUtil.copyProperties(user, vo);
+
+            // 如果还有下一级，且当前层级限制未达到，继续查找子用户
+            if (level > 1) {
+                List<SysUser> subUsers = this.lambdaQuery()
+                        .eq(SysUser::getDelFlag, "0")
+                        .eq(SysUser::getFromUserId, user.getUserId())
+                        .list();
+
+                vo.setChildren(buildUserTree(subUsers, level - 1)); // 递归构建子树
+            }
+
+            tree.add(vo);
+        }
+        return tree;
+    }
+
 }

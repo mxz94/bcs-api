@@ -117,3 +117,17 @@ export function uploadAvatar(data) {
   })
 }
 
+export function teamTree(data) {
+  return request({
+    url: '/system/user/teamTree',
+    method: 'get'
+  })
+}
+
+export function listAll(data) {
+  return request({
+    url: '/system/user/listAll',
+    method: 'get'
+  })
+}
+

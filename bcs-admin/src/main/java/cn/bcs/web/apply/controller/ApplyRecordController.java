@@ -109,7 +109,6 @@ public class ApplyRecordController extends BaseController {
     @ApiOperation(value = "套餐申请", tags = {"公众号"})
     @Log(title = "套餐申请", businessType = BusinessType.INSERT)
     @PostMapping("/apply")
-    @PreAuthorize("@ss.hasPermi('system:apply:add')")
     public Result apply(@Validated @RequestBody ApplyRecordDTO dto) {
         return applyRecordService.apply(dto);
     }

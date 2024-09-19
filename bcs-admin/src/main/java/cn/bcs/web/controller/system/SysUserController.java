@@ -8,8 +8,10 @@ import cn.bcs.common.core.domain.model.Edit;
 import cn.bcs.common.core.domain.model.LoginUser;
 import cn.bcs.common.core.page.TableDataInfo;
 import cn.bcs.common.enums.BusinessType;
+import cn.bcs.common.enums.SysUserType;
 import cn.bcs.common.utils.StringUtils;
 import cn.bcs.common.utils.poi.ExcelUtil;
+import cn.bcs.system.domain.TeamTreeVO;
 import cn.bcs.system.domain.dto.SysUserDTO;
 import cn.bcs.system.domain.dto.SysUserResetPwdDTO;
 import cn.bcs.system.domain.dto.SysUserStatusDTO;
@@ -120,5 +122,19 @@ public class SysUserController extends BaseController {
     @GetMapping("/select")
     public Result<Object> selectAll(String nickName) {
         return Result.success(userService.lambdaQuery().select(SysUser::getUserId, SysUser::getNickName).eq(SysUser::getDelFlag, 0).like(StringUtils.isNotEmpty(nickName), SysUser::getNickName, nickName).list());
+    }
+
+
+    @ApiOperation(value = "我的团队", tags = {"公众号"})
+    @GetMapping("/teamTree")
+    public Result<List<TeamTreeVO>> teamTree() {
+        return userService.teamTree();
+    }
+
+    @ApiOperation(value = "所有用户")
+    @PreAuthorize("@ss.hasPermi('system:user:list')")
+    @GetMapping("/listAll")
+    public Result<List<SysUser>> listAll() {
+        return Result.success(userService.lambdaQuery().eq(SysUser::getDelFlag, 0).ne(SysUser::getUserType, SysUserType.ADMIN.getCode()).list());
     }
 }

@@ -1,0 +1,76 @@
+<template>
+  <div class="app-container">
+    <el-table
+      v-if="refreshTable"
+      v-loading="loading"
+      :data="deptList"
+      row-key="userId"
+      :default-expand-all="isExpandAll"
+      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+    >
+      <el-table-column prop="nickName" label="昵称" width="260"></el-table-column>
+      <el-table-column prop="userType_dictText" label="类型" width="200"></el-table-column>
+      <el-table-column prop="balance" label="佣金" width="200"></el-table-column>
+      <el-table-column prop="waitInBalance" label="上周佣金" width="200"></el-table-column>
+      <el-table-column prop="callBalance" label="话费分成" width="200"></el-table-column>
+      <el-table-column prop="teamBuildBalance" label="团队构建奖" width="200"></el-table-column>
+      <el-table-column label="创建时间" align="center" prop="createTime"class-name="small-padding fixed-width">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.createTime) }}</span>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
+</template>
+
+<script>
+import Treeselect from "@riophae/vue-treeselect";
+import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import {teamTree, listAll} from "@/api/system/user";
+
+export default {
+  name: "Team",
+  dicts: [],
+  components: { Treeselect },
+  data() {
+    return {
+      // 遮罩层
+      loading: true,
+      // 显示搜索条件
+      showSearch: true,
+      // 表格树数据
+      deptList: [],
+      // 部门树选项
+      deptOptions: [],
+      // 弹出层标题
+      title: "",
+      // 是否显示弹出层
+      open: false,
+      // 是否展开，默认全部展开
+      isExpandAll: true,
+      // 重新渲染表格状态
+      refreshTable: true,
+      // 查询参数
+      queryParams: {
+        deptName: undefined,
+        status: undefined
+      },
+      // 表单参数
+      form: {},
+    };
+  },
+  created() {
+    this.getList();
+  },
+  methods: {
+    /** 查询部门列表 */
+    getList() {
+      this.loading = true;
+      listAll().then(response => {
+        this.deptList = this.handleTree(response.data, "userId", "fromUserId");
+        this.loading = false;
+      });
+    }
+  }
+};
+</script>

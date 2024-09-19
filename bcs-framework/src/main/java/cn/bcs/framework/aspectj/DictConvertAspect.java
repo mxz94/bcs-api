@@ -57,14 +57,14 @@ public class DictConvertAspect {
     @SuppressWarnings({"rawtypes"})
     private void parseDictText(Object result) {
         if (result instanceof Result) {
-            if (((Result) result).getResult() == null) {
+            if (((Result) result).getData() == null) {
                 return;
             }
-            if (((Result) result).getResult() instanceof IPage) {
+            if (((Result) result).getData() instanceof IPage) {
                 convertList(result);
-            } else if (((Result) result).getResult() instanceof ArrayList) {
+            } else if (((Result) result).getData() instanceof ArrayList) {
                 convertList(result);
-            } else if (((Result) result).getResult().getClass().getTypeName().startsWith("cn.bcs")) {
+            } else if (((Result) result).getData().getClass().getTypeName().startsWith("cn.bcs")) {
                 convertOne(result);
             }
         }
@@ -89,10 +89,10 @@ public class DictConvertAspect {
     private void convertList(Object result) {
         List<JSONObject> items = new ArrayList<>();
         List<Object> list = new ArrayList<>();
-        if (((Result) result).getResult() instanceof IPage) {
-            list = ((IPage) ((Result<?>) result).getResult()).getRecords();
-        } else if (((Result) result).getResult() instanceof ArrayList) {
-            list = (List) ((Result) result).getResult();
+        if (((Result) result).getData() instanceof IPage) {
+            list = ((IPage) ((Result<?>) result).getData()).getRecords();
+        } else if (((Result) result).getData() instanceof ArrayList) {
+            list = (List) ((Result) result).getData();
         }
         for (Object record : list) {
             ObjectMapper mapper = new ObjectMapper();
@@ -128,9 +128,9 @@ public class DictConvertAspect {
             }
             items.add(item);
         }
-        if (((Result) result).getResult() instanceof IPage) {
-            ((IPage) ((Result) result).getResult()).setRecords(items);
-        } else if (((Result) result).getResult() instanceof ArrayList) {
+        if (((Result) result).getData() instanceof IPage) {
+            ((IPage) ((Result) result).getData()).setRecords(items);
+        } else if (((Result) result).getData() instanceof ArrayList) {
             ((Result) result).setData(items);
         }
     }
@@ -191,7 +191,7 @@ public class DictConvertAspect {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void convertOne(Object result) {
-        Object record = ((Result) result).getResult();
+        Object record = ((Result) result).getData();
         ObjectMapper mapper = new ObjectMapper();
         String json = "{}";
         try {
