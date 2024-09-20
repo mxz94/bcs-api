@@ -57,5 +57,4 @@ private static final long serialVersionUID=1L;
     @ApiModelProperty(value = "计算后总话费分成")
     private BigDecimal newBalance;
 
-
 }

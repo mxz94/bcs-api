@@ -1,5 +1,14 @@
 import request from '@/utils/request'
 
+export function handleStatus(data) {
+    return request({
+        url: '/withdrawRecord/handleStatus',
+        method: 'post',
+        data : data
+    })
+}
+
+
 // 查询提现记录列表
 export function listWithdrawRecord(query) {
     return request({

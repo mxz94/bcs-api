@@ -141,12 +141,12 @@ export default {
         pageNum: 1,
         pageSize: 10,
         name: null,
-        type: "area",
+        type: "taocan",
         status: null,
       },
       // 表单参数
       form: {
-        type : "area",
+        type : "taocan",
       },
       // 表单校验
       rules: {
@@ -177,7 +177,7 @@ export default {
         id: null,
         name: null,
         remark: null,
-        type: "area",
+        type: "taocan",
         status: null,
         delFlag: null,
         createBy: null,

@@ -44,12 +44,11 @@ public class CallFeeRecordController extends BaseController {
  * 查询话费分成记录列表
  */
 @ApiOperation(value = "话费分成记录", tags = {"公众号"})
-@PreAuthorize("@ss.hasPermi('callFeeRecord:list')")
 @GetMapping("/list")
     public TableDataInfo list(CallFeeRecord callFeeRecord) {
         startPage();
         SysUser user = SecurityUtils.getLoginUser().getUser();
-        if (SysUserType.ADMIN.getCode() != user.getUserType()) {
+        if (!SysUserType.ADMIN.getCode().equals(user.getUserType())) {
             callFeeRecord.setUserId(user.getUserId());
         }
         List<CallFeeRecord> list = callFeeRecordService.list(new LambdaQueryWrapper<CallFeeRecord>(callFeeRecord));

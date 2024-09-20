@@ -9,6 +9,8 @@ import cn.bcs.web.third.domain.vo.WechatJsSdkSignVO;
 import cn.bcs.web.third.support.WechatSupport;
 import cn.bcs.web.wechat.domain.vo.WechatUserInfo;
 import cn.bcs.web.wechat.service.WechatLoginService;
+import cn.bcs.web.withdrawRecord.domain.dto.TixianDTO;
+import cn.bcs.web.withdrawRecord.service.WithdrawRecordService;
 import cn.hutool.core.bean.BeanUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -16,6 +18,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 
 @Api(tags = "公众号")
 @RestController
@@ -25,6 +28,8 @@ public class WechatLoginController {
     private WechatLoginService loginService;
     @Resource
     private WechatSupport wechatSupport;
+    @Resource
+    private WithdrawRecordService withdrawRecordService;
 
     @ApiOperation(value = "用户信息")
     @GetMapping("/userInfo")
@@ -52,5 +57,12 @@ public class WechatLoginController {
     public Result<WechatJsSdkSignVO> getConfig(@RequestParam String url) {
         return Result.success(wechatSupport.jsSdkSign(url));
     }
+
+    @ApiOperation(value = "提现", notes = "代理提现")
+    @PostMapping("/tixian")
+    public Result tixian(@RequestBody TixianDTO dto) {
+        return withdrawRecordService.tixian(dto.getType(), dto.getAmount());
+    }
+
 
 }

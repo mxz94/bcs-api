@@ -52,16 +52,16 @@ public class ApplyRecordController extends BaseController {
         return getDataTable(list);
     }
 
-    ///**
-    // * 获取套餐申请记录详细信息
-    // */
-    //@ApiOperation(value = "获取套餐申请记录详细信息")
-    //@GetMapping(value = "/{id}")
-    //@PreAuthorize("@ss.hasPermi('system:apply:list')")
-    //public Result getInfo(@PathVariable("id") Long id) {
-    //    return success(applyRecordService.getById(id));
-    //}
-    //
+    /**
+     * 获取套餐申请记录详细信息
+     */
+    @ApiOperation(value = "获取套餐申请记录详细信息")
+    @GetMapping(value = "/{id}")
+    @PreAuthorize("@ss.hasPermi('system:apply:list')")
+    public Result getInfo(@PathVariable("id") Long id) {
+        return success(applyRecordService.getById(id));
+    }
+
     ///**
     // * 新增套餐申请记录
     // */
@@ -83,17 +83,17 @@ public class ApplyRecordController extends BaseController {
     //public Result edit(@RequestBody ApplyRecord applyRecord) {
     //    return toAjax(applyRecordService.updateById(applyRecord));
     //}
-    //
-    ///**
-    // * 删除套餐申请记录
-    // */
-    //@ApiOperation(value = "删除套餐申请记录")
-    //@Log(title = "套餐申请记录", businessType = BusinessType.DELETE)
-    //@DeleteMapping("/{ids}")
-    //@PreAuthorize("@ss.hasPermi('system:apply:add')")
-    //public Result remove(@PathVariable Long[] ids) {
-    //    return toAjax(applyRecordService.removeByIds(Arrays.asList(ids)));
-    //}
+
+    /**
+     * 删除套餐申请记录
+     */
+    @ApiOperation(value = "删除套餐申请记录")
+    @Log(title = "套餐申请记录", businessType = BusinessType.DELETE)
+    @DeleteMapping("/{ids}")
+    @PreAuthorize("@ss.hasPermi('system:apply:add')")
+    public Result remove(@PathVariable Long[] ids) {
+        return toAjax(applyRecordService.removeByIds(Arrays.asList(ids)));
+    }
 
     @ApiOperation(value = "修改审核状态")
     @Log(title = "修改审核状态")

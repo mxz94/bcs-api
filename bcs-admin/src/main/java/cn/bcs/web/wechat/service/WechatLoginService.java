@@ -56,6 +56,7 @@ public class WechatLoginService {
             sysUser = new SysUser().setUserName(wechatUserInfoBO.getOpenid())
                     .setNickName(wechatUserInfoBO.getNickname())
                     .setUserType(SysUserType.PUTONG.getCode())
+                    .setTenantId(1L)
                     .setAvatar(wechatUserInfoBO.getHeadimgurl())
                     .setPassword(SecurityUtils.encryptPassword(wechatUserInfoBO.getOpenid()))
                     .setStatus(CommonStatusEnum.NORMAL.getCode());
@@ -89,6 +90,7 @@ public class WechatLoginService {
                     .setNickName(wechatUserInfoBO.getNickname())
                     .setUserType(SysUserType.PUTONG.getCode())
                     .setAvatar(wechatUserInfoBO.getHeadimgurl())
+                    .setTenantId(1L)
                     .setPassword(SecurityUtils.encryptPassword(wechatUserInfoBO.getOpenid()))
                     .setStatus(CommonStatusEnum.NORMAL.getCode());
             sysUser.setRemark(wechatUserInfoBO.getUnionid());
@@ -121,6 +123,7 @@ public class WechatLoginService {
         wechatUserInfo.setShareUrl("http://www.baidu.com");
         wechatUserInfo.setAllBalance(BigDecimalUtils.add(wechatUserInfo.getBalance(), wechatUserInfo.getWaitInBalance()));
         wechatUserInfo.setAllCallBalance(BigDecimalUtils.add(wechatUserInfo.getCallBalance(), wechatUserInfo.getTeamBuildBalance()));
+        wechatUserInfo.setPassword(null);
         return Result.success(wechatUserInfo);
     }
 }

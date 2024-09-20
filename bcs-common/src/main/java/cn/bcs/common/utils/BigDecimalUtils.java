@@ -86,6 +86,13 @@ public class BigDecimalUtils {
         return x.multiply(y).divide(HUNDRED, 2, roundingMode);
     }
 
+    public static BigDecimal multiplyPercentage(BigDecimal x, BigDecimal y) {
+        if (x == null || y == null) {
+            return null;
+        }
+        return x.multiply(y).divide(HUNDRED, 2, BigDecimal.ROUND_DOWN);
+    }
+
     /**
      * 除法计算(result = x ÷ y)
      *

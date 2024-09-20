@@ -22,7 +22,6 @@ public class  SelectDataService extends ServiceImpl<SelectDataMapper, SelectData
         return this.lambdaQuery().like(StringUtils.isNotEmpty(query.getName()), SelectData::getName, query.getName())
                 .eq(StringUtils.isNotEmpty(query.getType()), SelectData::getType, query.getType())
                 .eq(StringUtils.isNotEmpty(query.getStatus()), SelectData::getStatus, query.getStatus())
-                .eq(SelectData::getTenantId, query.getTenantId())
                 .orderByDesc(SelectData::getCreateTime)
                 .list();
     }

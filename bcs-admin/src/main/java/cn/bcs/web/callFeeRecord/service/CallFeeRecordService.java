@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import cn.bcs.common.constant.BalanceConstants;
+import cn.bcs.common.constant.Constants;
 import cn.bcs.common.core.domain.entity.SysUser;
 import cn.bcs.common.utils.BigDecimalUtils;
 import cn.bcs.common.utils.StringUtils;
@@ -44,7 +46,7 @@ public class  CallFeeRecordService extends ServiceImpl<CallFeeRecordMapper, Call
         BigDecimal fee = HuafeiRateUtils.calculateTaxAmount(item.getAmount());
         BigDecimal newFee = BigDecimalUtils.add(callBalance, fee);
 
-        userService.lambdaUpdate().set(SysUser::getCallBalance, newFee).eq(SysUser::getUserId, item.getUserId()).update();
+        userService.addBalance(BalanceConstants.CALL_BALANCE, fee, item.getUserId());
 
         CallFeeRecord record = new CallFeeRecord();
         record.setRecordIds(item.getRecordIds());
@@ -88,7 +90,7 @@ public class  CallFeeRecordService extends ServiceImpl<CallFeeRecordMapper, Call
         BigDecimal callBalance = teamUser.getCallBalance();
         BigDecimal newFee = BigDecimalUtils.add(callBalance, fee);
 
-        userService.lambdaUpdate().set(SysUser::getCallBalance, newFee).eq(SysUser::getUserId, teamUser.getUserId()).update();
+        userService.addBalance(BalanceConstants.TEAM_BUILD_BALANCE, fee, teamUser.getUserId());
 
         CallFeeRecord record = new CallFeeRecord();
         record.setRecordIds(StringUtils.join( rs,","));
@@ -100,7 +102,7 @@ public class  CallFeeRecordService extends ServiceImpl<CallFeeRecordMapper, Call
         record.setOldBalance(callBalance);
         record.setNewBalance(newFee);
         record.setMonth(month);
-        record.setType("团队奖");
+        record.setType("团队奖金");
         this.save(record);
     }
 }

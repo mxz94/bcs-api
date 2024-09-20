@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm"  :inline="true" v-show="showSearch" label-width="90px">
-      <el-form-item label="保密等级名称" prop="name">
+      <el-form-item label="问题名称" prop="name">
         <el-input
           v-model="queryParams.name"
           placeholder="请输入名称"
@@ -31,7 +31,7 @@
           type="primary"
           icon="el-icon-plus"
           @click="handleAdd"
-          v-hasPermi="['system:secrecyLevel:edit']"
+          v-hasPermi="['system:area:edit']"
         >添加</el-button>
       </el-col>
     </el-row>
@@ -39,12 +39,13 @@
     <el-table v-loading="loading" :data="selectDataList" @selection-change="handleSelectionChange">
 <!--      <el-table-column type="selection" width="55" align="center" />-->
       <el-table-column
-        label="序号"
+        label="id"
         align="center"
-        type="index"
+        prop="id"
         >
       </el-table-column>
       <el-table-column label="名称" align="center" prop="name" />
+      <el-table-column label="值" align="center" prop="value" />
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="状态" align="center" prop="status">
         <template slot-scope="scope">
@@ -57,24 +58,24 @@
           <el-button
             type="text"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:secrecyLevel:edit']"
+            v-hasPermi="['system:area:edit']"
           >编辑</el-button>
           <el-button
             v-if="scope.row.status === '0'"
             type="text"
             @click="setStatus(scope.row, 1)"
-            v-hasPermi="['system:secrecyLevel:status']"
+            v-hasPermi="['system:area:status']"
           >禁用</el-button>
           <el-button
             v-else
             type="text"
             @click="setStatus(scope.row, 0)"
-            v-hsecrecyLevelasPermi="['system:secrecyLevel:status']"
+            v-hasPermi="['system:area:status']"
           >启用</el-button>
           <el-button
             type="text"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:secrecyLevel:remove']"
+            v-hasPermi="['system:area:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -91,8 +92,11 @@
     <!-- 添加或编辑选择内容对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="保密等级名称:" prop="name">
-          <el-input v-model="form.name" placeholder="请输入保密等级名称" />
+        <el-form-item label="问题名称:" prop="name">
+          <el-input v-model="form.name" placeholder="请输入问题名称" />
+        </el-form-item>
+        <el-form-item label="值:" prop="value">
+          <el-input   type="number" :rows="2" v-model="form.value" placeholder="请输入值" />
         </el-form-item>
         <el-form-item label="备注:" prop="remark">
           <el-input   type="textarea" :rows="2" v-model="form.remark" placeholder="请输入备注内容" />
@@ -110,7 +114,7 @@
 import { listSelectData, getSelectData, delSelectData, addSelectData, updateSelectData } from "@/api/system/selectData";
 
 export default {
-  name: "SelectSecrecyLevel",
+  name: "SelectQuestion",
   dicts: ['sys_common_status'],
   data() {
     return {
@@ -137,12 +141,12 @@ export default {
         pageNum: 1,
         pageSize: 10,
         name: null,
-        type: "secrecyLevel",
+        type: "question",
         status: null,
       },
       // 表单参数
       form: {
-        type : "secrecyLevel",
+        type : "question",
       },
       // 表单校验
       rules: {
@@ -173,7 +177,7 @@ export default {
         id: null,
         name: null,
         remark: null,
-        type: "secrecyLevel",
+        type: "question",
         status: null,
         delFlag: null,
         createBy: null,

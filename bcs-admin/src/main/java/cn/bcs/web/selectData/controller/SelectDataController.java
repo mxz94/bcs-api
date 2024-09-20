@@ -44,10 +44,8 @@ public class SelectDataController extends BaseController {
      */
     @ApiOperation(value = "列表")
     @GetMapping("/list")
-    @PreAuthorize("@ss.hasPermi('system:selectData:list')")
     public TableDataInfo list(SelectDataQuery query) {
         startPage();
-        query.setTenantId(getTenantId());
         List<SelectData> list = selectDataService.selectList(query);
         return getDataTable(list);
     }
@@ -55,12 +53,10 @@ public class SelectDataController extends BaseController {
     /**
      * 查询选择内容列表
      */
-    @ApiOperation(value = "选择框查询")
+    @ApiOperation(value = "常见问题， 套餐 选择框查询", tags = {"公众号"})
     @ApiImplicitParam(name = "type", value = SelectDataType.INFO, required = true)
     @GetMapping("/selectList")
-    @PreAuthorize("@ss.hasPermi('system:selectData:list')")
     public Result<List<SelectData>> selectList(SelectDataQuery query) {
-        query.setTenantId(getTenantId());
         query.setStatus(SysCommonStatus.NORMAL.getCode());
         List<SelectData> list = selectDataService.selectList(query);
         return Result.success(list);

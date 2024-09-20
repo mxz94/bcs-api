@@ -67,7 +67,7 @@ private static final long serialVersionUID=1L;
     @ApiModelProperty(value = "月份")
     private String month;
 
-    @ApiModelProperty(value = "类型 分成， 团队奖")
+    @ApiModelProperty(value = "类型： 话费分成， 团队奖")
     private String type;
 
 }

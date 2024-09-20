@@ -8,7 +8,7 @@ public class HuafeiRateUtils {
 
     public static BigDecimal calculateTaxAmount(BigDecimal amount) {
         // 计算金额，乘以税率并使用指定的舍入方式
-        return BigDecimalUtils.multiplyPercentage(amount, calculateTaxRate(amount), BigDecimal.ROUND_DOWN);
+        return BigDecimalUtils.multiplyPercentage(amount, calculateTaxRate(amount));
     }
 
     public static BigDecimal calculateTaxRate(BigDecimal amount) {

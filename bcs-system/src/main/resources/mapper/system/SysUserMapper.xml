@@ -4,7 +4,11 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.bcs.system.mapper.SysUserMapper">
     <update id="addWaitBalance2Balance">
-        update sys_user set balance = balance + wait_balance, wait_balance = 0;
+        update sys_user set balance = balance + wait_in_balance, wait_balance = 0;
+    </update>
+
+    <update id="addBalance">
+        update sys_user set ${key} = ${key} + #{amount} where user_id = #{userId};
     </update>
 
     <select id="selectUserList" resultType="cn.bcs.system.domain.vo.SysUserVO">

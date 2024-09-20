@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.validation.Validator;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -291,7 +292,7 @@ public class SysUserService extends ServiceImpl<SysUserMapper, SysUser> {
             BeanUtil.copyProperties(user, vo);
 
             // 如果还有下一级，且当前层级限制未达到，继续查找子用户
-            if (level > 1) {
+            if (level >= 1) {
                 List<SysUser> subUsers = this.lambdaQuery()
                         .eq(SysUser::getDelFlag, "0")
                         .eq(SysUser::getFromUserId, user.getUserId())
@@ -305,4 +306,7 @@ public class SysUserService extends ServiceImpl<SysUserMapper, SysUser> {
         return tree;
     }
 
+    public void addBalance(String waitInBalance, BigDecimal amount, Long userId) {
+        this.baseMapper.addBalance(waitInBalance, amount, userId);
+    }
 }

@@ -17,8 +17,9 @@ public enum SelectDataType {
     //BINDING_TYPE("bindingType", "装订方式"),
     //MATERIAL("material", "材质管理"),
     //EXTERNAL_DEVICE("externalDevice", "外接设备"),
+    QUESTION("question", "常见问题"),
     TAOCAN("taocan", "套餐管理");
-    public static final String INFO = " taocan 套餐";
+    public static final String INFO = " taocan 套餐 question 常见问题";
     private final String code;
     private final String desc;
 

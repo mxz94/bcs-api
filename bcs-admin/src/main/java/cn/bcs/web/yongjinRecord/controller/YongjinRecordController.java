@@ -1,30 +1,20 @@
 package cn.bcs.web.yongjinRecord.controller;
 
-import java.util.Arrays;
 import java.util.List;
 
 import cn.bcs.common.core.domain.entity.SysUser;
 import cn.bcs.common.enums.SysUserType;
 import cn.bcs.common.utils.SecurityUtils;
 import cn.bcs.web.yongjinRecord.domain.YongjinRecord;
+import cn.bcs.web.yongjinRecord.domain.dto.YongjinRecordQuery;
 import cn.bcs.web.yongjinRecord.service.YongjinRecordService;
 import io.swagger.annotations.Api;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import cn.bcs.common.annotation.Log;
 import io.swagger.annotations.ApiOperation;
 import cn.bcs.common.core.controller.BaseController;
-import cn.bcs.common.core.domain.Result;
-import cn.bcs.common.enums.BusinessType;
 import cn.bcs.common.core.page.TableDataInfo;
 
 /**
@@ -45,13 +35,13 @@ public class YongjinRecordController extends BaseController {
  */
     @ApiOperation(value = "账单记录", tags = {"公众号"})
     @GetMapping("/list")
-    public TableDataInfo<List<YongjinRecord>> list(YongjinRecord yongjinRecord) {
+    public TableDataInfo<List<YongjinRecord>> list(YongjinRecordQuery query) {
         startPage();
         SysUser user = SecurityUtils.getLoginUser().getUser();
-        if (SysUserType.ADMIN.getCode() != user.getUserType()) {
-            yongjinRecord.setUserId(user.getUserId());
+        if (!SysUserType.ADMIN.getCode().equals(user.getUserType())) {
+            query.setUserId(user.getUserId());
         }
-        List<YongjinRecord> list = yongjinRecordService.list(new LambdaQueryWrapper<YongjinRecord>(yongjinRecord));
+        List<YongjinRecord> list = yongjinRecordService.lambdaQuery().eq(query.getUserId() != null, YongjinRecord::getUserId, query.getUserId()).list();
         return getDataTable(list);
     }
 

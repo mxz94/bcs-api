@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
+import cn.bcs.common.constant.BalanceConstants;
 import cn.bcs.common.core.domain.Result;
 import cn.bcs.common.core.domain.entity.SysUser;
 import cn.bcs.common.enums.SysUserType;
@@ -17,7 +18,6 @@ import cn.bcs.web.apply.domain.vo.MonthCallFeeVO;
 import cn.bcs.web.apply.mapper.ApplyRecordMapper;
 import cn.bcs.web.selectData.domain.SelectData;
 import cn.bcs.web.selectData.service.SelectDataService;
-import cn.bcs.web.yongjinRecord.domain.YongjinRecord;
 import cn.bcs.web.yongjinRecord.service.YongjinRecordService;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -48,25 +48,24 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
      * @param fromUser
      */
     private void calacFee(ApplyRecord old, SysUser fromUser) {
-        SysUser banLiUser = userService.getById(old.getUserId());
+        Long dailiUserId = fromUser.getUserId();
         // 合伙人 或没有上级 直接加350
         if (SysUserType.HEHUO.getCode().equals(fromUser.getUserType()) || fromUser.getFromUserId() == null) {
-            fromUser.setBalance(fromUser.getWaitInBalance().add(BigDecimal.valueOf(350)));
-            userService.lambdaUpdate().set(SysUser::getWaitInBalance, fromUser.getWaitInBalance()).eq(SysUser::getUserId, old.getUserId()).update();
-            yongjinRecordService.addRecord(fromUser, BigDecimal.valueOf(350), old);
+            userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, BalanceConstants.HEHUO_350,  dailiUserId);
+            yongjinRecordService.addRecord(fromUser, BalanceConstants.HEHUO_350, old);
         } else if (SysUserType.DAILI.getCode().equals(fromUser.getUserType())) {
-        //    代理 + 200 上级 + 150
-            fromUser.setBalance(fromUser.getWaitInBalance().add(BigDecimal.valueOf(200)));
-            userService.lambdaUpdate().set(SysUser::getWaitInBalance, fromUser.getWaitInBalance()).eq(SysUser::getUserId, old.getUserId()).update();
-            yongjinRecordService.addRecord(fromUser, BigDecimal.valueOf(200), old);
+        //    代理 + 200
+            userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, BalanceConstants.DAILI_200,  dailiUserId);
+            yongjinRecordService.addRecord(fromUser, BalanceConstants.DAILI_200, old);
 
+            // 上级 + 150
             SysUser parentUser = userService.getById(fromUser.getFromUserId());
-            userService.lambdaUpdate().set(SysUser::getWaitInBalance, parentUser.getWaitInBalance().add(BigDecimal.valueOf(150))).eq(SysUser::getUserId, parentUser.getUserId()).update();
-            yongjinRecordService.addRecord(parentUser, BigDecimal.valueOf(150), old);
+            userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, BalanceConstants.DAILI_150,  parentUser.getUserId());
+            yongjinRecordService.addRecord(parentUser, BalanceConstants.DAILI_150, old);
 
-            Integer count = this.lambdaQuery().eq(ApplyRecord::getFromUserId, fromUser.getUserId()).eq(ApplyRecord::getStatus, ApplyStatus.APPROVED.getCode()).count();
+            Integer count = this.lambdaQuery().eq(ApplyRecord::getFromUserId, dailiUserId).eq(ApplyRecord::getStatus, ApplyStatus.APPROVED.getCode()).count();
             if (count >= 1) {
-                userService.lambdaUpdate().eq(SysUser::getUserId, fromUser.getUserId()).set(SysUser::getUserType, SysUserType.HEHUO.getCode()).update();
+                userService.lambdaUpdate().eq(SysUser::getUserId, dailiUserId).set(SysUser::getUserType, SysUserType.HEHUO.getCode()).update();
             }
         }
         //    修改办理人类型为代理人
@@ -79,7 +78,7 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
             if (user == null) {
                 return Result.error("推荐人不存在");
             }
-            if (user.getUserType() != SysUserType.DAILI.getCode() && user.getUserType() != SysUserType.HEHUO.getCode()) {
+            if (!SysUserType.DAILI.getCode().equals(user.getUserType()) && !SysUserType.HEHUO.getCode().equals(user.getUserType())) {
                 return Result.error("推荐人必须是代理用户");
             }
             calacFee(old, user);
@@ -92,7 +91,7 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
 
     public Result apply(ApplyRecordDTO dto) /**/{
         SysUser fromUser = userService.getById(dto.getFromUserId());
-        if (fromUser.getUserType() != SysUserType.DAILI.getCode() && fromUser.getUserType() != SysUserType.HEHUO.getCode()) {
+        if (!SysUserType.DAILI.getCode().equals(fromUser.getUserType()) && !SysUserType.HEHUO.getCode().equals(fromUser.getUserType())) {
             return Result.error("邀请人未审核通过，无法邀请人，请联系管理员");
         }
         Integer count = this.lambdaQuery().eq(ApplyRecord::getUserId, SecurityUtils.getUserId()).in(ApplyRecord::getStatus, Arrays.asList(ApplyStatus.PENDING.getCode(), ApplyStatus.APPROVED.getCode())).count();
@@ -107,7 +106,7 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
         BeanUtil.copyProperties(taocan, applyRecord);
         this.save(applyRecord);
 
-        userService.lambdaUpdate().set(SysUser::getNickName, dto.getName()).eq(SysUser::getUserId, SecurityUtils.getUserId()).update();
+        userService.lambdaUpdate().set(SysUser::getNickName, dto.getName()).set(SysUser::getPhonenumber, dto.getPhone()).eq(SysUser::getUserId, SecurityUtils.getUserId()).update();
         return Result.success();
     }
 

@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -54,4 +55,6 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
     void updateLoginInfo(@Param("userId") Long userId, @Param("loginIp") String loginIp, @Param("loginDate") Date loginDate);
 
     void addWaitBalance2Balance();
+
+    void addBalance(@Param("key") String key, @Param("amount") BigDecimal amount, @Param("userId") Long userId);
 }

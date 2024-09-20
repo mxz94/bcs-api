@@ -6,6 +6,10 @@ import java.util.List;
 import cn.bcs.common.core.domain.entity.SysUser;
 import cn.bcs.common.enums.SysUserType;
 import cn.bcs.common.utils.SecurityUtils;
+import cn.bcs.web.withdrawRecord.domain.dto.TixianStatusDTO;
+import cn.bcs.web.withdrawRecord.domain.query.WithDrawRecordQuery;
+import cn.bcs.web.withdrawRecord.domain.vo.WithdrawRecordVO;
+import cn.bcs.web.yongjinRecord.domain.dto.YongjinRecordQuery;
 import io.swagger.annotations.Api;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,32 +44,31 @@ public class WithdrawRecordController extends BaseController {
     @Autowired
     private WithdrawRecordService withdrawRecordService;
 
-/**
- * 查询提现记录列表
- */
-@ApiOperation(value = "现金提现记录", tags = {"公众号"})
-@PreAuthorize("@ss.hasPermi('withdrawRecord:withdrawRecord:list')")
-@GetMapping("/list")
-    public TableDataInfo list(WithdrawRecord withdrawRecord) {
+    /**
+     * 查询提现记录列表
+     */
+    @ApiOperation(value = "现金提现记录", tags = {"公众号"})
+    @GetMapping("/list")
+    public TableDataInfo< List<WithdrawRecordVO>> list(WithDrawRecordQuery query) {
         startPage();
         SysUser user = SecurityUtils.getLoginUser().getUser();
-        if (SysUserType.ADMIN.getCode() != user.getUserType()) {
-            withdrawRecord.setCreateBy(user.getUserId().toString());
+        if (!SysUserType.ADMIN.getCode().equals(user.getUserType())) {
+            query.setUserId(user.getUserId());
         }
-        List<WithdrawRecord> list = withdrawRecordService.list(new LambdaQueryWrapper<WithdrawRecord>(withdrawRecord));
+        List<WithdrawRecordVO> list = withdrawRecordService.selectList(query);
         return getDataTable(list);
     }
 
-    ///**
-    // * 获取提现记录详细信息
-    // */
-    //@ApiOperation(value = "获取提现记录详细信息")
-    //@PreAuthorize("@ss.hasPermi('withdrawRecord:withdrawRecord:query')")
-    //@GetMapping(value = "/{id}")
-    //public Result getInfo(@PathVariable("id") Long id) {
-    //    return success(withdrawRecordService.getById(id));
-    //}
-    //
+    /**
+     * 获取提现记录详细信息
+     */
+    @ApiOperation(value = "获取提现记录详细信息")
+    @PreAuthorize("@ss.hasPermi('withdrawRecord:withdrawRecord:query')")
+    @GetMapping(value = "/{id}")
+    public Result getInfo(@PathVariable("id") Long id) {
+        return success(withdrawRecordService.getById(id));
+    }
+
     ///**
     // * 新增提现记录
     // */
@@ -98,4 +101,12 @@ public class WithdrawRecordController extends BaseController {
     //public Result remove(@PathVariable Long[] ids) {
     //    return toAjax(withdrawRecordService.removeByIds(Arrays.asList(ids)));
     //}
+
+    @ApiOperation(value = "处理提现单")
+    @PreAuthorize("@ss.hasPermi('withdrawRecord:withdrawRecord:edit')")
+    @Log(title = "处理提现单", businessType = BusinessType.UPDATE)
+    @PostMapping("/handleStatus")
+    public Result handleStatus(@RequestBody TixianStatusDTO dto) {
+        return toAjax(withdrawRecordService.handleStatus(dto));
+    }
 }

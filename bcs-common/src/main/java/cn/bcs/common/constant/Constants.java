@@ -2,6 +2,8 @@ package cn.bcs.common.constant;
 
 import io.jsonwebtoken.Claims;
 
+import java.math.BigDecimal;
+
 /**
  * 通用常量信息
  *

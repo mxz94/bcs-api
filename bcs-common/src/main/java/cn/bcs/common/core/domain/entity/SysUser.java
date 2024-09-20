@@ -115,4 +115,7 @@ public class SysUser extends BaseDBEntity {
 
     @ApiModelProperty("团队构建金额")
     private BigDecimal teamBuildBalance;
+
+    @ApiModelProperty("收款码链接")
+    private String shoukuanUrl;
 }

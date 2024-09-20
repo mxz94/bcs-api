@@ -18,18 +18,25 @@
     </el-form>
 
     <el-table v-loading="loading" :data="withdrawRecordList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="状态" align="center" prop="status" />
+      <el-table-column label="状态" align="center" prop="status" >
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.withdraw_status" :value="scope.row.status"  :style="getTagStyle(scope.row.status)"/>
+        </template>
+      </el-table-column>
       <el-table-column label="提现金额" align="center" prop="amount" />
       <el-table-column label="税率" align="center" prop="rate" />
       <el-table-column label="转账金额" align="center" prop="realAmount" />
       <el-table-column label="旧余额" align="center" prop="oldBalance" />
-      <el-table-column label="新余额" align="center" prop="newBalance" />
-      <el-table-column label="提现类型" align="center" prop="type" />
+      <el-table-column label="提现类型" align="center" prop="type_dictText" />
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="昵称" align="center" prop="nickName" />
       <el-table-column label="创建时间" align="center" prop="create_time" />
+      <el-table-column label="收款码" align="center" key="shoukuanUrl" prop="shoukuanUrl" >
+          <template slot-scope="scope">
+            <image-preview :url="scope.row.shoukuanUrl" :width="40" :height="40" />
+          </template>
+      </el-table-column>
       <el-table-column label="更新时间" align="center" prop="update_time" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -37,7 +44,7 @@
             size="mini"
             type="text"
             icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
+            @click="handleStatus(scope.row)"
             v-hasPermi="['withdrawRecord:withdrawRecord:edit']"
           >审核</el-button>
         </template>
@@ -53,14 +60,25 @@
     />
 
     <!-- 添加或编辑提现记录对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="openStatus" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" placeholder="请输入备注" />
+          <el-select v-model="form.status" placeholder="请选择审核状态" clearable>
+            <el-option
+                v-for="dict in dict.type.withdraw_status"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
+                :disabled="dict.value === '0'"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="form.remark" placeholder="请输入备注" type="textarea"  :autosize="{ minRows: 2, maxRows: 4}"  />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button type="primary" @click="submitStatus">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -68,12 +86,13 @@
 </template>
 
 <script>
-import { listWithdrawRecord, getWithdrawRecord, delWithdrawRecord, addWithdrawRecord, updateWithdrawRecord } from "@/api/withdrawRecord/withdrawRecord";
+import { listWithdrawRecord, getWithdrawRecord, delWithdrawRecord, addWithdrawRecord, updateWithdrawRecord, handleStatus } from "@/api/withdrawRecord/withdrawRecord";
 
 import { getUserSelect } from "@/api/system/user";
 
 export default {
   name: "WithdrawRecord",
+  dicts: ['withdraw_status'],
   data() {
     return {
       options: [],
@@ -94,7 +113,7 @@ export default {
       // 弹出层标题
       title: "",
       // 是否显示弹出层
-      open: false,
+      openStatus: false,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -113,7 +132,7 @@ export default {
       // 表单校验
       rules: {
         status: [
-          { required: true, message: "申请记录状态，0 待审批 1 通过  2 拒绝不能为空", trigger: "change" }
+          { required: true, message: "审核记录状态，1 通过  2 驳回", trigger: "change" }
         ],
       }
     };
@@ -123,6 +142,31 @@ export default {
     this.getSelect();
   },
   methods: {
+    getTagStyle(status) {
+      switch (status) {
+        case "0" : // 未办理
+          return { color: 'green' };
+        case "1": // 办理通过
+          return {  color: 'blue' };
+        case "2": // 办理拒绝
+          return {  color: 'red' };
+        default:
+          return {};
+      }
+    },
+    handleStatus(row) {
+      this.reset();
+      this.form.id = row.id
+      this.openStatus = true;
+      this.title = "审核套餐";
+    },
+  submitStatus() {
+    handleStatus(this.form).then(response => {
+      this.$modal.msgSuccess("修改成功");
+      this.openStatus = false;
+      this.getList();
+    });
+  },
     /** 查询提现记录列表 */
     getSelect() {
       getUserSelect().then(response => {
@@ -139,7 +183,7 @@ export default {
     },
     // 取消按钮
     cancel() {
-      this.open = false;
+      this.openStatus = false;
       this.reset();
     },
     // 表单重置
