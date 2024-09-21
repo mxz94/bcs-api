@@ -29,4 +29,7 @@ public class WithDrawRecordQuery extends PageDomain {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    @ApiModelProperty(value = "租户id")
+    private Long tenantId;
+
 }

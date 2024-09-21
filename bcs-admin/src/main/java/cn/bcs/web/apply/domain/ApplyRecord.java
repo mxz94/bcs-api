@@ -1,12 +1,10 @@
 package cn.bcs.web.apply.domain;
 
-import java.math.BigDecimal;
-
 import cn.bcs.common.annotation.DictConvert;
 import cn.bcs.common.core.domain.BaseDBEntity;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
+import cn.bcs.web.apply.constants.ApplyStatus;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,6 +13,8 @@ import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 套餐申请记录对象 b_apply_record
@@ -66,7 +66,7 @@ private static final long serialVersionUID=1L;
 
     /** 申请记录状态，0 未办理 1 办理通过  2 办理拒绝 */
     @NotNull(message = "申请记录状态，0 未办理 1 办理通过  2 办理拒绝不能为空")
-    @ApiModelProperty(value = "申请记录状态，0 未办理 1 办理通过  2 办理拒绝", required = true)
+    @ApiModelProperty(value = "申请记录状态，" + ApplyStatus.INFO, required = true)
     @DictConvert(dictType = "apply_status")
     private String status;
 
@@ -79,5 +79,11 @@ private static final long serialVersionUID=1L;
     private Long userId;
 
     private String remark;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date endTime;
+
+    @ApiModelProperty(value = "租户id")
+    private Long tenantId;
 
 }

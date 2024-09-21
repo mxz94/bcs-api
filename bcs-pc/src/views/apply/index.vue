@@ -1,13 +1,15 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="姓名" prop="name">
-        <el-input
-          v-model="queryParams.name"
-          placeholder="请输入姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="用户" prop="nickName">
+        <el-select v-model="queryParams.userId" filterable placeholder="请选择" clearable>
+          <el-option
+              v-for="item in options"
+              :key="item.userId"
+              :label="item.nickName"
+              :value="item.userId">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="身份证号" prop="idCard">
         <el-input
@@ -21,14 +23,6 @@
         <el-input
           v-model="queryParams.phone"
           placeholder="请输入手机号"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="套餐id" prop="taocanId">
-        <el-input
-          v-model="queryParams.taocanId"
-          placeholder="请输入套餐id"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -51,29 +45,15 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="套餐价格" prop="taocanValue">
-        <el-input
-          v-model="queryParams.taocanValue"
-          placeholder="请输入套餐价格"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="推荐人" prop="fromUserId">
-        <el-input
-          v-model="queryParams.fromUserId"
-          placeholder="请输入推荐人"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="微信openId" prop="openId">
-        <el-input
-          v-model="queryParams.openId"
-          placeholder="请输入微信openId"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.fromUserId" filterable placeholder="请选择" clearable>
+          <el-option
+              v-for="item in options"
+              :key="item.userId"
+              :label="item.nickName"
+              :value="item.userId">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -81,67 +61,23 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['apply:apply:add']"
-        >添加</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['apply:apply:edit']"
-        >编辑</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['apply:apply:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['apply:apply:export']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
-
     <el-table v-loading="loading" :data="applyList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="5" align="center" />
-      <el-table-column label="" align="center" prop="id" />
+<!--      <el-table-column type="selection" width="5" align="center" />-->
       <el-table-column label="姓名" align="center" prop="name" />
       <el-table-column label="身份证号" align="center" prop="idCard" />
       <el-table-column label="手机号" align="center" prop="phone" />
-      <el-table-column label="套餐id" align="center" prop="taocanId" />
       <el-table-column label="套餐名称" align="center" prop="taocanName" />
       <el-table-column label="套餐价格" align="center" prop="taocanValue" />
-      <el-table-column label="申请状态，0 未办理 1 办理通过  2 办理拒绝" align="center" prop="status" >
+      <el-table-column label="状态" align="center" prop="status" >
         <template slot-scope="scope">
           <dict-tag :options="dict.type.apply_status" :value="scope.row.status"  :style="getTagStyle(scope.row.status)"/>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="推荐人" align="center" prop="fromUserId" />
-      <el-table-column label="微信openId" align="center" prop="openId" />
+      <el-table-column label="创建时间" align="center" prop="createTime" />
+      <el-table-column label="更新时间" align="center" prop="updateTime" />
+<!--      <el-table-column label="微信openId" align="center" prop="openId" />-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -188,23 +124,11 @@
         <el-form-item label="手机号" prop="phone">
           <el-input v-model="form.phone" placeholder="请输入手机号" />
         </el-form-item>
-        <el-form-item label="套餐id" prop="taocanId">
-          <el-input v-model="form.taocanId" placeholder="请输入套餐id" />
-        </el-form-item>
-        <el-form-item label="套餐名称" prop="taocanName">
-          <el-input v-model="form.taocanName" placeholder="请输入套餐名称" />
-        </el-form-item>
         <el-form-item label="套餐价格" prop="taocanValue">
           <el-input v-model="form.taocanValue" placeholder="请输入套餐价格" />
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" placeholder="请输入备注" />
-        </el-form-item>
-        <el-form-item label="推荐人" prop="fromUserId">
-          <el-input v-model="form.fromUserId" placeholder="请输入推荐人" />
-        </el-form-item>
-        <el-form-item label="微信openId" prop="openId">
-          <el-input v-model="form.openId" placeholder="请输入微信openId" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -243,12 +167,14 @@
 
 <script>
 import { listApply, getApply, delApply, addApply, updateApply,handleStatus } from "@/api/apply/apply";
+import {getUserSelect} from "@/api/system/user";
 
 export default {
   name: "Apply",
   dicts: ['apply_status'],
   data() {
     return {
+      options: [],
       // 遮罩层
       loading: true,
       // 选中数组
@@ -312,6 +238,7 @@ export default {
   },
   created() {
     this.getList();
+    this.getSelect();
   },
   methods: {
     getTagStyle(status) {
@@ -325,6 +252,11 @@ export default {
         default:
           return {};
       }
+    },
+    getSelect() {
+      getUserSelect().then(response => {
+        this.options = response.data
+      })
     },
     /** 查询套餐申请记录列表 */
     getList() {

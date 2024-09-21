@@ -11,6 +11,9 @@
                     b_withdraw_record a
                 left join sys_user b on a.user_id = b.user_id
                 where 1=1
+                  <if test="query.tenantId != null">
+                    and a.tenant_id = #{query.tenantId}
+                </if>
                 <if test="query.type != null and query.type != ''">
                     and a.type = #{query.type}
                 </if>

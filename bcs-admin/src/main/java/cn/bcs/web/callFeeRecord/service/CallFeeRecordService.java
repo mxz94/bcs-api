@@ -1,12 +1,10 @@
 package cn.bcs.web.callFeeRecord.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import cn.bcs.common.constant.BalanceConstants;
-import cn.bcs.common.constant.Constants;
 import cn.bcs.common.core.domain.entity.SysUser;
 import cn.bcs.common.utils.BigDecimalUtils;
 import cn.bcs.common.utils.StringUtils;
@@ -14,7 +12,9 @@ import cn.bcs.system.service.SysUserService;
 import cn.bcs.web.apply.domain.vo.MonthCallFeeVO;
 import cn.bcs.web.apply.service.ApplyRecordService;
 import cn.bcs.web.callFeeRecord.constants.HuafeiRateUtils;
-import cn.hutool.core.date.DateUtil;
+import cn.bcs.web.callFeeRecord.domain.vo.CallFeeRecordVO;
+import cn.bcs.web.withdrawRecord.constants.WithdrawTypeEnum;
+import cn.bcs.web.callFeeRecord.domain.query.RecordQuery;
 import org.springframework.stereotype.Service;
 import cn.bcs.web.callFeeRecord.domain.CallFeeRecord;
 import cn.bcs.web.callFeeRecord.mapper.CallFeeRecordMapper;
@@ -39,12 +39,11 @@ public class  CallFeeRecordService extends ServiceImpl<CallFeeRecordMapper, Call
     @Transactional(rollbackFor = Exception.class)
     public void addRecordAndCallFee(MonthCallFeeVO item, String month, HashMap<Long, List<CallFeeRecord>> map) {
         SysUser user = userService.getById(item.getUserId());
-        if (user == null) {
+        if (user == null && user.getNoApplyMonth() != null && user.getNoApplyMonth() >= BalanceConstants.noApplyMonth) {
             return;
         }
         BigDecimal callBalance = user.getCallBalance();
         BigDecimal fee = HuafeiRateUtils.calculateTaxAmount(item.getAmount());
-        BigDecimal newFee = BigDecimalUtils.add(callBalance, fee);
 
         userService.addBalance(BalanceConstants.CALL_BALANCE, fee, item.getUserId());
 
@@ -54,13 +53,12 @@ public class  CallFeeRecordService extends ServiceImpl<CallFeeRecordMapper, Call
         record.setRate(HuafeiRateUtils.calculateTaxRate(callBalance));
         record.setFee(fee);
         record.setUserId(item.getUserId());
-        record.setNickName(user.getNickName());
         record.setOldBalance(callBalance);
-        record.setNewBalance(newFee);
+        record.setNewBalance(BigDecimalUtils.add(callBalance, fee));
         record.setMonth(month);
-        record.setType("每月分成");
+        record.setType(WithdrawTypeEnum.HUAFEIFENCHENG.getCode());
+        record.setTenantId(user.getTenantId());
         this.save(record);
-
         if (user.getFromUserId() != null) {
             List<CallFeeRecord> records = map.computeIfAbsent(user.getFromUserId(), k -> new ArrayList<>());
             records.add(record);
@@ -69,7 +67,7 @@ public class  CallFeeRecordService extends ServiceImpl<CallFeeRecordMapper, Call
 
     public void buildTeamFee(Long teamUserId, List<CallFeeRecord> callFeeRecords, String month) {
         SysUser teamUser = userService.getById(teamUserId);
-        if (teamUser == null) {
+        if (teamUser == null && teamUser.getNoApplyMonth() != null && teamUser.getNoApplyMonth() >= BalanceConstants.noApplyMonth) {
             return;
         }
 
@@ -88,7 +86,6 @@ public class  CallFeeRecordService extends ServiceImpl<CallFeeRecordMapper, Call
         }
 
         BigDecimal callBalance = teamUser.getCallBalance();
-        BigDecimal newFee = BigDecimalUtils.add(callBalance, fee);
 
         userService.addBalance(BalanceConstants.TEAM_BUILD_BALANCE, fee, teamUser.getUserId());
 
@@ -98,11 +95,33 @@ public class  CallFeeRecordService extends ServiceImpl<CallFeeRecordMapper, Call
         record.setRate(rate);
         record.setFee(fee);
         record.setUserId(teamUser.getUserId());
-        record.setNickName(teamUser.getNickName());
         record.setOldBalance(callBalance);
-        record.setNewBalance(newFee);
+        record.setNewBalance(BigDecimalUtils.add(callBalance, fee));
         record.setMonth(month);
-        record.setType("团队奖金");
+        record.setTenantId(teamUser.getTenantId());
+        record.setType(WithdrawTypeEnum.TEAMBUILD.getCode());
+        record.setRemark(StringUtils.format(WithdrawTypeEnum.TEAMBUILD.getDesc() + ":【{}(团队总话费)*{}%-{}(团队个人分成总和)】", sumFee, rate, fenFee ));
         this.save(record);
+    }
+
+    public void saveCallFeeRecord(SysUser user, WithdrawTypeEnum type, BigDecimal balance, String remark, Long recordId) {
+        BigDecimal oldBalance = type.equals("每月分成") ? user.getCallBalance() : user.getTeamBuildBalance();
+        CallFeeRecord record = new CallFeeRecord();
+        record.setRecordIds(recordId != null ? String.valueOf(recordId) : null);
+        record.setSumCallFee(BigDecimal.ZERO);
+        record.setRate(BigDecimal.ZERO);
+        record.setFee(balance);
+        record.setUserId(user.getUserId());
+        record.setOldBalance(oldBalance);
+        record.setNewBalance(BigDecimalUtils.add(oldBalance, balance));
+        record.setType(type.getCode());
+        record.setRemark(remark);
+        record.setTenantId(user.getTenantId());
+        this.save(record);
+    }
+
+    public List<CallFeeRecordVO> selectRecordListByType(RecordQuery query) {
+        List<CallFeeRecordVO> list = this.baseMapper.selectRecordListByType(query);
+        return list;
     }
 }

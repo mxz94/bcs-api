@@ -92,8 +92,6 @@ export default {
       };
     },
     handleLogin() {
-      this.loginForm.username = "superadmin"
-      this.loginForm.password = "123456"
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true;

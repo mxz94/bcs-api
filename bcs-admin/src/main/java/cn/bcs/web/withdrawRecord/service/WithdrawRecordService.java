@@ -12,8 +12,10 @@ import cn.bcs.common.core.domain.entity.SysUser;
 import cn.bcs.common.utils.BigDecimalUtils;
 import cn.bcs.common.utils.SecurityUtils;
 import cn.bcs.system.service.SysUserService;
+import cn.bcs.web.callFeeRecord.service.CallFeeRecordService;
 import cn.bcs.web.third.domain.vo.WechatJsSdkSignVO;
 import cn.bcs.web.withdrawRecord.constants.WithdrawStatusEnum;
+import cn.bcs.web.withdrawRecord.constants.WithdrawTypeEnum;
 import cn.bcs.web.withdrawRecord.domain.dto.TixianStatusDTO;
 import cn.bcs.web.withdrawRecord.domain.query.WithDrawRecordQuery;
 import cn.bcs.web.withdrawRecord.domain.vo.WithdrawRecordVO;
@@ -32,12 +34,13 @@ import javax.annotation.Resource;
  */
 @Service
 public class  WithdrawRecordService extends ServiceImpl<WithdrawRecordMapper, WithdrawRecord> {
-
+    @Resource
+    CallFeeRecordService callFeeRecordService;
     @Resource
     SysUserService sysUserService;
-    public Result tixian(String type, BigDecimal amount) {
+    public Result tixian(WithdrawTypeEnum type, BigDecimal amount) {
         SysUser user = sysUserService.getById(SecurityUtils.getUserId());
-        if ("佣金".equals(type)) {
+        if (type.equals(WithdrawTypeEnum.YONGJIN)) {
             if (BigDecimalUtils.isLessThan(user.getBalance(), amount)) {
                 return Result.warn("佣金不足");
             }
@@ -52,18 +55,20 @@ public class  WithdrawRecordService extends ServiceImpl<WithdrawRecordMapper, Wi
             withdrawRecord.setAmount(amount);
             withdrawRecord.setRealAmount(BigDecimalUtils.multiplyPercentage(amount, BalanceConstants.SUODESHUI));
             withdrawRecord.setRate(BalanceConstants.SUODESHUI);
-            withdrawRecord.setType(type);
+            withdrawRecord.setType(type.getCode());
             withdrawRecord.setUserId(user.getUserId());
             withdrawRecord.setStatus("0");
+            withdrawRecord.setTenantId(user.getTenantId());
             this.save(withdrawRecord);
+            callFeeRecordService.saveCallFeeRecord(user, WithdrawTypeEnum.YONGJIN, amount.negate(), "提现", withdrawRecord.getId());
             sysUserService.addBalance(BalanceConstants.BALANCE, amount.negate(), user.getUserId());
 
-        } else if ("话费分成".equals(type)) {
+        } else if (type.equals(WithdrawTypeEnum.HUAFEIFENCHENG)) {
             if (BigDecimalUtils.isLessThan(user.getCallBalance(), amount)) {
                 return Result.warn("话费分成不足");
             }
             if (checkWithdrawal(type)) {
-                return Result.warn("每月22日提现花费分成");
+                return Result.warn("每月22日提现话费分成");
             }
             if (BigDecimalUtils.isLessThan(amount, BalanceConstants.MIN_HUAFEI)) {
                 return Result.warn("提现金额不能小于" + BalanceConstants.MIN_HUAFEI);
@@ -73,37 +78,74 @@ public class  WithdrawRecordService extends ServiceImpl<WithdrawRecordMapper, Wi
             withdrawRecord.setAmount(amount);
             withdrawRecord.setRealAmount(BigDecimalUtils.multiplyPercentage(amount, BalanceConstants.SUODESHUI));
             withdrawRecord.setRate(BalanceConstants.SUODESHUI);
-            withdrawRecord.setType(type);
+            withdrawRecord.setType(type.getCode());
             withdrawRecord.setUserId(user.getUserId());
             withdrawRecord.setStatus("0");
+            withdrawRecord.setTenantId(user.getTenantId());
             this.save(withdrawRecord);
+            callFeeRecordService.saveCallFeeRecord(user, WithdrawTypeEnum.HUAFEIFENCHENG, amount.negate(), "提现", withdrawRecord.getId());
             sysUserService.addBalance(BalanceConstants.CALL_BALANCE, amount.negate(), user.getUserId());
-        } else {
-            return Result.warn("提现类型错误");
+        } else if (type.equals(WithdrawTypeEnum.TEAMBUILD)) {
+            if (BigDecimalUtils.isLessThan(user.getCallBalance(), amount)) {
+                return Result.warn("团队奖金不足");
+            }
+            if (checkWithdrawal(type)) {
+                return Result.warn("每月22日提现奖金分成");
+            }
+            if (BigDecimalUtils.isLessThan(amount, BalanceConstants.MIN_HUAFEI)) {
+                return Result.warn("提现金额不能小于" + BalanceConstants.MIN_HUAFEI);
+            }
+            WithdrawRecord withdrawRecord = new WithdrawRecord();
+            withdrawRecord.setOldBalance(user.getTeamBuildBalance());
+            withdrawRecord.setAmount(amount);
+            withdrawRecord.setRealAmount(BigDecimalUtils.multiplyPercentage(amount, BalanceConstants.SUODESHUI));
+            withdrawRecord.setRate(BalanceConstants.SUODESHUI);
+            withdrawRecord.setType(type.getCode());
+            withdrawRecord.setUserId(user.getUserId());
+            withdrawRecord.setStatus("0");
+            withdrawRecord.setTenantId(user.getTenantId());
+            this.save(withdrawRecord);
+            callFeeRecordService.saveCallFeeRecord(user, WithdrawTypeEnum.TEAMBUILD, amount.negate(), "提现", withdrawRecord.getId());
+            sysUserService.addBalance(BalanceConstants.TEAM_BUILD_BALANCE, amount.negate(), user.getUserId());
         }
         return Result.success("提交成功待审核");
     }
 
-    private Boolean checkWithdrawal(String type) {
+    private Boolean checkWithdrawal(WithdrawTypeEnum type) {
         LocalDate date = LocalDate.now();
         boolean isSunday = date.getDayOfWeek() == DayOfWeek.SUNDAY;
         // 判断是否是22号
         boolean isTwentySecond = date.getDayOfMonth() == 22;
-        return "佣金".equals(type) && isSunday || "话费".equals(type) && isTwentySecond;
+        return type.equals(WithdrawTypeEnum.YONGJIN) && isSunday || type.equals(WithdrawTypeEnum.HUAFEIFENCHENG) && isTwentySecond || type.equals(WithdrawTypeEnum.TEAMBUILD) && isTwentySecond;
     }
 
-    public int handleStatus(TixianStatusDTO dto) {
+    public Result handleStatus(TixianStatusDTO dto) {
         WithdrawRecord record = this.getById(dto.getId());
+        if (! record.getTenantId().equals(SecurityUtils.getTenantId())) {
+            return Result.error("非自己账号的数据");
+        }
+        SysUser user = sysUserService.getById(record.getUserId());
+        if (user == null) {
+            return Result.error("用户不存在");
+        }
+        if (WithdrawStatusEnum.REJECT.getCode().equals(record.getStatus()) || WithdrawStatusEnum.PASS.getCode().equals(record.getStatus())) {
+            return Result.error("已处理过了");
+        }
         if (WithdrawStatusEnum.REJECT.getCode().equals(dto.getStatus())) {
             BigDecimal amount = record.getAmount();
-            if (record.getType().equals("佣金")) {
+            if (record.getType().equals(WithdrawTypeEnum.YONGJIN.getCode())) {
+                callFeeRecordService.saveCallFeeRecord(user, WithdrawTypeEnum.YONGJIN, amount.negate(), "提现退回", record.getId());
                 sysUserService.addBalance(BalanceConstants.BALANCE, amount, record.getUserId());
-            } else if (record.getType().equals("话费分成")) {
+            } else if (record.getType().equals(WithdrawTypeEnum.HUAFEIFENCHENG.getCode())) {
+                callFeeRecordService.saveCallFeeRecord(user, WithdrawTypeEnum.HUAFEIFENCHENG, amount, "提现退回", record.getId());
                 sysUserService.addBalance(BalanceConstants.CALL_BALANCE, amount, record.getUserId());
+            } else if (record.getType().equals(WithdrawTypeEnum.TEAMBUILD.getCode())) {
+                callFeeRecordService.saveCallFeeRecord(user, WithdrawTypeEnum.TEAMBUILD, amount, "提现退回", record.getId());
+                sysUserService.addBalance(BalanceConstants.TEAM_BUILD_BALANCE, amount, record.getUserId());
             }
         }
         this.lambdaUpdate().eq(WithdrawRecord::getId, dto.getId()).set(WithdrawRecord::getStatus, dto.getStatus()).set(WithdrawRecord::getRemark, dto.getRemark()).update();
-        return 0;
+        return Result.success();
     }
 
     public List<WithdrawRecordVO> selectList(WithDrawRecordQuery query) {

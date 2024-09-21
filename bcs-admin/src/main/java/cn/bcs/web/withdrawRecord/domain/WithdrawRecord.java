@@ -68,4 +68,7 @@ private static final long serialVersionUID=1L;
 
     @ApiModelProperty(value = "备注")
     private String remark;
+
+    @ApiModelProperty(value = "租户id")
+    private Long tenantId;
 }

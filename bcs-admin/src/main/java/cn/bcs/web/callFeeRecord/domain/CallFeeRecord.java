@@ -2,7 +2,8 @@ package cn.bcs.web.callFeeRecord.domain;
 
     import java.math.BigDecimal;
 import cn.bcs.common.core.domain.BaseDBEntity;
-import com.baomidou.mybatisplus.annotation.IdType;
+    import cn.bcs.web.withdrawRecord.constants.WithdrawTypeEnum;
+    import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
@@ -29,45 +30,46 @@ public class CallFeeRecord extends BaseDBEntity {
 private static final long serialVersionUID=1L;
 
     /** $column.columnComment */
-    @ApiModelProperty(value = "${column.columnComment}")
+    @ApiModelProperty(value = "id")
     private Long id;
 
-    /** 统计合计使用的apply_record_id */
-    @ApiModelProperty(value = "统计合计使用的apply_record_id")
+    @ApiModelProperty(value = "话费分成 ids,  佣金只有 id")
     private String recordIds;
 
     /** 当月所办卡总花费 */
-    @ApiModelProperty(value = "当月所办卡总花费")
+    @ApiModelProperty(value = "办卡话费(话费分成)")
     private BigDecimal sumCallFee;
 
     /** 计算花费分成所用比例 */
-    @ApiModelProperty(value = "计算花费分成所用比例")
+    @ApiModelProperty(value = "计算话费分成所用比例")
     private BigDecimal rate;
 
     /** 当月话费分成 */
-    @ApiModelProperty(value = "当月话费分成")
+    @ApiModelProperty(value = "金额")
     private BigDecimal fee;
 
     /** 用户id */
     @ApiModelProperty(value = "用户id")
     private Long userId;
 
-    @ApiModelProperty(value = "昵称")
-    private String nickName;
-
     /** 计算前总话费分成 */
-    @ApiModelProperty(value = "计算前总话费分成")
+    @ApiModelProperty(value = "旧余额")
     private BigDecimal oldBalance;
 
     /** 计算后总话费分成 */
-    @ApiModelProperty(value = "计算后总话费分成")
+    @ApiModelProperty(value = "新余额")
     private BigDecimal newBalance;
 
     /** 月份 */
-    @ApiModelProperty(value = "月份")
+    @ApiModelProperty(value = "月份(话费分成 和 团队奖金)")
     private String month;
 
-    @ApiModelProperty(value = "类型： 话费分成， 团队奖")
+    @ApiModelProperty(value = "类型：" + WithdrawTypeEnum.INFO)
     private String type;
 
+    @ApiModelProperty(value = "租户id")
+    private Long tenantId;
+
+    @ApiModelProperty(value = "备注")
+    private String remark;
 }

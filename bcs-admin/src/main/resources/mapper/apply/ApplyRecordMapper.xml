@@ -5,11 +5,21 @@
 <mapper namespace="cn.bcs.web.apply.mapper.ApplyRecordMapper">
     <select id="selectCallFee" resultType="cn.bcs.web.apply.domain.vo.MonthCallFeeVO">
         select
-            user_id as userId,
+            from_user_id as userId,
             sum(taocan_value) as amount,
             group_concat(id) as recordIds
         from b_apply_record
         where status = 1
-        group by user_id
+        and end_time &lt; now()
+        group by from_user_id
+    </select>
+
+    <select id="selectMaxApplyRecord" resultType="cn.bcs.web.apply.domain.ApplyRecord">
+        SELECT
+            from_user_id,
+            MAX(create_time) AS create_time
+        FROM b_apply_record
+        WHERE status = '1'
+        GROUP BY from_user_id;
     </select>
 </mapper>

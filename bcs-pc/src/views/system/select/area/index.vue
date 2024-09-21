@@ -31,22 +31,22 @@
           type="primary"
           icon="el-icon-plus"
           @click="handleAdd"
-          v-hasPermi="['system:area:edit']"
+          v-hasPermi="['system:selectData:list']"
         >添加</el-button>
       </el-col>
     </el-row>
 
     <el-table v-loading="loading" :data="selectDataList" @selection-change="handleSelectionChange">
 <!--      <el-table-column type="selection" width="55" align="center" />-->
-      <el-table-column
-        label="id"
-        align="center"
-        prop="id"
-        >
-      </el-table-column>
-      <el-table-column label="名称" align="center" prop="name" />
-      <el-table-column label="值" align="center" prop="value" />
-      <el-table-column label="备注" align="center" prop="remark" />
+<!--      <el-table-column-->
+<!--        label="id"-->
+<!--        align="center"-->
+<!--        prop="id"-->
+<!--        >-->
+<!--      </el-table-column>-->
+      <el-table-column label="套餐名称" align="center" prop="name" />
+      <el-table-column label="套餐金额（元）" align="center" prop="value" />
+      <el-table-column label="套餐期数" align="center" prop="remark" />
       <el-table-column label="状态" align="center" prop="status">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_common_status" :value="scope.row.status"  :class="[scope.row.status == '1' ? 'disable-color' : 'enable-color']"
@@ -58,24 +58,24 @@
           <el-button
             type="text"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:area:edit']"
+            v-hasPermi="['system:selectData:list']"
           >编辑</el-button>
           <el-button
             v-if="scope.row.status === '0'"
             type="text"
             @click="setStatus(scope.row, 1)"
-            v-hasPermi="['system:area:status']"
+            v-hasPermi="['system:selectData:list']"
           >禁用</el-button>
           <el-button
             v-else
             type="text"
             @click="setStatus(scope.row, 0)"
-            v-hasPermi="['system:area:status']"
+            v-hasPermi="['system:selectData:list']"
           >启用</el-button>
           <el-button
             type="text"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:area:remove']"
+            v-hasPermi="['system:selectData:list']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -95,11 +95,11 @@
         <el-form-item label="套餐名称:" prop="name">
           <el-input v-model="form.name" placeholder="请输入套餐名称" />
         </el-form-item>
-        <el-form-item label="值:" prop="value">
+        <el-form-item label="套餐金额（元）:" prop="value">
           <el-input   type="number" :rows="2" v-model="form.value" placeholder="请输入值" />
         </el-form-item>
-        <el-form-item label="备注:" prop="remark">
-          <el-input   type="textarea" :rows="2" v-model="form.remark" placeholder="请输入备注内容" />
+        <el-form-item label="套餐期数:" prop="remark">
+          <el-input   type="number" :rows="2" v-model="form.remark" placeholder="请输入值" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">

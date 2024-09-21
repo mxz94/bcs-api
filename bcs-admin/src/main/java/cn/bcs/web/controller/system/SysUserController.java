@@ -9,6 +9,7 @@ import cn.bcs.common.core.domain.model.LoginUser;
 import cn.bcs.common.core.page.TableDataInfo;
 import cn.bcs.common.enums.BusinessType;
 import cn.bcs.common.enums.SysUserType;
+import cn.bcs.common.utils.SecurityUtils;
 import cn.bcs.common.utils.StringUtils;
 import cn.bcs.common.utils.poi.ExcelUtil;
 import cn.bcs.system.domain.TeamTreeVO;
@@ -121,7 +122,7 @@ public class SysUserController extends BaseController {
     @ApiImplicitParam(name = "nickName", value = "用户昵称", required = false, dataType = "String")
     @GetMapping("/select")
     public Result<Object> selectAll(String nickName) {
-        return Result.success(userService.lambdaQuery().select(SysUser::getUserId, SysUser::getNickName).eq(SysUser::getDelFlag, 0).like(StringUtils.isNotEmpty(nickName), SysUser::getNickName, nickName).list());
+        return Result.success(userService.lambdaQuery().select(SysUser::getUserId, SysUser::getNickName).eq(SysUser::getDelFlag, 0).like(StringUtils.isNotEmpty(nickName), SysUser::getNickName, nickName).eq(!SecurityUtils.isAdmin(), SysUser::getTenantId, SecurityUtils.getTenantId()).list());
     }
 
 
@@ -135,6 +136,6 @@ public class SysUserController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:user:list')")
     @GetMapping("/listAll")
     public Result<List<SysUser>> listAll() {
-        return Result.success(userService.lambdaQuery().eq(SysUser::getDelFlag, 0).ne(SysUser::getUserType, SysUserType.ADMIN.getCode()).list());
+        return Result.success(userService.lambdaQuery().eq(SysUser::getDelFlag, 0).eq(!SecurityUtils.isAdmin(), SysUser::getTenantId, SecurityUtils.getTenantId()).ne(SysUser::getUserType, SysUserType.ADMIN.getCode()).list());
     }
 }

@@ -2,6 +2,7 @@ package cn.bcs.web.selectData.service;
 
 import java.util.List;
 
+import cn.bcs.common.utils.SecurityUtils;
 import cn.bcs.common.utils.StringUtils;
 import cn.bcs.web.selectData.domain.SelectData;
 import cn.bcs.web.selectData.domain.vo.SelectDataQuery;
@@ -21,6 +22,7 @@ public class  SelectDataService extends ServiceImpl<SelectDataMapper, SelectData
     public List<SelectData> selectList(SelectDataQuery query) {
         return this.lambdaQuery().like(StringUtils.isNotEmpty(query.getName()), SelectData::getName, query.getName())
                 .eq(StringUtils.isNotEmpty(query.getType()), SelectData::getType, query.getType())
+                .eq(SelectData::getTenantId, SecurityUtils.getTenantId())
                 .eq(StringUtils.isNotEmpty(query.getStatus()), SelectData::getStatus, query.getStatus())
                 .orderByDesc(SelectData::getCreateTime)
                 .list();

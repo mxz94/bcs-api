@@ -42,7 +42,7 @@ public class WechatLoginService {
      *
      * @return 123
      */
-    public Result<LoginVO> wechatLogin1(WechatAccessTokenBO accessTokenBO) {
+    public Result<LoginVO> wechatLogin1(WechatAccessTokenBO accessTokenBO, String tenantId) {
         if (BeanUtil.isEmpty(accessTokenBO)) {
             return Result.error("微信授权失败");
         }
@@ -50,15 +50,16 @@ public class WechatLoginService {
         if (BeanUtil.isEmpty(wechatUserInfoBO) || StringUtils.isEmpty(wechatUserInfoBO.getOpenid())) {
             return Result.error("微信授权失败");
         }
-        SysUser sysUser = userService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUserName, wechatUserInfoBO.getOpenid()));
+        String userName = wechatUserInfoBO.getOpenid() + ":" + tenantId;
+        SysUser sysUser = userService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUserName, userName));
         if (BeanUtil.isEmpty(sysUser)) {
             // 不存在，添加用户
-            sysUser = new SysUser().setUserName(wechatUserInfoBO.getOpenid())
+            sysUser = new SysUser().setUserName(userName)
                     .setNickName(wechatUserInfoBO.getNickname())
                     .setUserType(SysUserType.PUTONG.getCode())
-                    .setTenantId(1L)
+                    .setTenantId(Long.valueOf(tenantId))
                     .setAvatar(wechatUserInfoBO.getHeadimgurl())
-                    .setPassword(SecurityUtils.encryptPassword(wechatUserInfoBO.getOpenid()))
+                    .setPassword(SecurityUtils.encryptPassword(userName))
                     .setStatus(CommonStatusEnum.NORMAL.getCode());
             sysUser.setRemark(wechatUserInfoBO.getUnionid());
             userService.save(sysUser);

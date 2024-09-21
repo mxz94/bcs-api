@@ -26,16 +26,15 @@
     </el-form>
 
     <el-table v-loading="loading" :data="callFeeRecordList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="累计办理话费" align="center" prop="sumCallFee" />
+      <el-table-column label="话费总和" align="center" prop="sumCallFee" />
       <el-table-column label="分成比例" align="center" prop="rate" />
       <el-table-column label="当月话费分成" align="center" prop="fee" />
-      <el-table-column label="用户id" align="center" prop="userId" />
-      <el-table-column label="计算前总话费分成" align="center" prop="oldBalance" />
-      <el-table-column label="计算后总话费分成" align="center" prop="newBalance" />
+      <el-table-column label="代理" align="center" prop="nickName" />
+      <el-table-column label="旧金额" align="center" prop="oldBalance" />
+      <el-table-column label="新金额" align="center" prop="newBalance" />
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="月份" align="center" prop="month" />
+      <el-table-column label="创建时间" align="center" prop="createTime" />
     </el-table>
 
     <pagination
@@ -78,15 +77,10 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
+        type: 2,
         pageNum: 1,
         pageSize: 10,
-        recordIds: null,
-        sumCallFee: null,
-        rate: null,
-        fee: null,
         userId: null,
-        oldBalance: null,
-        newBalance: null,
         month: null
       },
       // 表单参数

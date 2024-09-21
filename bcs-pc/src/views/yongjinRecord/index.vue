@@ -1,14 +1,6 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" >
-      <el-form-item label="办理记录id" prop="recordId" label-width="140">
-        <el-input
-          v-model="queryParams.recordId"
-          placeholder="请输入办理记录id"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="用户" prop="nickName">
         <el-select v-model="queryParams.userId" filterable placeholder="请选择" clearable>
           <el-option
@@ -26,32 +18,14 @@
     </el-form>
 
     <el-table v-loading="loading" :data="yongjinRecordList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="办理记录id" align="center" prop="recordId" />
+      <el-table-column label="办理id" align="center" prop="recordId" />
+      <el-table-column label="办理用户" align="center" prop="recordNickName" />
+      <el-table-column label="代理用户" align="center" prop="nickName" />
       <el-table-column label="佣金" align="center" prop="fee" />
-      <el-table-column label="用户id" align="center" prop="userId" />
-      <el-table-column label="计算前总话费分成" align="center" prop="oldBalance" />
-      <el-table-column label="计算后总话费分成" align="center" prop="newBalance" />
+      <el-table-column label="旧金额" align="center" prop="oldBalance" />
+      <el-table-column label="新金额" align="center" prop="newBalance" />
       <el-table-column label="备注" align="center" prop="remark" />
-<!--      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">-->
-<!--        <template slot-scope="scope">-->
-<!--          <el-button-->
-<!--            size="mini"-->
-<!--            type="text"-->
-<!--            icon="el-icon-edit"-->
-<!--            @click="handleUpdate(scope.row)"-->
-<!--            v-hasPermi="['yongjinRecord:yongjinRecord:edit']"-->
-<!--          >编辑</el-button>-->
-<!--          <el-button-->
-<!--            size="mini"-->
-<!--            type="text"-->
-<!--            icon="el-icon-delete"-->
-<!--            @click="handleDelete(scope.row)"-->
-<!--            v-hasPermi="['yongjinRecord:yongjinRecord:remove']"-->
-<!--          >删除</el-button>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
+      <el-table-column label="创建时间" align="center" prop="createTime" />
     </el-table>
 
     <pagination
@@ -65,8 +39,8 @@
 </template>
 
 <script>
-import { listYongjinRecord, getYongjinRecord, delYongjinRecord, addYongjinRecord, updateYongjinRecord } from "@/api/yongjinRecord/yongjinRecord";
 import {getUserSelect} from "@/api/system/user";
+import {listCallFeeRecord} from "@/api/callFeeRecord/callFeeRecord";
 
 export default {
   name: "YongjinRecord",
@@ -93,13 +67,10 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
+        type: '1',
         pageNum: 1,
         pageSize: 10,
-        recordId: null,
-        fee: null,
-        userId: null,
-        oldBalance: null,
-        newBalance: null,
+        userId: null
       },
       // 表单参数
       form: {},
@@ -124,7 +95,7 @@ export default {
     /** 查询佣金分成记录列表 */
     getList() {
       this.loading = true;
-      listYongjinRecord(this.queryParams).then(response => {
+      listCallFeeRecord(this.queryParams).then(response => {
         this.yongjinRecordList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -173,46 +144,6 @@ export default {
       this.reset();
       this.open = true;
       this.title = "添加佣金分成记录";
-    },
-    /** 编辑按钮操作 */
-    handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids
-      getYongjinRecord(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "编辑佣金分成记录";
-      });
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            updateYongjinRecord(this.form).then(response => {
-              this.$modal.msgSuccess("编辑成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addYongjinRecord(this.form).then(response => {
-              this.$modal.msgSuccess("添加成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除佣金分成记录编号为"' + ids + '"的数据项？').then(function() {
-        return delYongjinRecord(ids);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {

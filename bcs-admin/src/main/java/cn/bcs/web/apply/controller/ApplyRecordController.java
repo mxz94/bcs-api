@@ -3,6 +3,7 @@ package cn.bcs.web.apply.controller;
 import java.util.Arrays;
 import java.util.List;
 
+import cn.bcs.common.utils.SecurityUtils;
 import cn.bcs.web.apply.domain.dto.ApplyRecordDTO;
 import cn.bcs.web.apply.domain.dto.ApplyRecordHandleStatus;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -45,9 +46,11 @@ public class ApplyRecordController extends BaseController {
  */
     @ApiOperation(value = "查询套餐办理记录列表")
     @GetMapping("/list")
-    @PreAuthorize("@ss.hasPermi('system:apply:list')")
     public TableDataInfo list(ApplyRecord applyRecord) {
         startPage();
+        if (!SecurityUtils.isAdmin()) {
+            applyRecord.setTenantId(getTenantId());
+        }
         List<ApplyRecord> list = applyRecordService.list(new LambdaQueryWrapper<ApplyRecord>(applyRecord));
         return getDataTable(list);
     }
@@ -57,7 +60,6 @@ public class ApplyRecordController extends BaseController {
      */
     @ApiOperation(value = "获取套餐申请记录详细信息")
     @GetMapping(value = "/{id}")
-    @PreAuthorize("@ss.hasPermi('system:apply:list')")
     public Result getInfo(@PathVariable("id") Long id) {
         return success(applyRecordService.getById(id));
     }
@@ -90,7 +92,7 @@ public class ApplyRecordController extends BaseController {
     @ApiOperation(value = "删除套餐申请记录")
     @Log(title = "套餐申请记录", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    @PreAuthorize("@ss.hasPermi('system:apply:add')")
+    @PreAuthorize("@ss.hasPermi('system:apply:delete')")
     public Result remove(@PathVariable Long[] ids) {
         return toAjax(applyRecordService.removeByIds(Arrays.asList(ids)));
     }
@@ -98,7 +100,7 @@ public class ApplyRecordController extends BaseController {
     @ApiOperation(value = "修改审核状态")
     @Log(title = "修改审核状态")
     @PostMapping("/handleStatus")
-    @PreAuthorize("@ss.hasPermi('system:apply:add')")
+    @PreAuthorize("@ss.hasPermi('system:apply:edit')")
     public Result handleStatus(@RequestBody ApplyRecordHandleStatus applyRecordHandleStatus) {
         return applyRecordService.handleStatus(applyRecordHandleStatus);
     }

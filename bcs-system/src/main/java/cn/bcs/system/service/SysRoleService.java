@@ -88,9 +88,9 @@ public class SysRoleService extends ServiceImpl<SysRoleMapper, SysRole> {
         if (BeanUtil.isEmpty(sysRole)) {
             return Result.error("角色不存在");
         }
-        if (Constants.TENANT_ADMIN_ROLE_KEY.equals(sysRole.getRoleKey())) {
-            return Result.error("管理员角色不允许修改");
-        }
+        //if (Constants.TENANT_ADMIN_ROLE_KEY.equals(sysRole.getRoleKey())) {
+        //    return Result.error("管理员角色不允许修改");
+        //}
         boolean update = this.updateById(role);
         return update ? Result.success() : Result.error();
     }
@@ -188,9 +188,9 @@ public class SysRoleService extends ServiceImpl<SysRoleMapper, SysRole> {
         if (BeanUtil.isEmpty(sysRole)) {
             return Result.error("角色不存在");
         }
-        if (Constants.TENANT_ADMIN_ROLE_KEY.equals(sysRole.getRoleKey())) {
-            return Result.error("管理员角色不允许修改");
-        }
+        //if (Constants.TENANT_ADMIN_ROLE_KEY.equals(sysRole.getRoleKey())) {
+        //    return Result.error("管理员角色不允许修改");
+        //}
         //先删除角色菜单关联
         sysRoleMenuService.remove(new LambdaQueryWrapper<SysRoleMenu>().eq(SysRoleMenu::getRoleId, dto.getRoleId()));
         //再新增角色菜单关联

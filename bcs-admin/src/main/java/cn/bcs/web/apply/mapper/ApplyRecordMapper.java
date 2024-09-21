@@ -17,4 +17,6 @@ import java.util.List;
 public interface ApplyRecordMapper extends BaseMapper<ApplyRecord> {
 
     List<MonthCallFeeVO> selectCallFee();
+
+    List<ApplyRecord> selectMaxApplyRecord();
 }

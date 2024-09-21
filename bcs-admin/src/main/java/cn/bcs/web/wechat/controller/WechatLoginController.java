@@ -9,6 +9,8 @@ import cn.bcs.web.third.domain.vo.WechatJsSdkSignVO;
 import cn.bcs.web.third.support.WechatSupport;
 import cn.bcs.web.wechat.domain.vo.WechatUserInfo;
 import cn.bcs.web.wechat.service.WechatLoginService;
+import cn.bcs.web.withdrawRecord.constants.WithdrawStatusEnum;
+import cn.bcs.web.withdrawRecord.constants.WithdrawTypeEnum;
 import cn.bcs.web.withdrawRecord.domain.dto.TixianDTO;
 import cn.bcs.web.withdrawRecord.service.WithdrawRecordService;
 import cn.hutool.core.bean.BeanUtil;
@@ -40,7 +42,7 @@ public class WechatLoginController {
     @Log(title = "微信登陆")
     @ApiOperation(value = "微信授权登录")
     @PostMapping("/h5/wechatLogin")
-    public Result<LoginVO> wechatLogin(@RequestParam String code) {
+    public Result<LoginVO> wechatLogin(@RequestParam String code, @RequestParam String tenantId) {
         WechatAccessTokenBO accessToken = wechatSupport.getAccessToken(code);
         if (BeanUtil.isEmpty(accessToken)) {
             return Result.error("微信授权失败");
@@ -48,7 +50,7 @@ public class WechatLoginController {
         if (accessToken.getIs_snapshotuser() != null && 1 == accessToken.getIs_snapshotuser()) {
             return Result.error(HttpStatus.WECHAT_SNAPSHOTUSER, "请使用完整服务");
         }
-        return loginService.wechatLogin1(accessToken);
+        return loginService.wechatLogin1(accessToken, tenantId);
     }
 
     @ApiOperation(value = "获取公众号网页配置参数", notes = "用于页面调用微信扫一扫")
@@ -61,7 +63,11 @@ public class WechatLoginController {
     @ApiOperation(value = "提现", notes = "代理提现")
     @PostMapping("/tixian")
     public Result tixian(@RequestBody TixianDTO dto) {
-        return withdrawRecordService.tixian(dto.getType(), dto.getAmount());
+        WithdrawTypeEnum byCode = WithdrawTypeEnum.getByCode(dto.getType());
+        if (BeanUtil.isEmpty(byCode)) {
+            return Result.error("提现类型错误");
+        }
+        return withdrawRecordService.tixian(byCode, dto.getAmount());
     }
 
 

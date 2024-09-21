@@ -4,6 +4,7 @@ import cn.bcs.common.annotation.DictConvert;
 import cn.bcs.common.annotation.Excel;
 import cn.bcs.common.annotation.Excel.Type;
 import cn.bcs.common.core.domain.BaseDBEntity;
+import cn.bcs.common.enums.CommonEnum;
 import cn.bcs.common.enums.SysUserType;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -118,4 +119,10 @@ public class SysUser extends BaseDBEntity {
 
     @ApiModelProperty("收款码链接")
     private String shoukuanUrl;
+
+    @ApiModelProperty("连续未开单月份")
+    private Long noApplyMonth;
+
+    @ApiModelProperty("是否欠费" + CommonEnum.INFO)
+    private Integer qianfei;
 }

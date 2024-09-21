@@ -14,9 +14,12 @@ import lombok.Getter;
 @DictConfig(dictType = "apply_status", dictName = "申请记录状态")
 public enum ApplyStatus {
     PENDING("0", "未办理"),
-    APPROVED("1", "办理通过"),
-    REJECTED("2", "办理拒绝");
+    APPROVED("1", "通过"),
+    REJECTED("2", "拒绝"),
+    ZUOFEI("3", "通过(无分成)")
+    ;
 
+    public static final String INFO = "0:未办理，1:通过，2:拒绝，3:通过(无分成)";
     private final String code;
     private final String desc;
 

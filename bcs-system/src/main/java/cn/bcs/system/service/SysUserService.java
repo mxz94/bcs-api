@@ -257,9 +257,10 @@ public class SysUserService extends ServiceImpl<SysUserMapper, SysUser> {
         Long currentUserId = SecurityUtils.getUserId();
 
         // 如果是管理员，查找所有下级用户的树状结构
-        if (SecurityUtils.isAdmin()) {
+        if (SysUserType.ADMIN.getCode().equals(SecurityUtils.getLoginUser().getUser().getUserType())) {
             List<SysUser> topLevelUsers = this.lambdaQuery()
                     .eq(SysUser::getDelFlag, "0")
+                    .eq(SysUser::getTenantId, SecurityUtils.getTenantId())
                     .ne(SysUser::getUserType, SysUserType.ADMIN.getCode())
                     .isNull(SysUser::getFromUserId)
                     .list();

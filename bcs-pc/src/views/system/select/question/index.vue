@@ -31,7 +31,7 @@
           type="primary"
           icon="el-icon-plus"
           @click="handleAdd"
-          v-hasPermi="['system:area:edit']"
+          v-hasPermi="['system:selectData:list']"
         >添加</el-button>
       </el-col>
     </el-row>
@@ -58,24 +58,24 @@
           <el-button
             type="text"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:area:edit']"
+            v-hasPermi="['system:selectData:list']"
           >编辑</el-button>
           <el-button
             v-if="scope.row.status === '0'"
             type="text"
             @click="setStatus(scope.row, 1)"
-            v-hasPermi="['system:area:status']"
+            v-hasPermi="['system:selectData:list']"
           >禁用</el-button>
           <el-button
             v-else
             type="text"
             @click="setStatus(scope.row, 0)"
-            v-hasPermi="['system:area:status']"
+            v-hasPermi="['system:selectData:list']"
           >启用</el-button>
           <el-button
             type="text"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:area:remove']"
+            v-hasPermi="['system:selectData:list']"
           >删除</el-button>
         </template>
       </el-table-column>
