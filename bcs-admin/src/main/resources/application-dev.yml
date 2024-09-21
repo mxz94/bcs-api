@@ -19,15 +19,15 @@ spring:
         username:
         password:
   # redis 配置
-#  redis:
-#    # 地址
-#    host: 192.168.0.27
-#    # 端口，默认为6379
-#    port: 6379
-#    # 数据库索引
-#    database: 6
-#    # 密码
-#    password:
+  redis:
+    # 地址
+    host: 47.108.215.11
+    # 端口，默认为6379
+    port: 6379
+    # 数据库索引
+    database: 6
+    # 密码
+    password: qq67607301
 
 # Swagger配置
 swagger:

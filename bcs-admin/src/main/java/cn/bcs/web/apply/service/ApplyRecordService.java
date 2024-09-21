@@ -110,7 +110,7 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
         if (!SysUserType.DAILI.getCode().equals(fromUser.getUserType()) && !SysUserType.HEHUO.getCode().equals(fromUser.getUserType())) {
             return Result.error("邀请人未审核通过，无法邀请人，请联系管理员");
         }
-        if (fromUser.getTenantId().equals(SecurityUtils.getTenantId())) {
+        if (!fromUser.getTenantId().equals(SecurityUtils.getTenantId())) {
             return Result.error("邀请人和申请人租户不一致");
         }
         Integer count = this.lambdaQuery().eq(ApplyRecord::getUserId, SecurityUtils.getUserId()).in(ApplyRecord::getStatus, Arrays.asList(ApplyStatus.PENDING.getCode(), ApplyStatus.APPROVED.getCode())).count();

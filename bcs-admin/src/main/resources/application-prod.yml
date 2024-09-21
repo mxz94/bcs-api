@@ -1,7 +1,7 @@
 # 开发环境配置
 server:
   # 服务器的HTTP端口
-  port: 9006
+  port: 8006
 # 数据源配置
 spring:
   datasource:
@@ -19,17 +19,17 @@ spring:
         username:
         password:
   # redis 配置
-#  redis:
-#    # 地址
-#    host: localhost
-#    # 端口，默认为6379
-#    port: 6379
-#    # 数据库索引
-#    database: 6
-#    # 密码
-#    password:
+  redis:
+    # 地址
+    host: 127.0.0.1
+    # 端口，默认为6379
+    port: 6379
+    # 数据库索引
+    database: 6
+    # 密码
+    password: qq67607301
 
 # Swagger配置
 swagger:
   # 是否开启swagger
-  enabled: false
+  enabled: true
