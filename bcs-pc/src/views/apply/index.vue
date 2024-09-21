@@ -67,7 +67,8 @@
       <el-table-column label="身份证号" align="center" prop="idCard" />
       <el-table-column label="手机号" align="center" prop="phone" />
       <el-table-column label="套餐名称" align="center" prop="taocanName" />
-      <el-table-column label="套餐价格" align="center" prop="taocanValue" />
+      <el-table-column label="套餐价格(元)" align="center" prop="taocanValue" />
+      <el-table-column label="到期时间" align="center" prop="endTime" />
       <el-table-column label="状态" align="center" prop="status" >
         <template slot-scope="scope">
           <dict-tag :options="dict.type.apply_status" :value="scope.row.status"  :style="getTagStyle(scope.row.status)"/>
@@ -85,20 +86,22 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['apply:apply:edit']"
+            v-hasPermi="['apply:edit']"
+            v-if="scope.row.status === '0'"
           >编辑</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-edit"
             @click="handleStatus(scope.row)"
+            v-hasPermi="['apply:edit']"
           >审核</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['apply:apply:remove']"
+            v-hasPermi="['apply:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -124,7 +127,7 @@
         <el-form-item label="手机号" prop="phone">
           <el-input v-model="form.phone" placeholder="请输入手机号" />
         </el-form-item>
-        <el-form-item label="套餐价格" prop="taocanValue">
+        <el-form-item label="套餐价格(元)" prop="taocanValue">
           <el-input v-model="form.taocanValue" placeholder="请输入套餐价格" />
         </el-form-item>
         <el-form-item label="备注" prop="remark">

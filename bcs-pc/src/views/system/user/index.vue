@@ -1,3 +1,7 @@
+
+++
+
+
 <template>
   <div class="app-container">
     <el-row :gutter="20">
@@ -69,6 +73,7 @@
         <el-table v-loading="loading" :data="userList" border style="width: 100%"
           @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="50" align="center" fixed />
+          <el-table-column label="id" align="center" key="userId" prop="userId" />
           <el-table-column label="头像" align="center" key="avatar" prop="avatar">
             <template slot-scope="scope">
               <image-preview :url="scope.row.avatar" :width="40" :height="40" />

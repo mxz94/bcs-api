@@ -6,14 +6,14 @@
     <select id="selectRecordListByType" resultType="cn.bcs.web.callFeeRecord.domain.vo.CallFeeRecordVO">
         select
             bf.*,
-        <if test="query.type == '1'">
+            <if test="query.type == 1">
                  ar.name as recordNickName,
              </if>
-            su.nick_name as nick_name
+            su.nick_name as nickName
         from
             b_call_fee_record bf
         left join sys_user su on bf.user_id = su.user_id
-        <if test="query.type == '1'">
+        <if test="query.type == 1">
             left join b_apply_record ar on bf.record_ids = ar.id
         </if>
         where
@@ -27,6 +27,6 @@
         <if test="query.tenantId != null">
             and bf.tenant_id = #{query.tenantId}
         </if>
-
+        order by bf.id desc
     </select>
 </mapper>

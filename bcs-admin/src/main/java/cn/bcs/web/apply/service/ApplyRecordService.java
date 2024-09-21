@@ -1,5 +1,6 @@
 package cn.bcs.web.apply.service;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -8,7 +9,9 @@ import cn.bcs.common.constant.BalanceConstants;
 import cn.bcs.common.core.domain.Result;
 import cn.bcs.common.core.domain.entity.SysUser;
 import cn.bcs.common.enums.SysUserType;
+import cn.bcs.common.utils.BigDecimalUtils;
 import cn.bcs.common.utils.SecurityUtils;
+import cn.bcs.common.utils.StringUtils;
 import cn.bcs.system.service.SysUserService;
 import cn.bcs.web.apply.constants.ApplyStatus;
 import cn.bcs.web.apply.domain.ApplyRecord;
@@ -23,6 +26,7 @@ import cn.bcs.web.withdrawRecord.constants.WithdrawTypeEnum;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,7 +65,7 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
                 SysUser parentUser = userService.getById(fromUser.getFromUserId());
                 if (parentUser != null && parentUser.getNoApplyMonth() < BalanceConstants.noApplyMonth) {
                     userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, BalanceConstants.HEHUO_35,  parentUser.getUserId());
-                    callFeeRecordService.saveCallFeeRecord(parentUser, WithdrawTypeEnum.YONGJIN, BalanceConstants.HEHUO_35, null, old.getId());
+                    callFeeRecordService.saveCallFeeRecord(parentUser, WithdrawTypeEnum.YONGJIN, BalanceConstants.HEHUO_35, StringUtils.format("来自下级：{}的业务佣金", fromUser.getNickName()), old.getId());
                 }
             }
         } else if (SysUserType.DAILI.getCode().equals(fromUser.getUserType())) {
@@ -77,11 +81,13 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
             SysUser parentUser = userService.getById(fromUser.getFromUserId());
             if (parentUser.getNoApplyMonth() < BalanceConstants.noApplyMonth) {
                 userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, BalanceConstants.DAILI_150,  parentUser.getUserId());
-                callFeeRecordService.saveCallFeeRecord(parentUser, WithdrawTypeEnum.YONGJIN, BalanceConstants.DAILI_150, null, old.getId());
+                callFeeRecordService.saveCallFeeRecord(parentUser, WithdrawTypeEnum.YONGJIN, BalanceConstants.DAILI_150, StringUtils.format("来自下级：{}的业务佣金", fromUser.getNickName()), old.getId());
             }
         }
         //    修改办理人类型为代理人
-        userService.lambdaUpdate().eq(SysUser::getUserId, old.getUserId()).set(SysUser::getUserType, SysUserType.DAILI.getCode()).update();
+        userService.lambdaUpdate().eq(SysUser::getUserId, old.getUserId())
+                .set(SysUser::getFromUserId, old.getFromUserId())
+                .set(SysUser::getUserType, SysUserType.DAILI.getCode()).update();
     }
     @Transactional(rollbackFor = Exception.class)
     public Result handleStatus(ApplyRecordHandleStatus dto) {
@@ -122,7 +128,9 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
         ApplyRecord applyRecord = BeanUtil.copyProperties(dto, ApplyRecord.class);
         applyRecord.setUserId(SecurityUtils.getUserId());
         applyRecord.setStatus(ApplyStatus.PENDING.getCode());
-        BeanUtil.copyProperties(taocan, applyRecord);
+        applyRecord.setTaocanId(taocan.getId());
+        applyRecord.setTaocanName(taocan.getName());
+        applyRecord.setTaocanValue(BigDecimal.valueOf(Long.valueOf(taocan.getValue())));
         // 套餐结束时间
         DateTime endTime = DateUtil.offsetMonth(DateUtil.endOfMonth(new Date()), Integer.valueOf(taocan.getRemark()));
         applyRecord.setEndTime(endTime);

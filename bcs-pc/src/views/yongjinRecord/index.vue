@@ -18,7 +18,7 @@
     </el-form>
 
     <el-table v-loading="loading" :data="yongjinRecordList" @selection-change="handleSelectionChange">
-      <el-table-column label="办理id" align="center" prop="recordId" />
+      <el-table-column label="办理id" align="center" prop="recordIds" />
       <el-table-column label="办理用户" align="center" prop="recordNickName" />
       <el-table-column label="代理用户" align="center" prop="nickName" />
       <el-table-column label="佣金" align="center" prop="fee" />

@@ -105,7 +105,14 @@ public class  CallFeeRecordService extends ServiceImpl<CallFeeRecordMapper, Call
     }
 
     public void saveCallFeeRecord(SysUser user, WithdrawTypeEnum type, BigDecimal balance, String remark, Long recordId) {
-        BigDecimal oldBalance = type.equals("每月分成") ? user.getCallBalance() : user.getTeamBuildBalance();
+        BigDecimal oldBalance = BigDecimal.ZERO;
+        if (WithdrawTypeEnum.YONGJIN.equals(type)) {
+            oldBalance = BigDecimalUtils.add(user.getBalance(), user.getWaitInBalance());
+        } else if (WithdrawTypeEnum.HUAFEIFENCHENG.equals(type)) {
+            oldBalance = user.getCallBalance();
+        } else if (WithdrawTypeEnum.TEAMBUILD.equals(type)) {
+            oldBalance = user.getTeamBuildBalance();
+        }
         CallFeeRecord record = new CallFeeRecord();
         record.setRecordIds(recordId != null ? String.valueOf(recordId) : null);
         record.setSumCallFee(BigDecimal.ZERO);

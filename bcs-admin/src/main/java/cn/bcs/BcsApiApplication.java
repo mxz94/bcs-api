@@ -22,13 +22,12 @@ import java.net.UnknownHostException;
 public class BcsApiApplication {
     public static void main(String[] args) throws UnknownHostException {
 
-
         ConfigurableApplicationContext application = SpringApplication.run(BcsApiApplication.class, args);
         Environment env = application.getEnvironment();
         String ip = InetAddress.getLocalHost().getHostAddress();
         String port = env.getProperty("server.port");
         //String path = env.getProperty("server.servlet.context-path");
-        String swaggerEnable = env.getProperty("swagger.enable");
+        String swaggerEnable = env.getProperty("swagger.enabled");
         if ("true".equals(swaggerEnable)) {
             MyBatisPlusSqlLogInterceptor.startPrintSQL();
         }

@@ -51,7 +51,7 @@ public class ApplyRecordController extends BaseController {
         if (!SecurityUtils.isAdmin()) {
             applyRecord.setTenantId(getTenantId());
         }
-        List<ApplyRecord> list = applyRecordService.list(new LambdaQueryWrapper<ApplyRecord>(applyRecord));
+        List<ApplyRecord> list = applyRecordService.list(new LambdaQueryWrapper<ApplyRecord>(applyRecord).orderByDesc(ApplyRecord::getId));
         return getDataTable(list);
     }
 
@@ -92,7 +92,7 @@ public class ApplyRecordController extends BaseController {
     @ApiOperation(value = "删除套餐申请记录")
     @Log(title = "套餐申请记录", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    @PreAuthorize("@ss.hasPermi('system:apply:delete')")
+    @PreAuthorize("@ss.hasPermi('apply:edit')")
     public Result remove(@PathVariable Long[] ids) {
         return toAjax(applyRecordService.removeByIds(Arrays.asList(ids)));
     }
@@ -100,7 +100,7 @@ public class ApplyRecordController extends BaseController {
     @ApiOperation(value = "修改审核状态")
     @Log(title = "修改审核状态")
     @PostMapping("/handleStatus")
-    @PreAuthorize("@ss.hasPermi('system:apply:edit')")
+    @PreAuthorize("@ss.hasPermi('apply:edit')")
     public Result handleStatus(@RequestBody ApplyRecordHandleStatus applyRecordHandleStatus) {
         return applyRecordService.handleStatus(applyRecordHandleStatus);
     }

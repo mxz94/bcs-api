@@ -38,17 +38,17 @@
 
     <el-table v-loading="loading" :data="selectDataList" @selection-change="handleSelectionChange">
 <!--      <el-table-column type="selection" width="55" align="center" />-->
-<!--      <el-table-column-->
-<!--        label="id"-->
-<!--        align="center"-->
-<!--        prop="id"-->
-<!--        >-->
-<!--      </el-table-column>-->
+      <el-table-column
+        label="id"
+        align="center"
+        prop="id"
+        >
+      </el-table-column>
       <el-table-column label="套餐名称" align="center" prop="name" />
       <el-table-column label="套餐金额（元）" align="center" prop="value" />
       <el-table-column label="套餐期数" align="center" prop="remark" />
       <el-table-column label="状态" align="center" prop="status">
-        <template slot-scope="scope">
+        <template slot-scope="scope"><!---->
           <dict-tag :options="dict.type.sys_common_status" :value="scope.row.status"  :class="[scope.row.status == '1' ? 'disable-color' : 'enable-color']"
           />
         </template>
