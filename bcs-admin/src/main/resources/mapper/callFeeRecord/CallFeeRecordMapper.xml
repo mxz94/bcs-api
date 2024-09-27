@@ -8,13 +8,15 @@
             bf.*,
             <if test="query.type == 1">
                  ar.name as recordNickName,
+                su2.nick_name as tuijianName,
              </if>
             su.nick_name as nickName
         from
             b_call_fee_record bf
         left join sys_user su on bf.user_id = su.user_id
         <if test="query.type == 1">
-            left join b_apply_record ar on bf.record_ids = ar.id
+            left join b_apply_record ar on bf.record_id = ar.id
+            left join sys_user su2 on ar.from_user_id = su2.user_id
         </if>
         where
             bf.type = #{query.type}
@@ -26,6 +28,9 @@
         </if>
         <if test="query.tenantId != null">
             and bf.tenant_id = #{query.tenantId}
+        </if>
+        <if test="query.recordId != null">
+            and bf.record_id = #{query.recordId}
         </if>
         order by bf.id desc
     </select>

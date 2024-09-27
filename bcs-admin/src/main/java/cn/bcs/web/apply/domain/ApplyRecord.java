@@ -74,6 +74,10 @@ private static final long serialVersionUID=1L;
     @ApiModelProperty(value = "推荐人")
     private Long fromUserId;
 
+    /** 推荐人 */
+    @ApiModelProperty(value = "初始推荐人")
+    private Long oldFromUserId;
+
     /** 微信openId */
     @ApiModelProperty(value = "用户id")
     private Long userId;

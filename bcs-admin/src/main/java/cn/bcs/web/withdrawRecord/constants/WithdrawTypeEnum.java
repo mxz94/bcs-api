@@ -14,17 +14,13 @@ public enum WithdrawTypeEnum {
     /**
      * 是
      */
-    HUAFEIFENCHENG("2", "话费分成"),
-    /**
-     * 否
-     */
-    TEAMBUILD("3", "团队奖金"),
+    HUAFEIFENCHENG("2", "话费分成")
     ;
 
     private final String code;
     private final String desc;
 
-    public static final String INFO = "1 佣金 2 话费分成 3 团队奖金";
+    public static final String INFO = "1 佣金 2 话费分成";
 
     WithdrawTypeEnum(String code, String desc) {
         this.code = code;

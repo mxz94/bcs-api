@@ -95,11 +95,11 @@
         <el-form-item label="问题名称:" prop="name">
           <el-input v-model="form.name" placeholder="请输入问题名称" />
         </el-form-item>
-        <el-form-item label="值:" prop="value">
-          <el-input   type="number" :rows="2" v-model="form.value" placeholder="请输入值" />
+        <el-form-item label="默认展开" prop="value">
+          <el-input   type="number" :rows="2" v-model="form.value" placeholder="请输入值 0, 1" />
         </el-form-item>
-        <el-form-item label="备注:" prop="remark">
-          <el-input   type="textarea" :rows="2" v-model="form.remark" placeholder="请输入备注内容" />
+        <el-form-item label="问题答案:" prop="remark">
+          <el-input   type="textarea" :rows="2" v-model="form.remark" placeholder="问题答案" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">

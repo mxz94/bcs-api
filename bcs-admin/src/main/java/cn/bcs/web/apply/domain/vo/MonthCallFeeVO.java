@@ -11,5 +11,4 @@ public class MonthCallFeeVO {
 
     private BigDecimal amount;
 
-    private String recordIds;
 }

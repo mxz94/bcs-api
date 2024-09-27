@@ -60,15 +60,4 @@ public class WechatLoginController {
         return Result.success(wechatSupport.jsSdkSign(url));
     }
 
-    @ApiOperation(value = "提现", notes = "代理提现")
-    @PostMapping("/tixian")
-    public Result tixian(@RequestBody TixianDTO dto) {
-        WithdrawTypeEnum byCode = WithdrawTypeEnum.getByCode(dto.getType());
-        if (BeanUtil.isEmpty(byCode)) {
-            return Result.error("提现类型错误");
-        }
-        return withdrawRecordService.tixian(byCode, dto.getAmount());
-    }
-
-
 }

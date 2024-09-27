@@ -8,6 +8,7 @@ import java.util.List;
 import cn.bcs.common.constant.BalanceConstants;
 import cn.bcs.common.core.domain.Result;
 import cn.bcs.common.core.domain.entity.SysUser;
+import cn.bcs.common.core.domain.model.LoginUser;
 import cn.bcs.common.enums.SysUserType;
 import cn.bcs.common.utils.BigDecimalUtils;
 import cn.bcs.common.utils.SecurityUtils;
@@ -17,14 +18,19 @@ import cn.bcs.web.apply.constants.ApplyStatus;
 import cn.bcs.web.apply.domain.ApplyRecord;
 import cn.bcs.web.apply.domain.dto.ApplyRecordDTO;
 import cn.bcs.web.apply.domain.dto.ApplyRecordHandleStatus;
+import cn.bcs.web.apply.domain.query.ApplyRecordQuery;
+import cn.bcs.web.apply.domain.vo.ApplyRecordVO;
 import cn.bcs.web.apply.domain.vo.MonthCallFeeVO;
 import cn.bcs.web.apply.mapper.ApplyRecordMapper;
+import cn.bcs.web.callFeeRecord.domain.CallFeeRecord;
 import cn.bcs.web.callFeeRecord.service.CallFeeRecordService;
 import cn.bcs.web.selectData.domain.SelectData;
 import cn.bcs.web.selectData.service.SelectDataService;
 import cn.bcs.web.withdrawRecord.constants.WithdrawTypeEnum;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -95,7 +101,13 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
         if (! old.getTenantId().equals(SecurityUtils.getTenantId())) {
             return Result.error("非自己账号的数据");
         }
-        if (ApplyStatus.PENDING.getCode().equals(old.getStatus()) && ApplyStatus.APPROVED.getCode().equals(dto.getStatus())) {
+        if (ApplyStatus.getByCode(dto.getStatus()) == null) {
+            return Result.error("状态不正确");
+        }
+        if (ApplyStatus.PENDING.getCode().equals(old.getStatus()) || ApplyStatus.REJECTED.getCode().equals(old.getStatus())) {
+            return Result.error("已处理过了");
+        }
+        if (ApplyStatus.APPROVED.getCode().equals(dto.getStatus())) {
             SysUser user = userService.getById(old.getFromUserId());
             if (user == null) {
                 return Result.error("推荐人不存在");
@@ -113,6 +125,9 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
 
     public Result apply(ApplyRecordDTO dto) /**/{
         SysUser fromUser = userService.getById(dto.getFromUserId());
+        if (fromUser == null) {
+            return Result.error("邀请人不存在");
+        }
         if (!SysUserType.DAILI.getCode().equals(fromUser.getUserType()) && !SysUserType.HEHUO.getCode().equals(fromUser.getUserType())) {
             return Result.error("邀请人未审核通过，无法邀请人，请联系管理员");
         }
@@ -165,5 +180,51 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
 
     public List<ApplyRecord> selectMaxApplyRecord() {
         return this.baseMapper.selectMaxApplyRecord();
+    }
+
+    public Result rollback(Long id) {
+        ApplyRecord record = this.getById(id);
+        long between = DateUtil.between(record.getCreateTime(), new Date(), DateUnit.DAY);
+        if (between > 3) {
+            return Result.error("撤回失败，已超过3天");
+        }
+        List<CallFeeRecord> list = callFeeRecordService.lambdaQuery().eq(CallFeeRecord::getRecordId, record.getId()).list();
+        if (CollUtil.isNotEmpty(list)) {
+            for (CallFeeRecord item : list) {
+                userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, item.getFee().negate(),  item.getUserId());
+                SysUser parentUser = userService.getById(item.getUserId());
+                callFeeRecordService.saveCallFeeRecord(parentUser, WithdrawTypeEnum.YONGJIN, item.getFee(), "佣金撤回", item.getRecordId());
+            }
+        }
+        this.lambdaUpdate().eq(ApplyRecord::getId, id).set(ApplyRecord::getStatus, ApplyStatus.PENDING.getCode());
+        return Result.success();
+    }
+
+    public List<ApplyRecordVO> listNew(ApplyRecordQuery query) {
+        return this.baseMapper.listNew(query);
+    }
+
+    public Result<Object> deleteUserById(Long userId, LoginUser loginUser) {
+        if (userId.equals(loginUser.getUserId())) {
+            return Result.error("当前用户不能删除");
+        }
+        if (!SecurityUtils.isAdmin()) {
+            return Result.error("不是管理员");
+        }
+        changeFromUserAndDel(userId);
+        return Result.success();
+    }
+    @Transactional(rollbackFor = Exception.class)
+    public void changeFromUserAndDel(Long userId) {
+        SysUser byId = userService.getById(userId);
+        // 推荐人更新
+        userService.lambdaUpdate().eq(SysUser::getFromUserId, userId).set(SysUser::getFromUserId, byId.getFromUserId()).update();
+        // 单子更新
+        for (ApplyRecord applyRecord : this.lambdaQuery().eq(ApplyRecord::getFromUserId, userId).list()) {
+            this.lambdaUpdate().eq(ApplyRecord::getId, applyRecord.getId())
+                    .set(applyRecord.getOldFromUserId() == null, ApplyRecord::getOldFromUserId, applyRecord.getFromUserId())
+                    .set(ApplyRecord::getFromUserId, byId.getFromUserId()).update();
+        }
+        userService.removeById(userId);
     }
 }

@@ -118,7 +118,7 @@ export default {
     reset() {
       this.form = {
         id: null,
-        recordIds: null,
+        recordId: null,
         sumCallFee: null,
         rate: null,
         fee: null,

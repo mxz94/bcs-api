@@ -2,13 +2,17 @@ package cn.bcs.web.withdrawRecord.controller;
 
 import java.util.List;
 
+import cn.bcs.common.annotation.RepeatSubmit;
 import cn.bcs.common.core.domain.entity.SysUser;
 import cn.bcs.common.enums.SysUserType;
 import cn.bcs.common.utils.SecurityUtils;
 import cn.bcs.web.withdrawRecord.constants.WithdrawStatusEnum;
+import cn.bcs.web.withdrawRecord.constants.WithdrawTypeEnum;
+import cn.bcs.web.withdrawRecord.domain.dto.TixianDTO;
 import cn.bcs.web.withdrawRecord.domain.dto.TixianStatusDTO;
 import cn.bcs.web.withdrawRecord.domain.query.WithDrawRecordQuery;
 import cn.bcs.web.withdrawRecord.domain.vo.WithdrawRecordVO;
+import cn.hutool.core.bean.BeanUtil;
 import io.swagger.annotations.Api;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,5 +113,16 @@ public class WithdrawRecordController extends BaseController {
             return Result.error("状态不正确");
         }
         return withdrawRecordService.handleStatus(dto);
+    }
+
+    @ApiOperation(value = "提现", notes = "代理提现")
+    @PostMapping("/tixian")
+    @RepeatSubmit
+    public Result tixian(@RequestBody TixianDTO dto) {
+        WithdrawTypeEnum byCode = WithdrawTypeEnum.getByCode(dto.getType());
+        if (BeanUtil.isEmpty(byCode)) {
+            return Result.error("提现类型错误");
+        }
+        return withdrawRecordService.tixian(byCode, dto.getAmount());
     }
 }

@@ -20,6 +20,7 @@ import cn.bcs.system.domain.query.SysUserQuery;
 import cn.bcs.system.domain.vo.SysUserInfoVO;
 import cn.bcs.system.domain.vo.SysUserVO;
 import cn.bcs.system.service.SysUserService;
+import cn.bcs.web.apply.service.ApplyRecordService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -43,6 +44,8 @@ import java.util.List;
 public class SysUserController extends BaseController {
     @Resource
     private SysUserService userService;
+    @Resource
+    private ApplyRecordService applyRecordService;
 
     @ApiOperation("获取用户列表")
     @PreAuthorize("@ss.hasPermi('system:user:list')")
@@ -96,10 +99,10 @@ public class SysUserController extends BaseController {
     @ApiOperation("删除用户")
     @PreAuthorize("@ss.hasPermi('system:user:remove')")
     @Log(title = "用户管理", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{userIds}")
-    public Result<Object> remove(@PathVariable Long[] userIds) {
+    @DeleteMapping("/{userId}")
+    public Result<Object> remove(@PathVariable Long userId) {
         LoginUser loginUser = getLoginUser();
-        return userService.deleteUserByIds(userIds, loginUser);
+        return applyRecordService.deleteUserById(userId, loginUser);
     }
 
     @ApiOperation("重置密码")

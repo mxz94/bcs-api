@@ -3,9 +3,12 @@ package cn.bcs.web.apply.controller;
 import java.util.Arrays;
 import java.util.List;
 
+import cn.bcs.common.annotation.RepeatSubmit;
 import cn.bcs.common.utils.SecurityUtils;
 import cn.bcs.web.apply.domain.dto.ApplyRecordDTO;
 import cn.bcs.web.apply.domain.dto.ApplyRecordHandleStatus;
+import cn.bcs.web.apply.domain.query.ApplyRecordQuery;
+import cn.bcs.web.apply.domain.vo.ApplyRecordVO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.swagger.annotations.Api;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -46,12 +49,12 @@ public class ApplyRecordController extends BaseController {
  */
     @ApiOperation(value = "查询套餐办理记录列表")
     @GetMapping("/list")
-    public TableDataInfo list(ApplyRecord applyRecord) {
+    public TableDataInfo list(ApplyRecordQuery query) {
         startPage();
         if (!SecurityUtils.isAdmin()) {
-            applyRecord.setTenantId(getTenantId());
+            query.setTenantId(getTenantId());
         }
-        List<ApplyRecord> list = applyRecordService.list(new LambdaQueryWrapper<ApplyRecord>(applyRecord).orderByDesc(ApplyRecord::getId));
+        List<ApplyRecordVO> list = applyRecordService.listNew(query);
         return getDataTable(list);
     }
 
@@ -63,28 +66,6 @@ public class ApplyRecordController extends BaseController {
     public Result getInfo(@PathVariable("id") Long id) {
         return success(applyRecordService.getById(id));
     }
-
-    ///**
-    // * 新增套餐申请记录
-    // */
-    //@ApiOperation(value = "新增套餐申请记录")
-    //@Log(title = "套餐申请记录", businessType = BusinessType.INSERT)
-    //@PostMapping
-    //@PreAuthorize("@ss.hasPermi('system:apply:add')")
-    //public Result add(@RequestBody ApplyRecord applyRecord) {
-    //    return toAjax(applyRecordService.save(applyRecord));
-    //}
-    //
-    ///**
-    // * 修改套餐申请记录
-    // */
-    //@ApiOperation(value = "修改套餐申请记录")
-    //@Log(title = "套餐申请记录", businessType = BusinessType.UPDATE)
-    //@PutMapping
-    //@PreAuthorize("@ss.hasPermi('system:apply:add')")
-    //public Result edit(@RequestBody ApplyRecord applyRecord) {
-    //    return toAjax(applyRecordService.updateById(applyRecord));
-    //}
 
     /**
      * 删除套餐申请记录
@@ -101,8 +82,17 @@ public class ApplyRecordController extends BaseController {
     @Log(title = "修改审核状态")
     @PostMapping("/handleStatus")
     @PreAuthorize("@ss.hasPermi('apply:edit')")
+    @RepeatSubmit
     public Result handleStatus(@RequestBody ApplyRecordHandleStatus applyRecordHandleStatus) {
         return applyRecordService.handleStatus(applyRecordHandleStatus);
+    }
+
+    @ApiOperation(value = "审核撤回")
+    @Log(title = "审核撤回")
+    @PostMapping("/rollback/{id}")
+    @PreAuthorize("@ss.hasPermi('apply:edit')")
+    public Result rollback(@PathVariable("id") Long id) {
+        return applyRecordService.rollback(id);
     }
 
     /**

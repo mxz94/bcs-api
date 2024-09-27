@@ -15,11 +15,10 @@ import lombok.Getter;
 public enum ApplyStatus {
     PENDING("0", "未办理"),
     APPROVED("1", "通过"),
-    REJECTED("2", "拒绝"),
-    ZUOFEI("3", "通过(无分成)")
+    REJECTED("2", "拒绝")
     ;
 
-    public static final String INFO = "0:未办理，1:通过，2:拒绝，3:通过(无分成)";
+    public static final String INFO = "0:未办理，1:通过，2:拒绝";
     private final String code;
     private final String desc;
 

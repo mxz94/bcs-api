@@ -8,8 +8,6 @@ public interface BalanceConstants {
 
     public static final String CALL_BALANCE= "call_balance";
 
-    public static final String TEAM_BUILD_BALANCE= "team_build_balance";
-
     public static final String BALANCE = "balance";
 
     public static final BigDecimal HEHUO_350 = BigDecimal.valueOf(350);
@@ -30,8 +28,8 @@ public interface BalanceConstants {
 
     public static final BigDecimal MIN_HUAFEI = BigDecimal.valueOf(60);
 
-    public static final Long noApplyMonth = 3L;
+    public static final Long noApplyMonth = 2L;
 
-    public static final Integer TIXIAN_MONTH = 30;
+    public static final Integer TIXIAN_MONTH = 28;
 
 }

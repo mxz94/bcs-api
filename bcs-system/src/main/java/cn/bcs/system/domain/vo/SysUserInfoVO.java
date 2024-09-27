@@ -32,4 +32,7 @@ public class SysUserInfoVO {
 
     @ApiModelProperty(value = "角色列表")
     private List<SysRole> roles;
+
+    @ApiModelProperty(value = "是否欠费")
+    private Integer qianfei;
 }

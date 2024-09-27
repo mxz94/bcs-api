@@ -121,9 +121,9 @@ public class WechatLoginService {
             SysUser byId1 = userService.getById(byId.getFromUserId());
             if (byId1 != null) wechatUserInfo.setFromUserNickName(byId1.getNickName());
         }
-        wechatUserInfo.setShareUrl("http://www.baidu.com");
+        wechatUserInfo.setShareUrl("http://47.108.215.11:8082/#/apply?userId="+ byId.getUserId());
+        //wechatUserInfo.setShareUrl("http://localhost:8080/#/apply?userId="+ byId.getUserId());
         wechatUserInfo.setAllBalance(BigDecimalUtils.add(wechatUserInfo.getBalance(), wechatUserInfo.getWaitInBalance()));
-        wechatUserInfo.setAllCallBalance(BigDecimalUtils.add(wechatUserInfo.getCallBalance(), wechatUserInfo.getTeamBuildBalance()));
         wechatUserInfo.setPassword(null);
         return Result.success(wechatUserInfo);
     }

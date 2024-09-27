@@ -6,6 +6,7 @@ import java.util.List;
 import cn.bcs.common.enums.SysCommonStatus;
 import cn.bcs.web.selectData.constants.SelectDataType;
 import cn.bcs.web.selectData.domain.vo.SelectDataQuery;
+import cn.bcs.web.selectData.domain.vo.SelectDataVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -50,15 +51,24 @@ public class SelectDataController extends BaseController {
         return getDataTable(list);
     }
 
+    @ApiOperation(value = "常见问题，问题选择框查询", tags = {"公众号"})
+    @ApiImplicitParam(name = "type", value = SelectDataType.INFO, required = true)
+    @GetMapping("/listAll2")
+    public Result<List<SelectData>> listAll2(SelectDataQuery query) {
+        query.setStatus(SysCommonStatus.NORMAL.getCode());
+        List<SelectData> list = selectDataService.selectList(query);
+        return Result.success(list);
+    }
+
     /**
      * 查询选择内容列表
      */
     @ApiOperation(value = "常见问题， 套餐 选择框查询", tags = {"公众号"})
     @ApiImplicitParam(name = "type", value = SelectDataType.INFO, required = true)
-    @GetMapping("/selectList")
-    public Result<List<SelectData>> selectList(SelectDataQuery query) {
+    @GetMapping("/listAll")
+    public Result<List<SelectDataVO>> selectList(SelectDataQuery query) {
         query.setStatus(SysCommonStatus.NORMAL.getCode());
-        List<SelectData> list = selectDataService.selectList(query);
+        List<SelectDataVO> list = selectDataService.listAll(query);
         return Result.success(list);
     }
 

@@ -7,5 +7,7 @@ import lombok.Data;
 public class CallFeeRecordVO extends CallFeeRecord {
     private String recordNickName;
 
+    private String tuijianName;
+
     private String nickName;
 }

@@ -3,12 +3,16 @@ package cn.bcs.web.controller.common;
 import cn.bcs.common.config.RuoYiConfig;
 import cn.bcs.common.constant.Constants;
 import cn.bcs.common.core.domain.Result;
+import cn.bcs.common.core.domain.entity.SysUser;
 import cn.bcs.common.core.domain.model.FileVO;
 import cn.bcs.common.core.domain.model.FilesVO;
+import cn.bcs.common.utils.SecurityUtils;
 import cn.bcs.common.utils.StringUtils;
 import cn.bcs.common.utils.file.FileUploadUtils;
 import cn.bcs.common.utils.file.FileUtils;
+import cn.bcs.framework.config.SecurityConfig;
 import cn.bcs.framework.config.ServerConfig;
+import cn.bcs.system.service.SysUserService;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -36,6 +40,8 @@ public class CommonController {
     private static final String FILE_DELIMETER = ",";
     @Resource
     private ServerConfig serverConfig;
+    @Resource
+    private SysUserService sysUserService;
 
     /**
      * 通用下载请求
@@ -78,6 +84,26 @@ public class CommonController {
                     .setFileName(fileName)
                     .setNewFileName(FileUtils.getName(fileName))
                     .setOriginalFilename(file.getOriginalFilename());
+            return Result.success(fileVO);
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/uploadshoukuan")
+    public Result<FileVO> uploadshoukuan(MultipartFile file) {
+        try {
+            // 上传文件路径
+            String filePath = RuoYiConfig.getUploadPath();
+            // 上传并返回新文件名称
+            String fileName = FileUploadUtils.upload(filePath, file);
+            String url = serverConfig.getUrl() + fileName;
+            FileVO fileVO = new FileVO().setUrl(url)
+                    .setFileName(fileName)
+                    .setNewFileName(FileUtils.getName(fileName))
+                    .setOriginalFilename(file.getOriginalFilename());
+            sysUserService.lambdaUpdate().eq(SysUser::getUserId, SecurityUtils.getUserId())
+                    .set(SysUser::getShoukuanUrl, url).update();
             return Result.success(fileVO);
         } catch (Exception e) {
             return Result.error(e.getMessage());

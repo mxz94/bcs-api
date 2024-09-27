@@ -30,4 +30,7 @@ public class RecordQuery extends PageDomain {
     @ApiModelProperty(value = "类型：" + WithdrawTypeEnum.INFO, required = true)
     private String type;
 
+    @ApiModelProperty(value = "记录id")
+    private Long recordId;
+
 }

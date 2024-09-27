@@ -15,7 +15,4 @@ public class WechatUserInfo extends SysUser {
 
     @ApiModelProperty(value = "总佣金")
     private BigDecimal allBalance;
-
-    @ApiModelProperty(value = "话费总提成")
-    private BigDecimal allCallBalance;
 }

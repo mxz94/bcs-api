@@ -72,12 +72,12 @@
 
         <el-table v-loading="loading" :data="userList" border style="width: 100%"
           @selection-change="handleSelectionChange">
-          <el-table-column type="selection" width="50" align="center" fixed />
           <el-table-column label="id" align="center" key="userId" prop="userId" />
           <el-table-column label="头像" align="center" key="avatar" prop="avatar">
             <template slot-scope="scope">
-              <image-preview :url="scope.row.avatar" :width="40" :height="40" />
+              <image-preview :src="scope.row.avatar" :width="40" :height="40" />
             </template>
+
           </el-table-column>
           <el-table-column label="昵称" align="center" key="nickName" prop="nickName" :show-overflow-tooltip="true" />
           <el-table-column label="用户名" align="center" key="userName" prop="userName" :show-overflow-tooltip="true" />
@@ -85,8 +85,7 @@
           <el-table-column label="手机号" align="center" key="phonenumber" prop="phonenumber" />
           <el-table-column label="佣金" align="center" key="balance" prop="balance" />
           <el-table-column label="上周待确认佣金" align="center" key="waitInBalance" prop="waitInBalance" />
-          <el-table-column label="话费抽成" align="center" key="callBalance" prop="callBalance" />
-          <el-table-column label="团队构建金" align="center" key="teamBuildBalance" prop="teamBuildBalance" />
+          <el-table-column label="话费分成" align="center" key="callBalance" prop="callBalance" />
           <el-table-column label="状态" align="center" key="status">
             <template slot-scope="scope">
               <dict-tag :options="dict.type.sys_common_status" :value="scope.row.status" />
@@ -94,8 +93,12 @@
           </el-table-column>
           <el-table-column label="创建时间" align="center" width="160" prop="createTime"></el-table-column>
           <el-table-column label="推荐人" align="center" key="fromNickName" prop="fromNickName" />
+          <el-table-column label="欠费" align="center" key="qianfei" prop="qianfei_dictText" />
           <el-table-column label="操作" align="center" width="100" class-name="small-padding fixed-width" fixed="right">
             <template slot-scope="scope" v-if="scope.row.userId !== 1">
+              <el-button type="text" @click="handleUpdate(scope.row)"
+                         v-hasPermi="['system:user:edit']">编辑
+              </el-button>
               <el-button v-if="scope.row.status === '1'" type="text" @click="handleStatusChange([scope.row.userId], '0')"
                 v-hasPermi="['system:user:edit']">启用
               </el-button>
@@ -119,7 +122,7 @@
         <el-form-item label="昵称">
           <el-input v-model="form.nickName" placeholder="请输入昵称" :maxlength="120" show-word-limit />
         </el-form-item>
-        <el-form-item label="用户名" prop="userName">
+        <el-form-item  v-if="form.userId == undefined " label="用户名" prop="userName">
           <el-input v-model="form.userName" placeholder="请输入用户名" :maxlength="120" show-word-limit />
         </el-form-item>
         <el-form-item v-if="form.userId == undefined" label="密码" prop="password">
@@ -133,6 +136,16 @@
         </el-form-item>
         <el-form-item label="手机号" prop="phonenumber">
           <el-input v-model="form.phonenumber" placeholder="请输入手机号" :maxlength="11" show-word-limit />
+        </el-form-item>
+        <el-form-item   label="欠费" prop="qianfei">
+          <el-select v-model="form.qianfei" placeholder="请选择欠费状态">
+            <el-option
+              v-for="dict in dict.type.common"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            />
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -174,7 +187,7 @@ import { getToken } from "@/utils/auth";
 
 export default {
   name: "User",
-  dicts: ['sys_common_status'],
+  dicts: ['sys_common_status', 'common'],
   data() {
     return {
       // 遮罩层
@@ -249,11 +262,6 @@ export default {
         // nickName: [
         //   { required: true, message: "用户昵称不能为空", trigger: "blur" }
         // ],
-        password: [
-          { required: true, message: "密码不能为空", trigger: "blur" },
-          { min: 5, max: 20, message: '密码长度必须介于 5 和 20 之间', trigger: 'blur' }
-        ],
-        roleId: [{ required: true, message: "请选择角色", trigger: "change" }],
         email: [
           {
             type: "email",

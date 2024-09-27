@@ -1,7 +1,6 @@
 package cn.bcs.web.callFeeRecord.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import cn.bcs.common.constant.BalanceConstants;
@@ -9,12 +8,12 @@ import cn.bcs.common.core.domain.entity.SysUser;
 import cn.bcs.common.utils.BigDecimalUtils;
 import cn.bcs.common.utils.StringUtils;
 import cn.bcs.system.service.SysUserService;
-import cn.bcs.web.apply.domain.vo.MonthCallFeeVO;
 import cn.bcs.web.apply.service.ApplyRecordService;
 import cn.bcs.web.callFeeRecord.constants.HuafeiRateUtils;
 import cn.bcs.web.callFeeRecord.domain.vo.CallFeeRecordVO;
 import cn.bcs.web.withdrawRecord.constants.WithdrawTypeEnum;
 import cn.bcs.web.callFeeRecord.domain.query.RecordQuery;
+import cn.hutool.core.date.DateUtil;
 import org.springframework.stereotype.Service;
 import cn.bcs.web.callFeeRecord.domain.CallFeeRecord;
 import cn.bcs.web.callFeeRecord.mapper.CallFeeRecordMapper;
@@ -37,70 +36,30 @@ public class  CallFeeRecordService extends ServiceImpl<CallFeeRecordMapper, Call
     @Resource
     ApplyRecordService applyRecordService;
     @Transactional(rollbackFor = Exception.class)
-    public void addRecordAndCallFee(MonthCallFeeVO item, String month, HashMap<Long, List<CallFeeRecord>> map) {
-        SysUser user = userService.getById(item.getUserId());
-        if (user == null && user.getNoApplyMonth() != null && user.getNoApplyMonth() >= BalanceConstants.noApplyMonth) {
-            return;
-        }
+    public void addRecordAndCallFee(SysUser user) {
+        String month = DateUtil.format(DateUtil.offsetMonth(DateUtil.date(), -1), "yyyy-MM");
         BigDecimal callBalance = user.getCallBalance();
-        BigDecimal fee = HuafeiRateUtils.calculateTaxAmount(item.getAmount());
+        BigDecimal newCallBalance = BigDecimalUtils.subtract(callBalance, user.getHuafeiTeamFen());
 
-        userService.addBalance(BalanceConstants.CALL_BALANCE, fee, item.getUserId());
+        userService.lambdaUpdate().eq(SysUser::getUserId, user.getUserId())
+                .set(SysUser::getCallBalance, newCallBalance)
+                .set(SysUser::getHuafeiTeamTotal, user.getHuafeiTeamTotal())
+                .set(SysUser::getHuafeiTeamTotalRate, user.getHuafeiTeamTotalRate())
+                .set(SysUser::getHuafeiSubFenTotal, user.getHuafeiSubFenTotal())
+                .set(SysUser::getHuafeiTeamFen, user.getHuafeiTeamFen())
+                .update();
 
         CallFeeRecord record = new CallFeeRecord();
-        record.setRecordIds(item.getRecordIds());
-        record.setSumCallFee(item.getAmount());
-        record.setRate(HuafeiRateUtils.calculateTaxRate(callBalance));
-        record.setFee(fee);
-        record.setUserId(item.getUserId());
+        record.setHuafeiTeamTotal(user.getHuafeiTeamTotal());
+        record.setHuafeiTeamTotalRate(user.getHuafeiTeamTotalRate());
+        record.setHuafeiSubFenTotal(user.getHuafeiSubFenTotal());
+        record.setFee(user.getHuafeiTeamFen());
+        record.setUserId(user.getUserId());
         record.setOldBalance(callBalance);
-        record.setNewBalance(BigDecimalUtils.add(callBalance, fee));
+        record.setNewBalance(newCallBalance);
         record.setMonth(month);
         record.setType(WithdrawTypeEnum.HUAFEIFENCHENG.getCode());
         record.setTenantId(user.getTenantId());
-        this.save(record);
-        if (user.getFromUserId() != null) {
-            List<CallFeeRecord> records = map.computeIfAbsent(user.getFromUserId(), k -> new ArrayList<>());
-            records.add(record);
-        }
-    }
-
-    public void buildTeamFee(Long teamUserId, List<CallFeeRecord> callFeeRecords, String month) {
-        SysUser teamUser = userService.getById(teamUserId);
-        if (teamUser == null && teamUser.getNoApplyMonth() != null && teamUser.getNoApplyMonth() >= BalanceConstants.noApplyMonth) {
-            return;
-        }
-
-        BigDecimal sumFee = BigDecimal.ZERO;
-        BigDecimal fenFee = BigDecimal.ZERO;
-        List<Long> rs = new ArrayList<>();
-        for (CallFeeRecord callFeeRecord : callFeeRecords) {
-            sumFee = BigDecimalUtils.add(sumFee, callFeeRecord.getSumCallFee());
-            fenFee = BigDecimalUtils.add(fenFee, callFeeRecord.getFee());
-            rs.add(callFeeRecord.getId());
-        }
-        BigDecimal rate = HuafeiRateUtils.calculateTaxRate(sumFee);
-        BigDecimal fee = BigDecimalUtils.subtract(HuafeiRateUtils.calculateTaxAmount(sumFee), fenFee);
-        if (BigDecimalUtils.isNullOrLessOrEqZero(fee)) {
-            return;
-        }
-
-        BigDecimal callBalance = teamUser.getCallBalance();
-
-        userService.addBalance(BalanceConstants.TEAM_BUILD_BALANCE, fee, teamUser.getUserId());
-
-        CallFeeRecord record = new CallFeeRecord();
-        record.setRecordIds(StringUtils.join( rs,","));
-        record.setSumCallFee(sumFee);
-        record.setRate(rate);
-        record.setFee(fee);
-        record.setUserId(teamUser.getUserId());
-        record.setOldBalance(callBalance);
-        record.setNewBalance(BigDecimalUtils.add(callBalance, fee));
-        record.setMonth(month);
-        record.setTenantId(teamUser.getTenantId());
-        record.setType(WithdrawTypeEnum.TEAMBUILD.getCode());
-        record.setRemark(StringUtils.format(WithdrawTypeEnum.TEAMBUILD.getDesc() + ":【{}(团队总话费)*{}%-{}(团队个人分成总和)】", sumFee, rate, fenFee ));
         this.save(record);
     }
 
@@ -110,13 +69,9 @@ public class  CallFeeRecordService extends ServiceImpl<CallFeeRecordMapper, Call
             oldBalance = BigDecimalUtils.add(user.getBalance(), user.getWaitInBalance());
         } else if (WithdrawTypeEnum.HUAFEIFENCHENG.equals(type)) {
             oldBalance = user.getCallBalance();
-        } else if (WithdrawTypeEnum.TEAMBUILD.equals(type)) {
-            oldBalance = user.getTeamBuildBalance();
         }
         CallFeeRecord record = new CallFeeRecord();
-        record.setRecordIds(recordId != null ? String.valueOf(recordId) : null);
-        record.setSumCallFee(BigDecimal.ZERO);
-        record.setRate(BigDecimal.ZERO);
+        record.setRecordId(recordId);
         record.setFee(balance);
         record.setUserId(user.getUserId());
         record.setOldBalance(oldBalance);

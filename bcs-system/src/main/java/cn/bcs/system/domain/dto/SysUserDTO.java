@@ -40,4 +40,8 @@ public class SysUserDTO {
     @ApiModelProperty(value = "手机号码")
     private String phonenumber;
 
+
+    @ApiModelProperty(value = "是否欠费")
+    private Integer qianfei;
+
 }

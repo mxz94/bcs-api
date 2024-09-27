@@ -114,9 +114,6 @@ public class SysUser extends BaseDBEntity {
     @ApiModelProperty("话费抽成金额")
     private BigDecimal callBalance;
 
-    @ApiModelProperty("团队构建金额")
-    private BigDecimal teamBuildBalance;
-
     @ApiModelProperty("收款码链接")
     private String shoukuanUrl;
 
@@ -124,5 +121,19 @@ public class SysUser extends BaseDBEntity {
     private Long noApplyMonth;
 
     @ApiModelProperty("是否欠费" + CommonEnum.INFO)
+    @DictConvert(dictType = "common")
     private Integer qianfei;
+
+    @ApiModelProperty("下级所有话费总和包含自己发展的")
+    private BigDecimal huafeiTeamTotal;
+
+    @ApiModelProperty("我的费率")
+    private BigDecimal huafeiTeamTotalRate;
+
+    @ApiModelProperty("下级分成总和")
+    private BigDecimal huafeiSubFenTotal;
+
+    @ApiModelProperty("我的话费分成")
+    private BigDecimal huafeiTeamFen;
+
 }

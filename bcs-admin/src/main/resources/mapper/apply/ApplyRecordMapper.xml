@@ -6,8 +6,7 @@
     <select id="selectCallFee" resultType="cn.bcs.web.apply.domain.vo.MonthCallFeeVO">
         select
             from_user_id as userId,
-            sum(taocan_value) as amount,
-            group_concat(id) as recordIds
+            sum(taocan_value) as amount
         from b_apply_record
         where status = 1
         and end_time &lt; now()
@@ -21,5 +20,36 @@
         FROM b_apply_record
         WHERE status = '1'
         GROUP BY from_user_id;
+    </select>
+    <select id="listNew" resultType="cn.bcs.web.apply.domain.vo.ApplyRecordVO">
+        select
+            a.*,
+            b.user_name as fromUserName
+        from
+            b_apply_record a
+            left join sys_user b on a.from_user_id = b.user_id
+        <where>
+            <if test="query.status != null and query.status != ''">
+                and a.status = #{query.status}
+            </if>
+            <if test="query.fromUserId != null and query.fromUserId != ''">
+                and a.from_user_id = #{query.fromUserId}
+            </if>
+            <if test="query.userId != null and query.userId != ''">
+                and a.user_id = #{query.userId}
+            </if>
+            <if test="query.phone != null and query.phone != ''">
+                and a.phone = #{query.phone}
+            </if>
+            <if test="query.taocanName != null and query.taocanName != ''">
+                and a.taocan_name like concat('%',#{query.taocanName},'%')
+            </if>
+            <if test="query.tenantId != null">
+                and a.tenant_id = #{query.tenantId}
+            </if>
+            <if test="query.remark != null and query.remark != ''">
+                and a.remark like concat('%',#{query.remark},'%')
+            </if>
+        </where>
     </select>
 </mapper>

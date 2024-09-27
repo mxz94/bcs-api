@@ -34,6 +34,13 @@ export function handleStatus(data) {
   })
 }
 
+export function rollback(id) {
+  return request({
+    url: '/apply/rollback/'+id,
+    method: 'post'
+  })
+}
+
 // 修改套餐申请记录
 export function updateApply(data) {
     return request({

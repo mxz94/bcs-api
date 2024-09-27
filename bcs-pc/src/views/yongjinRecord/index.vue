@@ -11,6 +11,9 @@
           </el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="记录id" prop="queryParams.recordId">
+        <el-input v-model="queryParams.recordId" placeholder="请输入" property="recordId"></el-input>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -18,9 +21,9 @@
     </el-form>
 
     <el-table v-loading="loading" :data="yongjinRecordList" @selection-change="handleSelectionChange">
-      <el-table-column label="办理id" align="center" prop="recordIds" />
-      <el-table-column label="办理用户" align="center" prop="recordNickName" />
-      <el-table-column label="代理用户" align="center" prop="nickName" />
+      <el-table-column label="办理id" align="center" prop="recordId" />
+      <el-table-column label="用户" align="center" prop="recordNickName" />
+      <el-table-column label="推荐人" align="center" prop="nickName" />
       <el-table-column label="佣金" align="center" prop="fee" />
       <el-table-column label="旧金额" align="center" prop="oldBalance" />
       <el-table-column label="新金额" align="center" prop="newBalance" />

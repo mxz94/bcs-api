@@ -10,10 +10,14 @@
     >
       <el-table-column prop="nickName" label="昵称" width="260"></el-table-column>
       <el-table-column prop="userType_dictText" label="类型" width="200"></el-table-column>
-      <el-table-column prop="balance" label="佣金" width="200"></el-table-column>
-      <el-table-column prop="waitInBalance" label="上周佣金" width="200"></el-table-column>
-      <el-table-column prop="callBalance" label="话费分成" width="200"></el-table-column>
-      <el-table-column prop="teamBuildBalance" label="团队构建奖" width="200"></el-table-column>
+      <el-table-column label="团队总和" align="center" prop="huafeiTeamTotal" width="200"/>
+      <el-table-column label="分成比例" align="center" width="200">
+        <template slot-scope="scope">
+          {{ scope.row.huafeiTeamTotalRate }}%
+        </template>
+      </el-table-column>
+      <el-table-column label="下级分成" align="center" prop="huafeiSubFenTotal" width="200" />
+      <el-table-column label="我的分成" align="center" prop="huafeiTeamFen" width="200"/>
       <el-table-column label="创建时间" align="center" prop="createTime"class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>

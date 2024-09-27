@@ -58,8 +58,8 @@ public class SysConfigService {
      * @return 参数键值
      */
     public String selectConfigByKey(String configKey) {
-        String configValue = Convert.toStr(redisCache.getCacheObject(getCacheKey(configKey)));
-        if (StringUtils.isNotEmpty(configValue)) {
+        if (redisCache.hasKey(getCacheKey(configKey))) {
+            String configValue = Convert.toStr(redisCache.getCacheObject(getCacheKey(configKey)));
             return configValue;
         }
         SysConfig config = new SysConfig();

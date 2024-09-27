@@ -56,7 +56,8 @@ private static final long serialVersionUID=1L;
     /** 旧余额 */
     @ApiModelProperty(value = "旧余额")
     private BigDecimal oldBalance;
-
+    @ApiModelProperty(value = "新余额")
+    private BigDecimal newBalance;
 
     /** 提现类型  1 佣金  2 话费 */
     @ApiModelProperty(value = "提现类型：" + WithdrawTypeEnum.INFO)

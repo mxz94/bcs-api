@@ -6,6 +6,7 @@ import cn.bcs.common.enums.SysUserType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -30,4 +31,16 @@ public class TeamTreeVO {
     private List<TeamTreeVO> children;
 
     private Long fromUserId;
+
+    @ApiModelProperty("下级所有话费总和包含自己发展的")
+    private BigDecimal huafeiTeamTotal;
+
+    @ApiModelProperty("我的费率")
+    private BigDecimal huafeiTeamTotalRate;
+
+    @ApiModelProperty("下级分成总和")
+    private BigDecimal huafeiSubFenTotal;
+
+    @ApiModelProperty("我的话费分成")
+    private BigDecimal huafeiTeamFen;
 }

@@ -51,6 +51,10 @@ public class SysLoginController {
         String token = loginService.login(loginBody.getUsername(), loginBody.getPassword());
         return Result.success(new LoginVO().setToken(token));
     }
+    @PostMapping("/logRegister")
+    public  Result<LoginVO> logRegister(@RequestBody LoginBody loginBody) {
+        return loginService.logRegister(loginBody.getUsername(), loginBody.getPassword(), loginBody.getTenantId());
+    }
 
     /**
      * 获取用户信息

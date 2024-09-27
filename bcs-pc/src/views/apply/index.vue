@@ -11,14 +11,6 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="身份证号" prop="idCard">
-        <el-input
-          v-model="queryParams.idCard"
-          placeholder="请输入身份证号"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="手机号" prop="phone">
         <el-input
           v-model="queryParams.phone"
@@ -55,6 +47,14 @@
           </el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="备注" prop="remark">
+        <el-input
+          v-model="queryParams.remark"
+          placeholder="请输入备注"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -75,27 +75,36 @@
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" />
-      <el-table-column label="推荐人" align="center" prop="fromUserId" />
+      <el-table-column label="推荐人" align="center" prop="fromUserName" />
       <el-table-column label="创建时间" align="center" prop="createTime" />
       <el-table-column label="更新时间" align="center" prop="updateTime" />
 <!--      <el-table-column label="微信openId" align="center" prop="openId" />-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['apply:edit']"
-            v-if="scope.row.status === '0'"
-          >编辑</el-button>
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            type="text"-->
+<!--            icon="el-icon-edit"-->
+<!--            @click="handleUpdate(scope.row)"-->
+<!--            v-hasPermi="['apply:edit']"-->
+<!--            v-if="scope.row.status === '0'"-->
+<!--          >编辑</el-button>-->
           <el-button
             size="mini"
             type="text"
             icon="el-icon-edit"
             @click="handleStatus(scope.row)"
             v-hasPermi="['apply:edit']"
+            v-if="scope.row.status === '0'"
           >审核</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-edit"
+            @click="rollback(scope.row)"
+            v-hasPermi="['apply:edit']"
+            v-if="scope.row.status != '0'"
+          >撤回</el-button>
           <el-button
             size="mini"
             type="text"
@@ -169,8 +178,8 @@
 </template>
 
 <script>
-import { listApply, getApply, delApply, addApply, updateApply,handleStatus } from "@/api/apply/apply";
-import {getUserSelect} from "@/api/system/user";
+import {listApply, getApply, delApply, addApply, updateApply, handleStatus, rollback} from "@/api/apply/apply";
+import {delUser, getUserSelect} from "@/api/system/user";
 
 export default {
   name: "Apply",
@@ -366,6 +375,15 @@ export default {
         this.openStatus = false;
         this.getList();
       });
+    },
+    rollback(row) {
+        this.$modal.confirm('是否确认撤回单子？').then(function () {
+          return rollback(row.id);
+        }).then((response) => {
+          this.getList();
+          this.$modal.msgSuccess(response.msg);
+        }).catch(() => {
+        });
     },
     /** 删除按钮操作 */
     handleDelete(row) {

@@ -31,16 +31,17 @@
       <el-table-column label="提现类型" align="center" prop="type_dictText" />
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="昵称" align="center" prop="nickName" />
-      <el-table-column label="创建时间" align="center" prop="create_time" />
+      <el-table-column label="创建时间" align="center" prop="createTime" />
       <el-table-column label="收款码" align="center" key="shoukuanUrl" prop="shoukuanUrl" >
           <template slot-scope="scope">
-            <image-preview :url="scope.row.shoukuanUrl" :width="40" :height="40" />
+            <image-preview :src="scope.row.shoukuanUrl" :width="40" :height="40" />
           </template>
       </el-table-column>
-      <el-table-column label="更新时间" align="center" prop="update_time" />
+      <el-table-column label="更新时间" align="center" prop="updateTime" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
+              v-if="scope.row.status === '0'"
             size="mini"
             type="text"
             icon="el-icon-edit"
