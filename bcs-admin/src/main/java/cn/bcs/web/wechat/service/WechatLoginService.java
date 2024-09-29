@@ -82,7 +82,7 @@ public class WechatLoginService {
      * @param code 微信code
      * @return 123
      */
-    public Result<LoginVO> wechatLogin(String code) {
+    /*public Result<LoginVO> wechatLogin(String code) {
         WechatUserInfoBO wechatUserInfoBO = wechatSupport.codeGetUserinfo(code);
         if (BeanUtil.isEmpty(wechatUserInfoBO) || StringUtils.isEmpty(wechatUserInfoBO.getOpenid())) {
             return Result.error("微信授权失败");
@@ -107,7 +107,7 @@ public class WechatLoginService {
         // 生成token
         String token = tokenService.createToken(loginUser);
         return Result.success(new LoginVO().setToken(token));
-    }
+    }*/
     /**
      * 记录登录信息
      */

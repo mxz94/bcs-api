@@ -43,7 +43,7 @@ public class WechatLoginController {
     @ApiOperation(value = "微信授权登录")
     @PostMapping("/h5/wechatLogin")
     public Result<LoginVO> wechatLogin(@RequestParam String code, @RequestParam String tenantId) {
-        WechatAccessTokenBO accessToken = wechatSupport.getAccessToken(code);
+        WechatAccessTokenBO accessToken = wechatSupport.getAccessToken(code, tenantId);
         if (BeanUtil.isEmpty(accessToken)) {
             return Result.error("微信授权失败");
         }
@@ -56,8 +56,8 @@ public class WechatLoginController {
     @ApiOperation(value = "获取公众号网页配置参数", notes = "用于页面调用微信扫一扫")
     @ApiImplicitParam(name = "url", value = "网址URL", required = true)
     @GetMapping("/h5/getConfig")
-    public Result<WechatJsSdkSignVO> getConfig(@RequestParam String url) {
-        return Result.success(wechatSupport.jsSdkSign(url));
+    public Result<WechatJsSdkSignVO> getConfig(@RequestParam String url, @RequestParam String tenantId ) {
+        return Result.success(wechatSupport.jsSdkSign(url, tenantId));
     }
 
 }

@@ -37,5 +37,8 @@ private static final long serialVersionUID=1L;
     /** 用户数量限制 */
     private Long userNumLimit;
 
+    private String appid;
+
+    private Object secret;
 
 }
