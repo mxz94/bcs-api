@@ -3,13 +3,17 @@
     <van-image
         src="/images/banner.png"
     />
+    <van-notice-bar v-if="user.noApplyMonth > 0" :scrollable="true" color="#1989fa" background="#ecf9ff" style="position: absolute; top: 0%; width: 100%">
+      您已经累计{{user.noApplyMonth}}个月未开单啦！
+    </van-notice-bar>
+
     <div class="article-content  w-full p-[20px]" >
       <div class="p-[20px] rounded-[10px] text-white personal-data" >
         <van-row class="flex flex-wrap">
           <van-col span="16">
             <div class="flex flex-col">
                 <div class="flex items-center py-[5px]">
-                  <van-image src="https://thirdwx.qlogo.cn/mmopen/vi_32/P4gsM96GHib2aUrNJic8t8fscozYUfboicicb1HRRXG6UHQQGg8Yibib3c87XDnBsWCXM5mTASVrc8HpCpVnTgiaJWIZaQxbG0Czy0CmbZDlwnrkfg/132" width="60px" height="60px" round="true"/>
+                  <van-image :src="user.avatar" width="60px" height="60px" round="true"/>
                   <div span="18" class="flex-1 ml-[13px]">
                     <div  class="text-[18px] font-bold">{{ user.userType_dictText }}</div><div class="text-[12px]">
                     {{ user.nickName }}(ID:{{user.userId}})</div><div data-v-cb07a6e7="" class="text-[12px]">推荐人: {{user.fromUserNickName || '无'}}</div>
@@ -41,7 +45,7 @@
                 <div class="h-[100%] flex justify-center items-center p-[20px]">
                   <div class="w-[100%] bg-white rounded-[10px] text-[#01479D] text-center px-[20px] py-[20px] overlay-content qr_bg">
                     <div class="font-bold text-[20px]">
-                      <van-image src="https://thirdwx.qlogo.cn/mmopen/vi_32/P4gsM96GHib2aUrNJic8t8fscozYUfboicicb1HRRXG6UHQQGg8Yibib3c87XDnBsWCXM5mTASVrc8HpCpVnTgiaJWIZaQxbG0Czy0CmbZDlwnrkfg/132" width="60px" height="60px" round="true"/>
+                      <van-image :src="user.avatar" width="60px" height="60px" round="true"/>
                     </div>
                     <div class="text-white text-[15px] member-name rounded-[20px] inline-block px-[10px] py-[5px] mb-[40px]">
                       微信用户
@@ -133,12 +137,6 @@
         </div>
       </div>
     </div>
-<!--    <van-dialog v-model:show="show" title="" theme="round-button" :show-cancel-button="false"  :show-confirm-button="false" :close-on-click-overlay="true" width="80%">-->
-<!--      <van-image  src="/images/qr_bg.jpeg" />-->
-<!--      <div v-if="qrCodeUrl" style="position: absolute; top: 55%; left: 28%" >-->
-<!--        <img :src="qrCodeUrl" alt="QR Code" />-->
-<!--      </div>-->
-<!--    </van-dialog>-->
   </div>
 </template>
 
@@ -161,7 +159,7 @@ export default {
         "noApplyMonth": 0,
         "qianfei": 0,
         "fromUserNickName": null,
-        "shareUrl": "https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/iOS_WKWebview.html",
+        "shareUrl": "",
         "allBalance": 0.00,
         "userType_dictText": "管理员",
         "qianfei_dictText": "否",
