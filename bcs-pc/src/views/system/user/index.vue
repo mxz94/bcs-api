@@ -137,6 +137,16 @@
         <el-form-item label="手机号" prop="phonenumber">
           <el-input v-model="form.phonenumber" placeholder="请输入手机号" :maxlength="11" show-word-limit />
         </el-form-item>
+        <el-form-item   label="用户类型" prop="userType">
+          <el-select v-model="form.userType" placeholder="请选择用户类型">
+            <el-option
+              v-for="dict in dict.type.sys_user_type"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            />
+          </el-select>
+        </el-form-item>
         <el-form-item   label="欠费" prop="qianfei">
           <el-select v-model="form.qianfei" placeholder="请选择欠费状态">
             <el-option
@@ -187,7 +197,7 @@ import { getToken } from "@/utils/auth";
 
 export default {
   name: "User",
-  dicts: ['sys_common_status', 'common'],
+  dicts: ['sys_common_status', 'common', "sys_user_type"],
   data() {
     return {
       // 遮罩层

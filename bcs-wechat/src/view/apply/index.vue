@@ -127,6 +127,7 @@ export default {
             console.log(res)
             if (res.code == 200) {
               that.columns = res.data
+              Toast("提交成功")
             } else {
               Toast(res.msg)
             }

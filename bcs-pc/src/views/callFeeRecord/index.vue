@@ -26,6 +26,8 @@
     </el-form>
 
     <el-table v-loading="loading" :data="callFeeRecordList" @selection-change="handleSelectionChange">
+      <el-table-column label="姓名" align="center" prop="nickName" />
+      <el-table-column label="月份" align="center" prop="month" />
       <el-table-column label="团队总和" align="center" prop="huafeiTeamTotal" />
       <el-table-column label="分成比例" align="center" >
         <template slot-scope="scope">
@@ -34,11 +36,9 @@
       </el-table-column>
       <el-table-column label="下级分成" align="center" prop="huafeiSubFenTotal" />
       <el-table-column label="我的分成" align="center" prop="fee" />
-      <el-table-column label="姓名" align="center" prop="nickName" />
       <el-table-column label="旧金额" align="center" prop="oldBalance" />
       <el-table-column label="新金额" align="center" prop="newBalance" />
       <el-table-column label="备注" align="center" prop="remark" />
-      <el-table-column label="月份" align="center" prop="month" />
       <el-table-column label="创建时间" align="center" prop="createTime" />
     </el-table>
 

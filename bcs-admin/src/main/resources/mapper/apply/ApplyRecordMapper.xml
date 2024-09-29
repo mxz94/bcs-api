@@ -5,12 +5,18 @@
 <mapper namespace="cn.bcs.web.apply.mapper.ApplyRecordMapper">
     <select id="selectCallFee" resultType="cn.bcs.web.apply.domain.vo.MonthCallFeeVO">
         select
-            from_user_id as userId,
-            sum(taocan_value) as amount
-        from b_apply_record
-        where status = 1
-        and end_time &lt; now()
-        group by from_user_id
+            b.from_user_id as userId,
+            sum(b.taocan_value) as amount
+        from b_apply_record b
+        where b.status = 1
+        and b.end_time &gt; now()
+            AND NOT EXISTS (
+        SELECT 1
+        FROM sys_user u
+        WHERE u.user_id = b.user_id
+          AND u.qianfei = 1
+    )
+        group by b.from_user_id
     </select>
 
     <select id="selectMaxApplyRecord" resultType="cn.bcs.web.apply.domain.ApplyRecord">
@@ -24,7 +30,7 @@
     <select id="listNew" resultType="cn.bcs.web.apply.domain.vo.ApplyRecordVO">
         select
             a.*,
-            b.user_name as fromUserName
+            b.nick_name as fromUserName
         from
             b_apply_record a
             left join sys_user b on a.from_user_id = b.user_id
@@ -51,5 +57,6 @@
                 and a.remark like concat('%',#{query.remark},'%')
             </if>
         </where>
+        order by a.id desc
     </select>
 </mapper>

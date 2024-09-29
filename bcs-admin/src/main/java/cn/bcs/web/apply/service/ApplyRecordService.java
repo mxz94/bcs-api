@@ -69,7 +69,7 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
             callFeeRecordService.saveCallFeeRecord(fromUser, WithdrawTypeEnum.YONGJIN, BalanceConstants.HEHUO_350, null, old.getId());
             if (fromUser.getFromUserId() != null) {
                 SysUser parentUser = userService.getById(fromUser.getFromUserId());
-                if (parentUser != null && parentUser.getNoApplyMonth() < BalanceConstants.noApplyMonth) {
+                if (parentUser != null) {
                     userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, BalanceConstants.HEHUO_35,  parentUser.getUserId());
                     callFeeRecordService.saveCallFeeRecord(parentUser, WithdrawTypeEnum.YONGJIN, BalanceConstants.HEHUO_35, StringUtils.format("来自下级：{}的业务佣金", fromUser.getNickName()), old.getId());
                 }
@@ -104,7 +104,7 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
         if (ApplyStatus.getByCode(dto.getStatus()) == null) {
             return Result.error("状态不正确");
         }
-        if (ApplyStatus.PENDING.getCode().equals(old.getStatus()) || ApplyStatus.REJECTED.getCode().equals(old.getStatus())) {
+        if (! ApplyStatus.PENDING.getCode().equals(old.getStatus())) {
             return Result.error("已处理过了");
         }
         if (ApplyStatus.APPROVED.getCode().equals(dto.getStatus())) {
@@ -147,7 +147,7 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
         applyRecord.setTaocanName(taocan.getName());
         applyRecord.setTaocanValue(BigDecimal.valueOf(Long.valueOf(taocan.getValue())));
         // 套餐结束时间
-        DateTime endTime = DateUtil.offsetMonth(DateUtil.endOfMonth(new Date()), Integer.valueOf(taocan.getRemark()));
+        DateTime endTime = DateUtil.offsetMonth(DateUtil.endOfMonth(new Date()), Integer.valueOf(taocan.getRemark()) - 1);
         applyRecord.setEndTime(endTime);
         applyRecord.setTenantId(SecurityUtils.getTenantId());
         this.save(applyRecord);
@@ -171,13 +171,6 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
         return count;
     }
 
-    public static void main(String[] args) {
-        Date now = new Date();
-        DateTime endTime =  DateUtil.beginOfMonth(now);
-        DateTime startTime = DateUtil.offsetMonth(endTime, -3);
-        System.out.println("startTime = " + startTime);
-    }
-
     public List<ApplyRecord> selectMaxApplyRecord() {
         return this.baseMapper.selectMaxApplyRecord();
     }
@@ -192,11 +185,12 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
         if (CollUtil.isNotEmpty(list)) {
             for (CallFeeRecord item : list) {
                 userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, item.getFee().negate(),  item.getUserId());
-                SysUser parentUser = userService.getById(item.getUserId());
-                callFeeRecordService.saveCallFeeRecord(parentUser, WithdrawTypeEnum.YONGJIN, item.getFee(), "佣金撤回", item.getRecordId());
+                //SysUser parentUser = userService.getById(item.getUserId());
+                //callFeeRecordService.saveCallFeeRecord(parentUser, WithdrawTypeEnum.YONGJIN, item.getFee(), "佣金撤回", item.getRecordId());
             }
+            callFeeRecordService.lambdaUpdate().eq(CallFeeRecord::getRecordId, record.getId()).remove();
         }
-        this.lambdaUpdate().eq(ApplyRecord::getId, id).set(ApplyRecord::getStatus, ApplyStatus.PENDING.getCode());
+        this.lambdaUpdate().eq(ApplyRecord::getId, id).set(ApplyRecord::getStatus, ApplyStatus.PENDING.getCode()).update();
         return Result.success();
     }
 
@@ -208,8 +202,9 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
         if (userId.equals(loginUser.getUserId())) {
             return Result.error("当前用户不能删除");
         }
-        if (!SecurityUtils.isAdmin()) {
-            return Result.error("不是管理员");
+        SysUser user = userService.getById(userId);
+        if (! user.getTenantId().equals(SecurityUtils.getTenantId())) {
+            return Result.error("不是当前账号下的用户");
         }
         changeFromUserAndDel(userId);
         return Result.success();

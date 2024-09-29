@@ -10,11 +10,13 @@ public interface BalanceConstants {
 
     public static final String BALANCE = "balance";
 
+    public static final BigDecimal GONGXIAN_125000 = BigDecimal.valueOf(125000);
+
     public static final BigDecimal HEHUO_350 = BigDecimal.valueOf(350);
 
     public static final BigDecimal HEHUO_35 = BigDecimal.valueOf(35);
 
-    public static final BigDecimal DAILI_200 = BigDecimal.valueOf(250);
+    public static final BigDecimal DAILI_200 = BigDecimal.valueOf(200);
 
     public static final BigDecimal DAILI_150 = BigDecimal.valueOf(150);
 

@@ -54,7 +54,7 @@ public class CallFeeRecordController extends BaseController {
         if (!SysUserType.ADMIN.getCode().equals(user.getUserType())) {
             query.setUserId(user.getUserId());
         }
-        if (! SecurityUtils.isAdmin(user.getUserId())) {
+        if (!SecurityUtils.isAdmin(user.getUserId())) {
             query.setTenantId(user.getTenantId());
         }
         List<CallFeeRecordVO> list = callFeeRecordService.selectRecordListByType(query);

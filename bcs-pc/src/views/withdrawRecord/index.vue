@@ -19,24 +19,24 @@
 
     <el-table v-loading="loading" :data="withdrawRecordList" @selection-change="handleSelectionChange">
       <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="状态" align="center" prop="status" >
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.withdraw_status" :value="scope.row.status"  :style="getTagStyle(scope.row.status)"/>
-        </template>
-      </el-table-column>
+      <el-table-column label="昵称" align="center" prop="nickName" />
       <el-table-column label="提现金额" align="center" prop="amount" />
       <el-table-column label="税率" align="center" prop="rate" />
       <el-table-column label="转账金额" align="center" prop="realAmount" />
       <el-table-column label="旧余额" align="center" prop="oldBalance" />
       <el-table-column label="提现类型" align="center" prop="type_dictText" />
       <el-table-column label="备注" align="center" prop="remark" />
-      <el-table-column label="昵称" align="center" prop="nickName" />
-      <el-table-column label="创建时间" align="center" prop="createTime" />
       <el-table-column label="收款码" align="center" key="shoukuanUrl" prop="shoukuanUrl" >
           <template slot-scope="scope">
             <image-preview :src="scope.row.shoukuanUrl" :width="40" :height="40" />
           </template>
       </el-table-column>
+      <el-table-column label="状态" align="center" prop="status" >
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.withdraw_status" :value="scope.row.status"  :style="getTagStyle(scope.row.status)"/>
+        </template>
+      </el-table-column>
+      <el-table-column label="创建时间" align="center" prop="createTime" />
       <el-table-column label="更新时间" align="center" prop="updateTime" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">

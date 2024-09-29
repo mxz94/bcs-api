@@ -73,6 +73,7 @@ export default {
               } else {
                 that.$router.push({ path: "/user" });
               }
+              Toast("提交成功")
             } else {
               Toast(res.msg)
               if(1001!==res.code) {

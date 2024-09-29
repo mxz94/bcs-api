@@ -39,8 +39,7 @@ public class  CallFeeRecordService extends ServiceImpl<CallFeeRecordMapper, Call
     public void addRecordAndCallFee(SysUser user) {
         String month = DateUtil.format(DateUtil.offsetMonth(DateUtil.date(), -1), "yyyy-MM");
         BigDecimal callBalance = user.getCallBalance();
-        BigDecimal newCallBalance = BigDecimalUtils.subtract(callBalance, user.getHuafeiTeamFen());
-
+        BigDecimal newCallBalance = BigDecimalUtils.add(callBalance, user.getHuafeiTeamFen());
         userService.lambdaUpdate().eq(SysUser::getUserId, user.getUserId())
                 .set(SysUser::getCallBalance, newCallBalance)
                 .set(SysUser::getHuafeiTeamTotal, user.getHuafeiTeamTotal())
@@ -48,7 +47,9 @@ public class  CallFeeRecordService extends ServiceImpl<CallFeeRecordMapper, Call
                 .set(SysUser::getHuafeiSubFenTotal, user.getHuafeiSubFenTotal())
                 .set(SysUser::getHuafeiTeamFen, user.getHuafeiTeamFen())
                 .update();
-
+        if (BigDecimalUtils.isNullOrLessZero(user.getHuafeiTeamFen())) {
+            return;
+        }
         CallFeeRecord record = new CallFeeRecord();
         record.setHuafeiTeamTotal(user.getHuafeiTeamTotal());
         record.setHuafeiTeamTotalRate(user.getHuafeiTeamTotalRate());

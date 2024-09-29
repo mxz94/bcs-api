@@ -63,6 +63,7 @@
 
     <el-table v-loading="loading" :data="applyList" @selection-change="handleSelectionChange">
 <!--      <el-table-column type="selection" width="5" align="center" />-->
+      <el-table-column label="办理id" align="center" prop="id" />
       <el-table-column label="姓名" align="center" prop="name" />
       <el-table-column label="身份证号" align="center" prop="idCard" />
       <el-table-column label="手机号" align="center" prop="phone" />

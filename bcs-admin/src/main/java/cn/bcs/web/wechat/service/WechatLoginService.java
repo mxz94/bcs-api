@@ -8,6 +8,7 @@ import cn.bcs.common.enums.SysUserType;
 import cn.bcs.common.utils.BigDecimalUtils;
 import cn.bcs.common.utils.SecurityUtils;
 import cn.bcs.common.utils.ip.IpUtils;
+import cn.bcs.framework.config.ServerConfig;
 import cn.bcs.framework.web.service.TokenService;
 import cn.bcs.system.domain.vo.LoginVO;
 import cn.bcs.system.service.SysUserService;
@@ -36,6 +37,8 @@ public class WechatLoginService {
     private SysUserService userService;
     @Resource
     private WechatSupport wechatSupport;
+    @Resource
+    private ServerConfig serverConfig;
 
     /**
      * 微信登录
@@ -121,7 +124,8 @@ public class WechatLoginService {
             SysUser byId1 = userService.getById(byId.getFromUserId());
             if (byId1 != null) wechatUserInfo.setFromUserNickName(byId1.getNickName());
         }
-        wechatUserInfo.setShareUrl("http://47.108.215.11:8082/#/apply?userId="+ byId.getUserId());
+        String url = serverConfig.getUrl();
+        wechatUserInfo.setShareUrl(url + "/#/apply?userId="+ byId.getUserId());
         //wechatUserInfo.setShareUrl("http://localhost:8080/#/apply?userId="+ byId.getUserId());
         wechatUserInfo.setAllBalance(BigDecimalUtils.add(wechatUserInfo.getBalance(), wechatUserInfo.getWaitInBalance()));
         wechatUserInfo.setPassword(null);

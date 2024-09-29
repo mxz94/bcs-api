@@ -105,6 +105,9 @@ public class SysUser extends BaseDBEntity {
     @ApiModelProperty("上级代理ID")
     private Long fromUserId;
 
+    @ApiModelProperty("旧上级代理ID")
+    private Long oldFromUserId;
+
     @ApiModelProperty("已确认佣金")
     private BigDecimal balance;
 

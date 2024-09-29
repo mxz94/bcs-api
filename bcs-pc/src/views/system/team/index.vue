@@ -8,8 +8,12 @@
       :default-expand-all="isExpandAll"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
-      <el-table-column prop="nickName" label="昵称" width="260"></el-table-column>
-      <el-table-column prop="userType_dictText" label="类型" width="200"></el-table-column>
+      <el-table-column prop="nickName" label="昵称" width="200"></el-table-column>
+      <el-table-column prop="userId" label="id" width="60"></el-table-column>
+      <el-table-column prop="userType_dictText" label="类型" width="60"></el-table-column>
+      <el-table-column label="佣金" align="center" key="balance" prop="balance" />
+      <el-table-column label="上周待确认佣金" align="center" key="waitInBalance" prop="waitInBalance" />
+      <el-table-column label="话费分成" align="center" key="callBalance" prop="callBalance" />
       <el-table-column label="团队总和" align="center" prop="huafeiTeamTotal" width="200"/>
       <el-table-column label="分成比例" align="center" width="200">
         <template slot-scope="scope">

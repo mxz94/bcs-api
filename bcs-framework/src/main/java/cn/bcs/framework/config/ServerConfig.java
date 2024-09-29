@@ -1,6 +1,7 @@
 package cn.bcs.framework.config;
 
 import cn.bcs.common.utils.ServletUtils;
+import cn.bcs.common.utils.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,7 +16,7 @@ public class ServerConfig {
     public static String getDomain(HttpServletRequest request) {
         StringBuffer url = request.getRequestURL();
         String contextPath = request.getServletContext().getContextPath();
-        return url.delete(url.length() - request.getRequestURI().length(), url.length()).append(contextPath).toString();
+        return StringUtils.replace(url.delete(url.length() - request.getRequestURI().length(), url.length()).append(contextPath).toString(), "http:", "https:");
     }
 
     /**

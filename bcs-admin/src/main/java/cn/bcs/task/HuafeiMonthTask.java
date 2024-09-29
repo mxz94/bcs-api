@@ -99,12 +99,20 @@ public class HuafeiMonthTask {
             subHuaFeiFenTotal = subHuaFeiFenTotal.add(HuafeiRateUtils.calculateTaxAmount(su.getHuafeiTeamTotal()));
         }
         // 4. 当前用户及其所有下级的订单总金额
-        BigDecimal totalAmount = currentUserAmount.add(subHuaFeiTotal);
+        BigDecimal totalAmount = BigDecimalUtils.add(currentUserAmount, subHuaFeiTotal);
         user.setHuafeiTeamTotal(totalAmount);
         user.setHuafeiTeamTotalRate(HuafeiRateUtils.calculateTaxRate(totalAmount));
         user.setHuafeiSubFenTotal(subHuaFeiFenTotal);
         user.setHuafeiTeamFen(BigDecimalUtils.subtract(HuafeiRateUtils.calculateTaxAmount(totalAmount), subHuaFeiFenTotal));
         callFeeRecordService.addRecordAndCallFee(user);
+        // 杰出贡献奖励 大于125000
+        // 1. 修改自己的推荐人为null。 oldFromUserId;
+        // 2. 修改上级的汇率38%
+        //if (BigDecimalUtils.isGreaterThanOrEqual(user.getHuafeiTeamTotal(), BalanceConstants.GONGXIAN_125000)) {
+        //    sysUserService.lambdaUpdate().eq(SysUser::getUserId, user.getUserId()).set(SysUser::getFromUserId, null)
+        //            .set(SysUser::getOldFromUserId, user.getFromUserId())
+        //            .update();
+        //}
         // 用户的话费分成
         return user;
     }
