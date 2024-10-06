@@ -1,6 +1,5 @@
 package cn.bcs.web.callFeeRecord.service;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import cn.bcs.common.constant.BalanceConstants;
@@ -9,7 +8,6 @@ import cn.bcs.common.utils.BigDecimalUtils;
 import cn.bcs.common.utils.StringUtils;
 import cn.bcs.system.service.SysUserService;
 import cn.bcs.web.apply.service.ApplyRecordService;
-import cn.bcs.web.callFeeRecord.constants.HuafeiRateUtils;
 import cn.bcs.web.callFeeRecord.domain.vo.CallFeeRecordVO;
 import cn.bcs.web.withdrawRecord.constants.WithdrawTypeEnum;
 import cn.bcs.web.callFeeRecord.domain.query.RecordQuery;
@@ -61,6 +59,26 @@ public class  CallFeeRecordService extends ServiceImpl<CallFeeRecordMapper, Call
         record.setMonth(month);
         record.setType(WithdrawTypeEnum.HUAFEIFENCHENG.getCode());
         record.setTenantId(user.getTenantId());
+        this.save(record);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void addGongxianAndCallFee(SysUser user, SysUser fromUser) {
+        String month = DateUtil.format(DateUtil.offsetMonth(DateUtil.date(), -1), "yyyy-MM");
+        BigDecimal callBalance = user.getCallBalance();
+        BigDecimal newCallBalance = BigDecimalUtils.add(callBalance, BalanceConstants.GONGXIAN_5000);
+        userService.lambdaUpdate().eq(SysUser::getUserId, user.getUserId())
+                .set(SysUser::getCallBalance, newCallBalance)
+                .update();
+        CallFeeRecord record = new CallFeeRecord();
+        record.setFee(BalanceConstants.GONGXIAN_5000);
+        record.setUserId(user.getUserId());
+        record.setOldBalance(callBalance);
+        record.setNewBalance(newCallBalance);
+        record.setMonth(month);
+        record.setType(WithdrawTypeEnum.HUAFEIFENCHENG.getCode());
+        record.setTenantId(user.getTenantId());
+        record.setRemark(StringUtils.format("来自{}达到12.5w的贡献奖5k", fromUser.getNickName()));
         this.save(record);
     }
 

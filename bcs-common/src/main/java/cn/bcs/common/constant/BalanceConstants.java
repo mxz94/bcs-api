@@ -34,4 +34,7 @@ public interface BalanceConstants {
 
     public static final Integer TIXIAN_MONTH = 28;
 
+    public static final BigDecimal MAX_RATE_38 = BigDecimal.valueOf(38);
+
+    public static final BigDecimal GONGXIAN_5000 = BigDecimal.valueOf(5000);
 }

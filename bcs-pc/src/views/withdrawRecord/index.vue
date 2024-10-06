@@ -23,7 +23,7 @@
       <el-table-column label="提现金额" align="center" prop="amount" />
       <el-table-column label="税率" align="center" prop="rate" />
       <el-table-column label="转账金额" align="center" prop="realAmount" />
-      <el-table-column label="旧余额" align="center" prop="oldBalance" />
+      <el-table-column label="余额" align="center" prop="newBalance" />
       <el-table-column label="提现类型" align="center" prop="type_dictText" />
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="收款码" align="center" key="shoukuanUrl" prop="shoukuanUrl" >

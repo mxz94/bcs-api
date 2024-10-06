@@ -6,9 +6,9 @@ import java.math.BigDecimal;
 
 public class HuafeiRateUtils {
 
-    public static BigDecimal calculateTaxAmount(BigDecimal amount) {
+    public static BigDecimal calculateTaxAmount(BigDecimal amount, BigDecimal rate) {
         // 计算金额，乘以税率并使用指定的舍入方式
-        return BigDecimalUtils.multiplyPercentage(amount, calculateTaxRate(amount));
+        return BigDecimalUtils.multiplyPercentage(amount, rate);
     }
 
     public static BigDecimal calculateTaxRate(BigDecimal amount) {

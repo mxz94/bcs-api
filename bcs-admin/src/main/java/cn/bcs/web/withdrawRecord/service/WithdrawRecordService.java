@@ -48,9 +48,9 @@ public class  WithdrawRecordService extends ServiceImpl<WithdrawRecordMapper, Wi
             if (BigDecimalUtils.isLessThan(user.getBalance(), amount)) {
                 return Result.error("佣金不足");
             }
-            //if (checkWithdrawal(type)) {
-            //    return Result.error("周日才可提现佣金");
-            //}
+            if (checkWithdrawal(type)) {
+                return Result.error("周日才可提现佣金");
+            }
             if (BigDecimalUtils.isLessThan(amount, BalanceConstants.MIN_YONGJIN)) {
                 return Result.error("提现金额不能小于" + BalanceConstants.MIN_YONGJIN);
             }
@@ -72,9 +72,9 @@ public class  WithdrawRecordService extends ServiceImpl<WithdrawRecordMapper, Wi
             if (BigDecimalUtils.isLessThan(user.getCallBalance(), amount)) {
                 return Result.error("话费分成不足");
             }
-            //if (checkWithdrawal(type)) {
-            //    return Result.error("每月28日提现话费分成");
-            //}
+            if (checkWithdrawal(type)) {
+                return Result.error("每月28日提现话费分成");
+            }
             if (BigDecimalUtils.isLessThan(amount, BalanceConstants.MIN_HUAFEI)) {
                 return Result.error("提现金额不能小于" + BalanceConstants.MIN_HUAFEI);
             }

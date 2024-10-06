@@ -96,23 +96,43 @@ public class HuafeiMonthTask {
             SysUser su = calculateTotalOrderAmount(subUser, userAmountMap);
             subHuaFeiTotal = subHuaFeiTotal.add(su.getHuafeiTeamTotal());
             // 累计当前下级的话费分成总和
-            subHuaFeiFenTotal = subHuaFeiFenTotal.add(HuafeiRateUtils.calculateTaxAmount(su.getHuafeiTeamTotal()));
+            subHuaFeiFenTotal = subHuaFeiFenTotal.add(HuafeiRateUtils.calculateTaxAmount(su.getHuafeiTeamTotal(), su.getHuafeiTeamTotalRate()));
         }
+        // 计算汇率金额前计算当前用户费率
+        if (user.getFromUserId() == null) {
+            List<SysUser> list = sysUserService.lambdaQuery().eq(SysUser::getOldFromUserId, user.getUserId()).list();
+            if (list.size() > 0) {
+                user.setHuafeiTeamTotalRate(BalanceConstants.MAX_RATE_38);
+                if (list.size() > 1) {
+                    for (SysUser sysUser : list.subList(1, list.size())) {
+                        callFeeRecordService.addGongxianAndCallFee(user, sysUser);
+                    }
+                }
+            }
+        }
+
         // 4. 当前用户及其所有下级的订单总金额
         BigDecimal totalAmount = BigDecimalUtils.add(currentUserAmount, subHuaFeiTotal);
         user.setHuafeiTeamTotal(totalAmount);
-        user.setHuafeiTeamTotalRate(HuafeiRateUtils.calculateTaxRate(totalAmount));
+        if (BalanceConstants.MAX_RATE_38.equals(user.getHuafeiTeamTotalRate())) {
+            user.setHuafeiTeamTotalRate(HuafeiRateUtils.calculateTaxRate(totalAmount));
+        }
         user.setHuafeiSubFenTotal(subHuaFeiFenTotal);
-        user.setHuafeiTeamFen(BigDecimalUtils.subtract(HuafeiRateUtils.calculateTaxAmount(totalAmount), subHuaFeiFenTotal));
+        user.setHuafeiTeamFen(BigDecimalUtils.subtract(HuafeiRateUtils.calculateTaxAmount(totalAmount, user.getHuafeiTeamTotalRate()), subHuaFeiFenTotal));
         callFeeRecordService.addRecordAndCallFee(user);
         // 杰出贡献奖励 大于125000
         // 1. 修改自己的推荐人为null。 oldFromUserId;
         // 2. 修改上级的汇率38%
-        //if (BigDecimalUtils.isGreaterThanOrEqual(user.getHuafeiTeamTotal(), BalanceConstants.GONGXIAN_125000)) {
-        //    sysUserService.lambdaUpdate().eq(SysUser::getUserId, user.getUserId()).set(SysUser::getFromUserId, null)
-        //            .set(SysUser::getOldFromUserId, user.getFromUserId())
-        //            .update();
-        //}
+        if (BigDecimalUtils.isGreaterThanOrEqual(user.getHuafeiTeamTotal(), BalanceConstants.GONGXIAN_125000)) {
+            sysUserService.lambdaUpdate().eq(SysUser::getUserId, user.getUserId()).set(SysUser::getFromUserId, null)
+                    .set(SysUser::getOldFromUserId, user.getFromUserId())
+                    .update();
+            user.setHuafeiTeamTotal(BigDecimal.ZERO);
+            user.setHuafeiTeamTotalRate(BigDecimal.ZERO);
+            user.setHuafeiSubFenTotal(BigDecimal.ZERO);
+            user.setHuafeiTeamFen(BigDecimal.ZERO);
+            return user;
+        }
         // 用户的话费分成
         return user;
     }
