@@ -200,7 +200,7 @@ public class WechatSupport {
         return ACCESS_TOKEN;
     }
 
-    public String sendSubscriberMessage(String userOpenid, String templateId, JSONObject data, String page, Integer tenantId) {
+    public String sendSubscriberMessage(String userOpenid, String templateId, JSONObject data, String page, Long tenantId) {
         String accessToken = getAccessToken(String.valueOf(tenantId));
         String url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=" + accessToken;
         JSONObject params = new JSONObject();

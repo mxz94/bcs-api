@@ -13,14 +13,14 @@ const routes = [
         name: 'login',
         component: () => import('./view/login'),
         meta: {
-            title: '登录'
+            title: '业务佣金系统'
         }
     },
   {
     name: 'user',
     component: () => import('./view/user'),
     meta: {
-      title: '会员中心',
+      title: '业务佣金系统',
         keepAlive: true,
         isBack: false
     }
@@ -29,49 +29,49 @@ const routes = [
         name: 'yjrecord',
         component: () => import('./view/yonngjin/index.vue'),
         meta: {
-            title: '佣金记录'
+            title: '业务佣金系统'
         }
     },
     {
         name: 'yjtx',
         component: () => import('./view/yonngjin/tx.vue'),
         meta: {
-            title: '佣金提现'
+            title: '业务佣金系统'
         }
     },
     {
         name: 'yjtixian',
         component: () => import('./view/yonngjin/tixian.vue'),
         meta: {
-            title: '佣金提现记录'
+            title: '业务佣金系统'
         }
     },
     {
         name: 'hfrecord',
         component: () => import('./view/huafei/index.vue'),
         meta: {
-            title: '话费分成记录'
+            title: '业务佣金系统'
         }
     },
     {
         name: 'hftx',
         component: () => import('./view/huafei/tx.vue'),
         meta: {
-            title: '话费提现'
+            title: '业务佣金系统'
         }
     },
     {
         name: 'hftixian',
         component: () => import('./view/huafei/tixian.vue'),
         meta: {
-            title: '话费分成提现记录'
+            title: '业务佣金系统'
         }
     },
     {
         name: 'team',
         component: () => import('./view/team'),
         meta: {
-            title: '我的团队'
+            title: '业务佣金系统'
         }
     },
   {
@@ -85,7 +85,7 @@ const routes = [
         name: 'apply',
         component: () => import('./view/apply'),
         meta: {
-            title: '申请',
+            title: '业务佣金系统',
             requiresAuth: "true"
         }
     },
@@ -93,7 +93,7 @@ const routes = [
         name: 'question',
         component: () => import('./view/question'),
         meta: {
-            title: '尝尽问题',
+            title: '业务佣金系统',
         }
   }
 ];
@@ -106,21 +106,20 @@ routes.forEach(route => {
 const router = new Router({ routes });
 
 router.beforeEach((to, from, next) => {
-  const title = to.meta && to.meta.title;
-  if (title) {
-    document.title = title;
-  }
-  console.log("1111111111111111111111111111111111")
-
-    const isAuthenticated = !!getToken(); // 假设通过 token 判断是否登录
-    if (to.meta.requiresAuth && !isAuthenticated) {
-        next({
-            path: '/login',
-            query: { redirect: to.fullPath } // 保存用户原来的路径
-        });
-    } else {
+  // const title = to.meta && to.meta.title;
+  // if (title) {
+  //   document.title = title;
+  // }
+  //
+  //   const isAuthenticated = !!getToken(); // 假设通过 token 判断是否登录
+  //   if (to.meta.requiresAuth && !isAuthenticated) {
+  //       next({
+  //           path: '/login',
+  //           query: { redirect: to.fullPath } // 保存用户原来的路径
+  //       });
+  //   } else {
         next();
-    }
+    // }
 });
 
 export {

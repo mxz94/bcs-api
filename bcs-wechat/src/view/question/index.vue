@@ -31,10 +31,6 @@ export default {
   data() {
     return {
       faqList: [
-        { name: '如何注册账号？', remark: '你可以通过点击注册按钮，并填写相关信息来注册账号。', value: true },
-        { name: '忘记密码怎么办？', remark: '点击登录页面的忘记密码选项，按照提示重置密码。', value: false },
-        { name: '如何联系客服？', remark: '你可以通过网站底部的联系方式或在线聊天功能联系客服。', value: false },
-        { name: '退款流程是什么？', remark: '退款请求将在提交后的5个工作日内处理。', value: false },
         // 更多问题...
       ]
     };

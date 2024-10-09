@@ -81,7 +81,7 @@ public class LogAspect {
     protected void handleLog(final JoinPoint joinPoint, Log controllerLog, final Exception e, Object jsonResult) {
         try {
             // 获取当前的用户
-            LoginUser loginUser = SecurityUtils.getLoginUser();
+            LoginUser loginUser = SecurityUtils.getLoginUserIgnoreExceptions();
 
             // *========数据库日志=========*//
             SysOperLog operLog = new SysOperLog();

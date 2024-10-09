@@ -71,6 +71,7 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
                 SysUser parentUser = userService.getById(fromUser.getFromUserId());
                 if (parentUser != null) {
                     userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, BalanceConstants.HEHUO_35,  parentUser.getUserId());
+
                     callFeeRecordService.saveCallFeeRecord(parentUser, WithdrawTypeEnum.YONGJIN, BalanceConstants.HEHUO_35, StringUtils.format("来自下级：{}的业务佣金", fromUser.getNickName()), old.getId());
                 }
             }

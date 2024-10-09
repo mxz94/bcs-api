@@ -2,6 +2,7 @@ package cn.bcs.framework.manager;
 
 import cn.bcs.common.utils.Threads;
 import cn.bcs.common.utils.spring.SpringUtils;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.TimerTask;
 import java.util.concurrent.ScheduledExecutorService;
@@ -47,5 +48,10 @@ public class AsyncManager {
      */
     public void shutdown() {
         Threads.shutdownAndAwaitTermination(executor);
+    }
+
+    private ThreadPoolTaskExecutor asyncExecutor = SpringUtils.getBean("threadPoolTaskExecutor");
+    public void asyncExecute(Runnable runnable) {
+        asyncExecutor.execute(runnable);
     }
 }

@@ -1,7 +1,7 @@
 <template>
   <div style=" background-color: #f0f0f0;  min-height: 100vh; ">
     <van-image src="/images/add-banner.png"/>
-    <van-form @submit="submitForm" class="m-[20px] py-[10px] bg-white rounded-[10px]">
+    <van-form @submit="submitForm" class="m-[20px] py-[10px] bg-white rounded-[10px]" v-if="isOK">
       <van-cell-group inset>
         <van-field
             v-model="formData.name"
@@ -61,7 +61,7 @@
 
 <script>
 import {Toast} from "vant";
-import {getToken, getUrlKey} from "@/libs/util";
+import {deleteToken, getToken, getUrlKey, getUrlParam} from "@/libs/util";
 
 export default {
   data() {
@@ -79,11 +79,17 @@ export default {
       pattern: /^\d{6}(18|19|20)?\d{2}(0[1-9]|1[012])(0[1-9]|[12]\d|3[01])\d{3}(\d|X)$/i,
       patternPhone: /^1(3|4|5|6|7|8|9)\d{9}$/,
       errors: {},
-      popupVisible: false
+      popupVisible: false,
+      isOK: false
     };
   },
   mounted() {
-    // this.$router.push({path : '/login', query: { redirect: location.hostname }});
+    var token = getToken();
+    const userId = getUrlKey("userId");
+    if (!token) {
+      this.$router.push('/login?state='+userId);
+      return;
+    }
     this.selectTaoCanList();
   },
   created() {
@@ -105,8 +111,10 @@ export default {
             console.log(res)
             if (res.code == 200) {
               that.columns = res.data
+              that.isOK = true
             } else {
-              Toast(res.msg)
+              that.$router.push('/login');
+              deleteToken()
             }
           }
       );

@@ -7,7 +7,7 @@
       您已经累计{{user.noApplyMonth}}个月未开单啦！
     </van-notice-bar>
 
-    <div class="article-content  w-full p-[20px]" >
+    <div class="article-content  w-full p-[20px]"  v-if="user.userId != null">
       <div class="p-[20px] rounded-[10px] text-white personal-data" >
         <van-row class="flex flex-wrap">
           <van-col span="16">
@@ -48,7 +48,7 @@
                       <van-image :src="user.avatar" width="60px" height="60px" round="true"/>
                     </div>
                     <div class="text-white text-[15px] member-name rounded-[20px] inline-block px-[10px] py-[5px] mb-[40px]">
-                      微信用户
+                      {{ user.nickName }}
                     </div>
                     <div class="flex justify-center items-center mt-[160px]">
                         <img :src="qrCodeUrl" alt="QR Code" />
@@ -127,14 +127,14 @@
             我的团队
           </div>
         </div>
-        <div class="flex flex-col text-center"@click="lougout()">
-          <div class="flex justify-center items-center w-[100%]">
-            <van-image  src="/images/8.png" width="8vmin" height="8vmin"/>
-          </div>
-          <div class="text-[13px] pt-[10px]">
-            退出(开发)
-          </div>
-        </div>
+<!--        <div class="flex flex-col text-center"@click="lougout()">-->
+<!--          <div class="flex justify-center items-center w-[100%]">-->
+<!--            <van-image  src="/images/8.png" width="8vmin" height="8vmin"/>-->
+<!--          </div>-->
+<!--          <div class="text-[13px] pt-[10px]">-->
+<!--            退出(开发)-->
+<!--          </div>-->
+<!--        </div>-->
       </div>
     </div>
   </div>
@@ -172,6 +172,7 @@ export default {
       var token = getToken();
       if (!token) {
         this.$router.push('/login');
+        return;
       }
       let that =this
       this.$request(
@@ -184,10 +185,8 @@ export default {
             if (res.code == 200) {
               that.user = res.data
             } else {
-              Toast(res.msg)
-              if(1001!==res.data.code) {
-                // getWeiXinCode("scantips");
-              }
+              that.$router.push('/login');
+              deleteToken()
             }
             // that.$storage.delData("wxcode");
           }

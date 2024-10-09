@@ -9,6 +9,7 @@ import cn.bcs.common.utils.BigDecimalUtils;
 import cn.bcs.common.utils.SecurityUtils;
 import cn.bcs.common.utils.ip.IpUtils;
 import cn.bcs.framework.config.ServerConfig;
+import cn.bcs.framework.security.context.AuthenticationContextHolder;
 import cn.bcs.framework.web.service.TokenService;
 import cn.bcs.system.domain.vo.LoginVO;
 import cn.bcs.system.service.SysUserService;
@@ -68,7 +69,9 @@ public class WechatLoginService {
             userService.save(sysUser);
         }
         // 该方法会去调用UserDetailsServiceImpl.loadUserByUsername
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(sysUser.getUserName(), sysUser.getUserName()));
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userName, userName);
+        AuthenticationContextHolder.setContext(authenticationToken);
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         recordLoginInfo(loginUser.getUser());
         // 生成token
@@ -119,6 +122,9 @@ public class WechatLoginService {
 
     public Result<WechatUserInfo> userInfo() {
         SysUser byId = userService.getById(SecurityUtils.getUserId());
+        if (byId == null) {
+            return Result.error("用户不存在");
+        }
         WechatUserInfo wechatUserInfo = BeanUtil.copyProperties(byId, WechatUserInfo.class);
         if (byId.getFromUserId() != null) {
             SysUser byId1 = userService.getById(byId.getFromUserId());

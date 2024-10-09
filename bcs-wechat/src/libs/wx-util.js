@@ -20,17 +20,14 @@ export function isWeiXinBrowser() {
 /**
  * 隐式授权（使用哪个公众号授权，要和Java后台使用的一致，否则会报获取openId异常）
  */
-export function getWeiXinCode(routerName, type) {
-    console.log(routerName, type)
-    const APP_ID = ""
-    let baseApi = process.env.VUE_APP_BASE_API;
+export function getWeiXinCode(userId) {
+    const APP_ID = "wx0605e4222a42c44b"
+    let baseApi = process.env.VUE_APP_BASE_API_ALL;
     //环境切换
-    const AUTH_URL = !type ? baseApi + `/h5/#/${routerName}?deviceId=${localStorage.getItem("deviceId")}` : baseApi + `/h5/#/${routerName}?type=${type}`
+    // const AUTH_URL = !type ? baseApi + `/h5/#/${routerName}?deviceId=${localStorage.getItem("deviceId")}` : baseApi + `/h5/#/${routerName}?type=${type}`
+    const AUTH_URL = userId ? baseApi + `/#/login?userId=`+ userId : baseApi + `/#/login`
     const REDIRECT_URL = encodeURIComponent(AUTH_URL)
-    const url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + APP_ID + '&redirect_uri=' + REDIRECT_URL + '&response_type=code&scope=snsapi_userinfo&state=STATE&connect_redirect=1#wechat_redirect'
-
-    console.log("REDIRECT_URL: ", REDIRECT_URL)
-    console.log("url: ", JSON.stringify(url))
+    const url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + APP_ID + '&redirect_uri=' + REDIRECT_URL + '&response_type=code&scope=snsapi_userinfo&state='+userId+'&connect_redirect=1#wechat_redirect'
     // console.log(localStorage.getItem("deviceId"))
     // alert(JSON.stringify(REDIRECT_URL))
     // return

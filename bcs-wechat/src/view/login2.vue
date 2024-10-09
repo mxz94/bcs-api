@@ -1,13 +1,42 @@
 <template>
   <div class="login-page">
-    <van-loading size="24px">加载中...</van-loading>
+    <van-form @submit="onSubmit" class="login-container">
+      <van-cell-group inset>
+        <van-field
+            v-model="username"
+            name="用户名"
+            label="用户名"
+            placeholder="用户名"
+            :rules="[{ required: true, message: '请填写用户名' }]"
+        />
+        <van-field
+            v-model="password"
+            type="password"
+            name="密码"
+            label="密码"
+            placeholder="密码"
+            :rules="[{ required: true, message: '请填写密码' }]"
+        />
+        <van-field name="switch" label="注册并登录">
+          <template #input>
+            <van-switch v-model="checked" />
+          </template>
+        </van-field>
+
+      </van-cell-group>
+
+      <div style="margin: 16px;">
+        <van-button round block type="primary" native-type="submit">
+          登录
+        </van-button>
+      </div>
+    </van-form>
   </div>
 </template>
 
 <script>
 import { Toast } from 'vant';
-import {getToken, getUrlKey, getUrlParam, setToken} from "@/libs/util";
-import {getWeiXinCode, isWeiXinBrowser} from "@/libs/wx-util";
+import {setToken} from "@/libs/util";
 export default {
   name: "Login",
   data() {
@@ -17,57 +46,34 @@ export default {
       checked: false,
       tenantId: 3,
       url: {
-        h5Login:"/wechat/h5/wechatLogin"
+        login: "/login",
+        logRegister: "/logRegister",
       },
     };
-  },
-  created() {
-    if (isWeiXinBrowser()) {
-      let wxcode = getUrlKey("code");
-      let userId = getUrlKey("state");
-      if (userId == "null" || userId == "undefined" ) userId = null
-      if (wxcode && wxcode !== "") {
-        this.loginByCode(wxcode, userId);
-      } else {
-          if (!getToken()) {
-            // 获取微信code
-            getWeiXinCode( userId);
-          } else {
-            if (userId) {
-              this.$router.push({ path: "/apply?userId="+userId });
-            } else {
-              this.$router.push({ path: "/user" });
-            }
-          }
-      }
-    } else {
-      window.location.href =
-          "https://open.weixin.qq.com/connect/oauth2/authorize?appid=888";
-    }
   },
   methods: {
     onSubmit() {
       /*console.log('submit', values);*/
-      // this.loginByCode(this.username, this.password);
+      this.loginByCode(this.username, this.password);
     },
-    loginByCode: function (wxCode, userId) {
+    loginByCode: function (userName, password) {
       let that =this
       this.$request(
-          // this.checked ? this.url.logRegister : this.url.login,
-          this.url.h5Login,
+          this.checked ? this.url.logRegister : this.url.login,
           "post",
-          null,
-          // { username: userName, password:password, tenantId: this.tenantId },
-          { code : wxCode, tenantId: this.tenantId },
+          "json",
+          { username: userName, password:password, tenantId: this.tenantId },
           function (res) {
             if (res.code == 200) {
               let token = res.data.token;
               setToken(token);
-              if (userId) {
-                that.$router.push({ path: "/apply?userId="+userId });
+              if (that.$route.query.redirect )
+              {
+                that.$router.push(that.$route.query.redirect);
               } else {
                 that.$router.push({ path: "/user" });
               }
+              Toast("提交成功")
             } else {
               Toast(res.msg)
               if(1001!==res.code) {
@@ -93,7 +99,7 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  //background: url('/images/qr_bg.jpeg') no-repeat center center fixed; /* 背景图片 */
+  background: url('/images/qr_bg.jpeg') no-repeat center center fixed; /* 背景图片 */
   background-size: cover; /* 背景覆盖整个容器 */
 }
 

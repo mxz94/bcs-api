@@ -9,6 +9,7 @@ import cn.bcs.web.third.domain.vo.WechatJsSdkSignVO;
 import cn.bcs.web.third.support.WechatSupport;
 import cn.bcs.web.wechat.domain.vo.WechatUserInfo;
 import cn.bcs.web.wechat.service.WechatLoginService;
+import cn.bcs.web.wechat.service.WxSubTemplateService;
 import cn.bcs.web.withdrawRecord.constants.WithdrawStatusEnum;
 import cn.bcs.web.withdrawRecord.constants.WithdrawTypeEnum;
 import cn.bcs.web.withdrawRecord.domain.dto.TixianDTO;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Api(tags = "公众号")
 @RestController
@@ -32,7 +34,8 @@ public class WechatLoginController {
     private WechatSupport wechatSupport;
     @Resource
     private WithdrawRecordService withdrawRecordService;
-
+    @Resource
+    private WxSubTemplateService wxSubTemplateService;
     @ApiOperation(value = "用户信息")
     @GetMapping("/userInfo")
     public Result<WechatUserInfo> userInfo() {
@@ -58,6 +61,11 @@ public class WechatLoginController {
     @GetMapping("/h5/getConfig")
     public Result<WechatJsSdkSignVO> getConfig(@RequestParam String url, @RequestParam String tenantId ) {
         return Result.success(wechatSupport.jsSdkSign(url, tenantId));
+    }
+
+    @GetMapping("/getSubTemplateList")
+    public Result<List<String>> getSubTemplateList() {
+        return wxSubTemplateService.getSubTemplateList();
     }
 
 }

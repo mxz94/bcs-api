@@ -640,8 +640,14 @@ export function getUrlParam(name) {
 }
 
 export function getUrlKey(name) {
-    return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.href) || [, ""])[1].replace(/\+/g, '%20')) || null
+    // 处理 location.search 和 location.hash 部分的参数
+    const url = location.search || location.hash;
+    return decodeURIComponent(
+        (new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(url) || [, ""])[1]
+            .replace(/\+/g, '%20')
+    ) || null;
 }
+
 
 export function regYuanToFen(yuan, digit) {
   var m = 0,
