@@ -117,6 +117,13 @@ export function uploadAvatar(data) {
   })
 }
 
+export function uploadFile(data) {
+  return request({
+    url: '/common/upload',
+    method: 'post',
+    data: data
+  })
+}
 export function teamTree(data) {
   return request({
     url: '/system/user/teamTree',

@@ -16,8 +16,7 @@
         </span>
       </div>
       <!-- 回答部分 -->
-      <div v-if="faq.value" class="faq-answer">
-        {{ faq.remark }}
+      <div v-if="faq.value ? true : false" class="faq-answer" v-html="faq.remark">
       </div>
     </div>
   </div>

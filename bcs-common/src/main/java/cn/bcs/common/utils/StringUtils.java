@@ -458,6 +458,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
                 return true;
             }
         }
+        if (str.contains("selectData")) return true;
         return false;
     }
 

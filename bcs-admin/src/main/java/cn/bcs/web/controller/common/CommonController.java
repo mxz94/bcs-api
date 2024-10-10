@@ -95,7 +95,7 @@ public class CommonController {
     public Result<FileVO> uploadshoukuan(MultipartFile file) {
         try {
             // 上传文件路径
-            String filePath = RuoYiConfig.getUploadPath();
+            String filePath = RuoYiConfig.getShoukuanPath();
             // 上传并返回新文件名称
             String fileName = FileUploadUtils.upload(filePath, file);
             fileName = "/api" + fileName;

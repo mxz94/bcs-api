@@ -26,7 +26,7 @@ public class  SelectDataService extends ServiceImpl<SelectDataMapper, SelectData
                 .eq(StringUtils.isNotEmpty(query.getType()), SelectData::getType, query.getType())
                 .eq(SelectData::getTenantId, SecurityUtils.getTenantId())
                 .eq(StringUtils.isNotEmpty(query.getStatus()), SelectData::getStatus, query.getStatus())
-                .orderByDesc(SelectData::getCreateTime)
+                .orderByDesc(SelectData::getSortNum)
                 .list();
     }
 
@@ -35,7 +35,7 @@ public class  SelectDataService extends ServiceImpl<SelectDataMapper, SelectData
                 .eq(StringUtils.isNotEmpty(query.getType()), SelectData::getType, query.getType())
                 .eq(SelectData::getTenantId, SecurityUtils.getTenantId())
                 .eq(SelectData::getStatus, 0)
-                .orderByDesc(SelectData::getCreateTime)
+                .orderByDesc(SelectData::getSortNum)
                 .list();
         List<SelectDataVO> selectDataVOList = new ArrayList<>();
 

@@ -72,7 +72,9 @@ public class RuoYiConfig {
     public static String getDownloadPath() {
         return getProfile() + "/download/";
     }
-
+    public static String getShoukuanPath() {
+        return getProfile() + "/shoukuan";
+    }
     /**
      * 获取上传路径
      */
