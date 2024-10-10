@@ -25,17 +25,37 @@
 
 <script>
 import {Toast} from "vant";
+import {getWeiXinCode, isWeiXinBrowser} from "@/libs/wx-util";
+import {getToken, getUrlKey} from "@/libs/util";
 
 export default {
   data() {
     return {
+      tenantId: 3,
       faqList: [
         // 更多问题...
       ]
     };
   },
-  mounted() {
-    this.selectTaoCanList()
+  created() {
+    // 获取当前url
+    let url = window.location.href;
+    let prefix = url.match(/https:\/\/([^.]+)\./)[1];
+    if (prefix = "wx") {
+      this.tenantId = 3
+    } else if (prefix = "wx2") {
+      this.tenantId = 4
+    } else if (prefix = "wx3") {
+      this.tenantId = 5
+    } else if (prefix = "wx4") {
+      this.tenantId = 6
+    }
+    if (isWeiXinBrowser()) {
+      this.selectTaoCanList()
+    } else {
+      window.location.href =
+          "https://open.weixin.qq.com/connect/oauth2/authorize?appid=888";
+    }
   },
   methods: {
     selectTaoCanList() {
@@ -44,7 +64,7 @@ export default {
           "/system/selectData/listAll2",
           "get",
           null,
-          {"type":"question"},
+          {"type":"question", "tenantId": this.tenantId},
           function (res) {
             console.log(res)
             if (res.code == 200) {

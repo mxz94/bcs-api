@@ -22,6 +22,18 @@ export default {
     };
   },
   created() {
+    // 获取当前url
+    let url = window.location.href;
+    let prefix = url.match(/https:\/\/([^.]+)\./)[1];
+    if (prefix = "wx") {
+      this.tenantId = 3
+    } else if (prefix = "wx2") {
+      this.tenantId = 4
+    } else if (prefix = "wx3") {
+      this.tenantId = 5
+    } else if (prefix = "wx4") {
+      this.tenantId = 6
+    }
     if (isWeiXinBrowser()) {
       let wxcode = getUrlKey("code");
       let userId = getUrlKey("state");

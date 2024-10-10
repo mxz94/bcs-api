@@ -15,4 +15,6 @@ public class SelectDataQuery {
     private String status;
     @ApiModelProperty(value = "选择数据类型" + SelectDataType.INFO)
     private String type;
+
+    private String tenantId;
 }
