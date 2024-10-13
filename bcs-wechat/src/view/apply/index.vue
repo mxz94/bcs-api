@@ -66,6 +66,7 @@ import {deleteToken, getToken, getUrlKey, getUrlParam} from "@/libs/util";
 export default {
   data() {
     return {
+      tenantId: 3,
       showPicker: false,
       columns: [
       ],
@@ -84,16 +85,29 @@ export default {
     };
   },
   mounted() {
-    var token = getToken();
-    const userId = getUrlKey("userId");
-    if (!token) {
-      this.$router.push('/login?state='+userId);
-      return;
-    }
-    this.selectTaoCanList();
+      // 获取当前url
+      let url = window.location.href;
+      let prefix = url.match(/https:\/\/([^.]+)\./)[1];
+      if (prefix == "wx") {
+        this.tenantId = 3
+      } else if (prefix == "wx1") {
+        this.tenantId = 4
+      } else if (prefix == "wx2") {
+        this.tenantId = 5
+      } else if (prefix == "wx3") {
+        this.tenantId = 6
+      }
+      var token = getToken();
+     let userId = getUrlKey("userId") || getUrlParam("userId") || getUrlKey("state") || getUrlParam("state");
+      this.formData.fromUserId = userId
+      if (!token) {
+        this.$router.push('/login?state='+userId);
+        return;
+      }
+      this.selectTaoCanList();
   },
   created() {
-    let userId = getUrlKey("userId")
+    let userId = getUrlKey("userId") || getUrlParam("userId") || getUrlKey("state") || getUrlParam("state");
     this.formData.fromUserId = userId
   },
   methods: {
@@ -106,21 +120,23 @@ export default {
           "/system/selectData/listAll",
           "get",
           null,
-          {"type":"taocan"},
+          {"type":"taocan", "tenantId" : this.tenantId},
           function (res) {
             console.log(res)
             if (res.code == 200) {
               that.columns = res.data
               that.isOK = true
             } else {
-              that.$router.push('/login');
               deleteToken()
+              that.$router.push('/login?state='+that.formData.fromUserId);
             }
           }
       );
     },
     onConfirm(selectedOptions ) {
       this.showPicker = false
+      let userId = getUrlKey("userId") || getUrlParam("userId") || getUrlKey("state") || getUrlParam("state");
+      this.formData.fromUserId = userId
       this.formData.taocanName = selectedOptions.text
       this.formData.taocanId = selectedOptions.value
     },

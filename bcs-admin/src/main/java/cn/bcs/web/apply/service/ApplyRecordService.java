@@ -2,17 +2,21 @@ package cn.bcs.web.apply.service;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import cn.bcs.common.constant.BalanceConstants;
+import cn.bcs.common.constant.CacheConstants;
 import cn.bcs.common.core.domain.Result;
 import cn.bcs.common.core.domain.entity.SysUser;
 import cn.bcs.common.core.domain.model.LoginUser;
+import cn.bcs.common.core.redis.RedisCache;
 import cn.bcs.common.enums.SysUserType;
 import cn.bcs.common.utils.BigDecimalUtils;
 import cn.bcs.common.utils.SecurityUtils;
 import cn.bcs.common.utils.StringUtils;
+import cn.bcs.framework.web.service.TokenService;
 import cn.bcs.system.service.SysUserService;
 import cn.bcs.web.apply.constants.ApplyStatus;
 import cn.bcs.web.apply.domain.ApplyRecord;
@@ -53,6 +57,10 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
     private SelectDataService selectDataService;
     @Resource
     private CallFeeRecordService callFeeRecordService;
+    @Resource
+    private TokenService tokenService;
+    @Resource
+    RedisCache redisCache;
 
     /**
      * 合伙人或上级没有代理 本周不可体现佣金+350
@@ -135,6 +143,12 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
         if (!fromUser.getTenantId().equals(SecurityUtils.getTenantId())) {
             return Result.error("邀请人和申请人租户不一致");
         }
+        if (this.lambdaQuery().eq(ApplyRecord::getIdCard, dto.getIdCard()).ne(ApplyRecord::getStatus, ApplyStatus.REJECTED.getCode()).count() > 0) {
+            return Result.error("当前身份证有正在办理中的或已办理的单子");
+        }
+        if (this.lambdaQuery().eq(ApplyRecord::getPhone, dto.getPhone()).ne(ApplyRecord::getStatus, ApplyStatus.REJECTED.getCode()).count() > 0) {
+            return Result.error("当前手机号有正在办理中的或已办理的单子");
+        }
         Integer count = this.lambdaQuery().eq(ApplyRecord::getUserId, SecurityUtils.getUserId()).in(ApplyRecord::getStatus, Arrays.asList(ApplyStatus.PENDING.getCode(), ApplyStatus.APPROVED.getCode())).count();
         if (count > 0) {
             return Result.error("当前微信有正在办理中或已办理过的单子");
@@ -210,6 +224,16 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
         changeFromUserAndDel(userId);
         return Result.success();
     }
+
+    public void deleteRedisUser(Integer userId) {
+        Collection<String> keys = redisCache.keys(CacheConstants.LOGIN_TOKEN_KEY + "*");
+        for (String key : keys) {
+            LoginUser user = redisCache.getCacheObject(key);
+            if (user.getUserId().equals(userId)) {
+                redisCache.deleteObject(CacheConstants.LOGIN_TOKEN_KEY + user.getToken());
+            }
+        }
+    }
     @Transactional(rollbackFor = Exception.class)
     public void changeFromUserAndDel(Long userId) {
         SysUser byId = userService.getById(userId);
@@ -222,5 +246,12 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
                     .set(ApplyRecord::getFromUserId, byId.getFromUserId()).update();
         }
         userService.removeById(userId);
+        Collection<String> keys = redisCache.keys(CacheConstants.LOGIN_TOKEN_KEY+ "*");
+        for (String key : keys) {
+            LoginUser user1 = redisCache.getCacheObject(key);
+            if (userId.equals(user1.getUserId())) {
+                redisCache.deleteObject(key);
+            }
+        }
     }
 }

@@ -25,13 +25,13 @@ export default {
     // 获取当前url
     let url = window.location.href;
     let prefix = url.match(/https:\/\/([^.]+)\./)[1];
-    if (prefix = "wx") {
+    if (prefix == "wx") {
       this.tenantId = 3
-    } else if (prefix = "wx2") {
+    } else if (prefix == "wx1") {
       this.tenantId = 4
-    } else if (prefix = "wx3") {
+    } else if (prefix == "wx2") {
       this.tenantId = 5
-    } else if (prefix = "wx4") {
+    } else if (prefix == "wx3") {
       this.tenantId = 6
     }
     if (isWeiXinBrowser()) {
@@ -43,7 +43,7 @@ export default {
       } else {
           if (!getToken()) {
             // 获取微信code
-            getWeiXinCode( userId);
+            getWeiXinCode( userId, prefix);
           } else {
             if (userId) {
               this.$router.push({ path: "/apply?userId="+userId });

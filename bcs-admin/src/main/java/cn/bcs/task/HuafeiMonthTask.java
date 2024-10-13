@@ -114,7 +114,7 @@ public class HuafeiMonthTask {
         // 4. 当前用户及其所有下级的订单总金额
         BigDecimal totalAmount = BigDecimalUtils.add(currentUserAmount, subHuaFeiTotal);
         user.setHuafeiTeamTotal(totalAmount);
-        if (BalanceConstants.MAX_RATE_38.equals(user.getHuafeiTeamTotalRate())) {
+        if (!BalanceConstants.MAX_RATE_38.equals(user.getHuafeiTeamTotalRate())) {
             user.setHuafeiTeamTotalRate(HuafeiRateUtils.calculateTaxRate(totalAmount));
         }
         user.setHuafeiSubFenTotal(subHuaFeiFenTotal);

@@ -20,9 +20,19 @@ export function isWeiXinBrowser() {
 /**
  * 隐式授权（使用哪个公众号授权，要和Java后台使用的一致，否则会报获取openId异常）
  */
-export function getWeiXinCode(userId) {
-    const APP_ID = "wx0605e4222a42c44b"
-    let baseApi = process.env.VUE_APP_BASE_API_ALL;
+export function getWeiXinCode(userId, prefix) {
+    let APP_ID = null
+    if (prefix == "wx") {
+        APP_ID = "wx0605e4222a42c44b"
+    } else if (prefix == "wx1") {
+        APP_ID = "wxa70669801c82f469"
+    } else if (prefix == "wx2") {
+        APP_ID = "wx0605e4222a42c44b"
+    } else if (prefix == "wx3") {
+        APP_ID = "wx0605e4222a42c44b"
+    }
+
+    let baseApi = 'https://'+prefix+'.yj.malanxi.top';
     //环境切换
     // const AUTH_URL = !type ? baseApi + `/h5/#/${routerName}?deviceId=${localStorage.getItem("deviceId")}` : baseApi + `/h5/#/${routerName}?type=${type}`
     const AUTH_URL = userId ? baseApi + `/#/login?userId=`+ userId : baseApi + `/#/login`
