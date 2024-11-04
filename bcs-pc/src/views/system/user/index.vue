@@ -95,7 +95,7 @@
           <el-table-column label="推荐人" align="center" key="fromNickName" prop="fromNickName" />
           <el-table-column label="欠费" align="center" key="qianfei" prop="qianfei_dictText" />
           <el-table-column label="操作" align="center" width="100" class-name="small-padding fixed-width" fixed="right">
-            <template slot-scope="scope" v-if="scope.row.userId !== 1">
+            <template slot-scope="scope" v-if="scope.row.userType !== '0'">
               <el-button type="text" @click="handleUpdate(scope.row)"
                          v-hasPermi="['system:user:edit']">编辑
               </el-button>

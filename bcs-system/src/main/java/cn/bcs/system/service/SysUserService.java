@@ -59,7 +59,7 @@ public class SysUserService extends ServiceImpl<SysUserMapper, SysUser> {
      * @return 用户信息集合信息
      */
     public TableDataInfo<SysUserVO> selectUserList(SysUserQuery query, LoginUser loginUser) {
-        List<SysUserVO> sysUsers = baseMapper.selectUserList(query, loginUser.getTenantId());
+        List<SysUserVO> sysUsers = baseMapper.selectUserList(query, SecurityUtils.isAdmin() ? null : loginUser.getTenantId());
         return TableDataInfo.ok(sysUsers);
     }
 

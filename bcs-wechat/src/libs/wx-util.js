@@ -27,7 +27,7 @@ export function getWeiXinCode(userId, prefix) {
     } else if (prefix == "wx1") {
         APP_ID = "wxa70669801c82f469"
     } else if (prefix == "wx2") {
-        APP_ID = "wx0605e4222a42c44b"
+        APP_ID = "wx731ca5cb3c340590"
     } else if (prefix == "wx3") {
         APP_ID = "wx0605e4222a42c44b"
     }

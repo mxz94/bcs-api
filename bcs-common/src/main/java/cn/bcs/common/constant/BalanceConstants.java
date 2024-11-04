@@ -21,6 +21,15 @@ public interface BalanceConstants {
     public static final BigDecimal DAILI_150 = BigDecimal.valueOf(150);
 
 
+    public static final BigDecimal HEHUO_750 = BigDecimal.valueOf(750);
+
+    public static final BigDecimal HEHUO_75 = BigDecimal.valueOf(75);
+
+    public static final BigDecimal DAILI_400 = BigDecimal.valueOf(400);
+
+    public static final BigDecimal DAILI_350 = BigDecimal.valueOf(350);
+
+
 
 
     // 提现个人所得税 8.6%

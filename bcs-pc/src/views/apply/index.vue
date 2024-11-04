@@ -104,14 +104,14 @@
             icon="el-icon-edit"
             @click="rollback(scope.row)"
             v-hasPermi="['apply:edit']"
-            v-if="scope.row.status != '0'"
+            v-if="scope.row.status === '1'"
           >撤回</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['apply:remove']"
+            v-if="scope.row.status === '2'"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -166,6 +166,16 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="赠品类型" prop="giftType">
+          <el-select v-model="form.giftType" placeholder="赠品类型">
+            <el-option
+              v-for="dict in dict.type.apply_gift_type"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" placeholder="请输入备注" type="textarea"  :autosize="{ minRows: 2, maxRows: 4}"  />
         </el-form-item>
@@ -184,7 +194,7 @@ import {delUser, getUserSelect} from "@/api/system/user";
 
 export default {
   name: "Apply",
-  dicts: ['apply_status'],
+  dicts: ['apply_status', 'apply_gift_type'],
   data() {
     return {
       options: [],
