@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import cn.bcs.common.constant.BalanceConstants;
 import cn.bcs.common.constant.CacheConstants;
@@ -70,6 +71,11 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
      */
     private void calacFee(ApplyRecord old, SysUser fromUser, Boolean isPhone) {
         Long dailiUserId = fromUser.getUserId();
+        //    修改办理人类型为代理人
+        userService.lambdaUpdate().eq(SysUser::getUserId, old.getUserId())
+                .set(SysUser::getFromUserId, old.getFromUserId())
+                .set(SysUser::getUserType, SysUserType.DAILI.getCode()).update();
+
         // 合伙人 或没有上级 直接加350
         if (SysUserType.HEHUO.getCode().equals(fromUser.getUserType()) || fromUser.getFromUserId() == null) {
             userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, isPhone ? BalanceConstants.HEHUO_350 : BalanceConstants.HEHUO_750,  dailiUserId);
@@ -93,16 +99,48 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
 
             // 上级 + 150
             SysUser parentUser = userService.getById(fromUser.getFromUserId());
-            if (parentUser.getNoApplyMonth() < BalanceConstants.noApplyMonth) {
-                userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, isPhone ? BalanceConstants.DAILI_150 : BalanceConstants.DAILI_350,  parentUser.getUserId());
-                callFeeRecordService.saveCallFeeRecord(parentUser, WithdrawTypeEnum.YONGJIN, isPhone ? BalanceConstants.DAILI_150 : BalanceConstants.DAILI_350, StringUtils.format("来自下级：{}的业务佣金", fromUser.getNickName()), old.getId());
+            if (parentUser != null) {
+                // 当前单据是否是上级的前两单是的话， 继续往上找
+                if (fromUser.getTenantId().equals(3L)) {
+                    // 发展的第三单只和合伙人有关
+                    Integer fazhanCount = this.lambdaQuery().eq(ApplyRecord::getFromUserId, dailiUserId).eq(ApplyRecord::getStatus, ApplyStatus.APPROVED.getCode()).count();
+                    if (fazhanCount > 2) {
+                        userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, isPhone ? BalanceConstants.DAILI_150 : BalanceConstants.DAILI_350,  parentUser.getUserId());
+                        callFeeRecordService.saveCallFeeRecord(parentUser, WithdrawTypeEnum.YONGJIN, isPhone ? BalanceConstants.DAILI_150 : BalanceConstants.DAILI_350, StringUtils.format("来自下级：{}的业务佣金", fromUser.getNickName()), old.getId());
+                        return;
+                    }
+
+                    SysUser finalUser = parentUser;
+                    Long songUserId = dailiUserId;
+                    // 查找上级的单子是否是前两个， 是的话，继续往上找， 当不是前两个时返回用户id
+                    while (parentUser != null) {
+                        List<ApplyRecord> parentRecords = this.lambdaQuery()
+                                .eq(ApplyRecord::getFromUserId, parentUser.getUserId())
+                                .eq(ApplyRecord::getStatus, ApplyStatus.APPROVED.getCode())
+                                .orderByAsc(ApplyRecord::getCreateTime)
+                                .last("LIMIT 2")
+                                .list().stream().filter(record -> record.getUserId().equals(dailiUserId)).collect(Collectors.toList());
+                        if (parentRecords.size() > 0 && finalUser.getFromUserId() != null) {
+                            //    是前两个发展的继续往上找
+                            songUserId = finalUser.getUserId();
+                            finalUser = userService.getById(finalUser.getFromUserId());
+                        } else {
+                        //     不是前两个发展的直接 给你吧我的上级
+                            userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, isPhone ? BalanceConstants.DAILI_150 : BalanceConstants.DAILI_350,  finalUser.getUserId());
+                            callFeeRecordService.saveCallFeeRecord(finalUser, WithdrawTypeEnum.YONGJIN, isPhone ? BalanceConstants.DAILI_150 : BalanceConstants.DAILI_350, StringUtils.format("来自下级合伙人:{}发展的：{}的前两单业务佣金", parentUser.getNickName(), fromUser.getNickName()), old.getId());
+                            return;
+                        }
+                    }
+                } else  {
+                    if (parentUser.getNoApplyMonth() < BalanceConstants.noApplyMonth) {
+                        userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, isPhone ? BalanceConstants.DAILI_150 : BalanceConstants.DAILI_350,  parentUser.getUserId());
+                        callFeeRecordService.saveCallFeeRecord(parentUser, WithdrawTypeEnum.YONGJIN, isPhone ? BalanceConstants.DAILI_150 : BalanceConstants.DAILI_350, StringUtils.format("来自下级：{}的业务佣金", fromUser.getNickName()), old.getId());
+                    }
+                }
             }
         }
-        //    修改办理人类型为代理人
-        userService.lambdaUpdate().eq(SysUser::getUserId, old.getUserId())
-                .set(SysUser::getFromUserId, old.getFromUserId())
-                .set(SysUser::getUserType, SysUserType.DAILI.getCode()).update();
     }
+
     @Transactional(rollbackFor = Exception.class)
     public Result handleStatus(ApplyRecordHandleStatus dto) {
         if (StringUtils.isEmpty(dto.getGiftType())) {

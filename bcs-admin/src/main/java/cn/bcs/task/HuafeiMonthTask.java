@@ -40,7 +40,12 @@ public class HuafeiMonthTask {
         Date now = new Date();
         //查询系统内每个人最新审核通过的单子
         List<ApplyRecord> userMaxList = applyRecordService.selectMaxApplyRecord();
+        List<Long> collect = sysUserService.lambdaQuery().isNull(SysUser::getFromUserId).in(SysUser::getUserType, SysUserType.HEHUO.getCode(), SysUserType.DAILI.getCode()).list().stream().map(SysUser::getUserId).collect(Collectors.toList());
         for (ApplyRecord applyRecord : userMaxList) {
+            // 手动设置为合伙人的不删除
+            if (applyRecord.getFromUserId() == null || collect.contains(applyRecord.getFromUserId())) {
+                continue;
+            }
             Long betweenMonth = DateUtil.betweenMonth(now, applyRecord.getCreateTime(), true) -1;
             if (betweenMonth > 0) {
                 if (betweenMonth.equals(BalanceConstants.noApplyMonth)) {
