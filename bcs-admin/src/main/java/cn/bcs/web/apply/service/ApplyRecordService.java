@@ -13,7 +13,6 @@ import cn.bcs.common.core.domain.Result;
 import cn.bcs.common.core.domain.entity.SysUser;
 import cn.bcs.common.core.domain.model.LoginUser;
 import cn.bcs.common.core.redis.RedisCache;
-import cn.bcs.common.enums.ApplyGiftType;
 import cn.bcs.common.enums.SysUserType;
 import cn.bcs.common.utils.SecurityUtils;
 import cn.bcs.common.utils.StringUtils;
@@ -78,20 +77,20 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
 
         // 合伙人 或没有上级 直接加350
         if (SysUserType.HEHUO.getCode().equals(fromUser.getUserType()) || fromUser.getFromUserId() == null) {
-            userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, isPhone ? BalanceConstants.HEHUO_350 : BalanceConstants.HEHUO_750,  dailiUserId);
-            callFeeRecordService.saveCallFeeRecord(fromUser, WithdrawTypeEnum.YONGJIN, isPhone ? BalanceConstants.HEHUO_350 : BalanceConstants.HEHUO_750, null, old.getId());
+            userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, isPhone ? BalanceConstants.HEHUO_350 : BalanceConstants.HEHUO_200,  dailiUserId);
+            callFeeRecordService.saveCallFeeRecord(fromUser, WithdrawTypeEnum.YONGJIN, isPhone ? BalanceConstants.HEHUO_350 : BalanceConstants.HEHUO_200, null, old.getId());
             if (fromUser.getFromUserId() != null) {
                 SysUser parentUser = userService.getById(fromUser.getFromUserId());
                 if (parentUser != null) {
-                    userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, isPhone ? BalanceConstants.HEHUO_35 : BalanceConstants.HEHUO_75,  parentUser.getUserId());
+                    userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, isPhone ? BalanceConstants.HEHUO_35 : BalanceConstants.HEHUO_20,  parentUser.getUserId());
 
-                    callFeeRecordService.saveCallFeeRecord(parentUser, WithdrawTypeEnum.YONGJIN, isPhone ? BalanceConstants.HEHUO_35 : BalanceConstants.HEHUO_75, StringUtils.format("来自下级：{}的业务佣金", fromUser.getNickName()), old.getId());
+                    callFeeRecordService.saveCallFeeRecord(parentUser, WithdrawTypeEnum.YONGJIN, isPhone ? BalanceConstants.HEHUO_35 : BalanceConstants.HEHUO_20, StringUtils.format("来自下级：{}的业务佣金", fromUser.getNickName()), old.getId());
                 }
             }
         } else if (SysUserType.DAILI.getCode().equals(fromUser.getUserType())) {
         //    代理 + 200
-            userService.addBalance(BalanceConstants.WAIT_IN_BALANCE,  isPhone ? BalanceConstants.DAILI_200 : BalanceConstants.DAILI_400,  dailiUserId);
-            callFeeRecordService.saveCallFeeRecord(fromUser, WithdrawTypeEnum.YONGJIN, isPhone ? BalanceConstants.DAILI_200 : BalanceConstants.DAILI_400, null, old.getId());
+            userService.addBalance(BalanceConstants.WAIT_IN_BALANCE,  isPhone ? BalanceConstants.DAILI_200 : BalanceConstants.DAILI_100,  dailiUserId);
+            callFeeRecordService.saveCallFeeRecord(fromUser, WithdrawTypeEnum.YONGJIN, isPhone ? BalanceConstants.DAILI_200 : BalanceConstants.DAILI_100, null, old.getId());
             Integer count = this.lambdaQuery().eq(ApplyRecord::getFromUserId, dailiUserId).eq(ApplyRecord::getStatus, ApplyStatus.APPROVED.getCode()).count();
                 userService.lambdaUpdate().eq(SysUser::getUserId, dailiUserId)
                         .set(SysUser::getNoApplyMonth, 0)
@@ -101,12 +100,12 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
             SysUser parentUser = userService.getById(fromUser.getFromUserId());
             if (parentUser != null) {
                 // 当前单据是否是上级的前两单是的话， 继续往上找
-                if (fromUser.getTenantId().equals(3L)) {
+                if (fromUser.getTenantId().equals(13L)) {
                     // 发展的第三单只和合伙人有关
                     Integer fazhanCount = this.lambdaQuery().eq(ApplyRecord::getFromUserId, dailiUserId).eq(ApplyRecord::getStatus, ApplyStatus.APPROVED.getCode()).count();
                     if (fazhanCount > 2) {
-                        userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, isPhone ? BalanceConstants.DAILI_150 : BalanceConstants.DAILI_350,  parentUser.getUserId());
-                        callFeeRecordService.saveCallFeeRecord(parentUser, WithdrawTypeEnum.YONGJIN, isPhone ? BalanceConstants.DAILI_150 : BalanceConstants.DAILI_350, StringUtils.format("来自下级：{}的业务佣金", fromUser.getNickName()), old.getId());
+                        userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, isPhone ? BalanceConstants.DAILI_150 : BalanceConstants.DAILI_100,  parentUser.getUserId());
+                        callFeeRecordService.saveCallFeeRecord(parentUser, WithdrawTypeEnum.YONGJIN, isPhone ? BalanceConstants.DAILI_150 : BalanceConstants.DAILI_100, StringUtils.format("来自下级：{}的业务佣金", fromUser.getNickName()), old.getId());
                         return;
                     }
 
@@ -126,15 +125,15 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
                             finalUser = userService.getById(finalUser.getFromUserId());
                         } else {
                         //     不是前两个发展的直接 给你吧我的上级
-                            userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, isPhone ? BalanceConstants.DAILI_150 : BalanceConstants.DAILI_350,  finalUser.getUserId());
-                            callFeeRecordService.saveCallFeeRecord(finalUser, WithdrawTypeEnum.YONGJIN, isPhone ? BalanceConstants.DAILI_150 : BalanceConstants.DAILI_350, StringUtils.format("来自下级合伙人:{}发展的：{}的前两单业务佣金", parentUser.getNickName(), fromUser.getNickName()), old.getId());
+                            userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, isPhone ? BalanceConstants.DAILI_150 : BalanceConstants.DAILI_100,  finalUser.getUserId());
+                            callFeeRecordService.saveCallFeeRecord(finalUser, WithdrawTypeEnum.YONGJIN, isPhone ? BalanceConstants.DAILI_150 : BalanceConstants.DAILI_100, StringUtils.format("来自下级合伙人:{}发展的：{}的前两单业务佣金", parentUser.getNickName(), fromUser.getNickName()), old.getId());
                             return;
                         }
                     }
                 } else  {
                     if (parentUser.getNoApplyMonth() < BalanceConstants.noApplyMonth) {
-                        userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, isPhone ? BalanceConstants.DAILI_150 : BalanceConstants.DAILI_350,  parentUser.getUserId());
-                        callFeeRecordService.saveCallFeeRecord(parentUser, WithdrawTypeEnum.YONGJIN, isPhone ? BalanceConstants.DAILI_150 : BalanceConstants.DAILI_350, StringUtils.format("来自下级：{}的业务佣金", fromUser.getNickName()), old.getId());
+                        userService.addBalance(BalanceConstants.WAIT_IN_BALANCE, isPhone ? BalanceConstants.DAILI_150 : BalanceConstants.DAILI_100,  parentUser.getUserId());
+                        callFeeRecordService.saveCallFeeRecord(parentUser, WithdrawTypeEnum.YONGJIN, isPhone ? BalanceConstants.DAILI_150 : BalanceConstants.DAILI_100, StringUtils.format("来自下级：{}的业务佣金", fromUser.getNickName()), old.getId());
                     }
                 }
             }
@@ -143,9 +142,6 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
 
     @Transactional(rollbackFor = Exception.class)
     public Result handleStatus(ApplyRecordHandleStatus dto) {
-        if (StringUtils.isEmpty(dto.getGiftType())) {
-            dto.setGiftType(ApplyGiftType.GIFT_A.getCode());
-        }
         ApplyRecord old = this.getById(dto.getId());
         if (! old.getTenantId().equals(SecurityUtils.getTenantId())) {
             return Result.error("非自己账号的数据");
@@ -164,14 +160,9 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
             if (!SysUserType.DAILI.getCode().equals(user.getUserType()) && !SysUserType.HEHUO.getCode().equals(user.getUserType())) {
                 return Result.error("推荐人必须是代理用户");
             }
-            calacFee(old, user, "1".equals(dto.getGiftType()));
-        }
-        if (!"1".equals(dto.getGiftType())) {
-            if (dto.getRemark() != null) {
-                dto.setRemark(dto.getRemark() + "：酒");
-            } else {
-                dto.setRemark("酒");
-            }
+            // 99 的套餐
+            Boolean isNine = old.getTaocanValue().equals(BigDecimal.valueOf(99)) && SecurityUtils.getLoginUser().getTenantId().equals(3L);
+            calacFee(old, user, isNine);
         }
 
         this.lambdaUpdate().eq(ApplyRecord::getId, dto.getId())

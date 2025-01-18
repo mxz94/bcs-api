@@ -7,7 +7,5 @@ import lombok.Data;
 public class ApplyRecordHandleStatus {
     private Long id;
     private String status;
-    @ApiModelProperty(value ="操作类型 1 手机  2 酒")
-    private String giftType;
     private String remark;
 }

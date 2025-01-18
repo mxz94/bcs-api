@@ -80,7 +80,7 @@ public class  WithdrawRecordService extends ServiceImpl<WithdrawRecordMapper, Wi
             }
             WithdrawRecord withdrawRecord = new WithdrawRecord();
             withdrawRecord.setOldBalance(user.getCallBalance());
-            withdrawRecord.setNewBalance(BigDecimalUtils.add(user.getBalance(), amount.negate()));
+            withdrawRecord.setNewBalance(BigDecimalUtils.add(user.getCallBalance(), amount.negate()));
             withdrawRecord.setAmount(amount);
             withdrawRecord.setRealAmount(BigDecimalUtils.subtract(amount, BigDecimalUtils.multiplyPercentage(amount, BalanceConstants.SUODESHUI)));
             withdrawRecord.setRate(BalanceConstants.SUODESHUI);
