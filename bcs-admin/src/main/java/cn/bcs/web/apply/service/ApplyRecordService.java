@@ -161,7 +161,7 @@ public class  ApplyRecordService extends ServiceImpl<ApplyRecordMapper, ApplyRec
                 return Result.error("推荐人必须是代理用户");
             }
             // 99 的套餐
-            Boolean isNine = old.getTaocanValue().equals(BigDecimal.valueOf(99)) && SecurityUtils.getLoginUser().getTenantId().equals(3L);
+            Boolean isNine = "99合约".equals(old.getTaocanName()) && SecurityUtils.getLoginUser().getTenantId().equals(3L);
             calacFee(old, user, isNine);
         }
 
